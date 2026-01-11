@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot
 {
   private static final boolean m_isComp          = detectRobot( );         // Detect which robot is in use
-  private final RobotContainer m_robotContainer  = new RobotContainer( );  // Create that robot
+  private final RobotContainer m_robotContainer  = new RobotContainer(this);    // Create that robot
   private Command              m_autonomousCommand;
   private boolean              m_faultsCleared   = false;
   private static double        m_timeMark        = Timer.getFPGATimestamp( );
@@ -61,7 +61,7 @@ public class Robot extends TimedRobot
       PortForwarder.add(port, Constants.kLLRightName + ".local", port);
     }
 
-    FollowPathCommand.warmupCommand( ).withName("PathPlanner - warmupCommand").schedule( ); // Recommended by PathPlanner docs
+    CommandScheduler.getInstance( ).schedule(FollowPathCommand.warmupCommand( ).withName("PathPlanner - warmupCommand")); // Recommended by PathPlanner docs
 
     Robot.timeMarker("Robot: after warmup");
   }
@@ -159,7 +159,7 @@ public class Robot extends TimedRobot
     // schedule the autonomous command selected by the RobotContainer class
     if (m_autonomousCommand != null)
     {
-      m_autonomousCommand.schedule( );
+      CommandScheduler.getInstance( ).schedule(m_autonomousCommand);
     }
   }
 

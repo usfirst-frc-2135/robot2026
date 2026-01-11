@@ -3,7 +3,6 @@
 //
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -75,19 +74,19 @@ public class Elevator extends SubsystemBase
   private static final double  kToleranceInches        = 0.5;             // PID tolerance in inches
   private static final double  kMMDebounceTime         = 0.040;           // Seconds to debounce a final position check
   private static final double  kMMMoveTimeout          = 1.3;             // Seconds allowed for a Motion Magic movement
-  private static final Current kHardStopCurrentLimit   = Amps.of(100.0);
+  // private static final Current kHardStopCurrentLimit   = Amps.of(100.0);
 
   // Elevator heights - Motion Magic move parameters
   private static final double  kHeightInchesMin        = 0.0;             // Minimum allowable height
   private static final double  kHeightInchesMax        = 30.5;            // Maximum allowable height
 
   private static final double  kMinDownHeight          = 0.1;             // Minimum height in inches commanded during down movements
-  private static final double  kMaxDownHeight          = 0.4;             // Maximum height in inches when down limit switch is closed
+  // private static final double  kMaxDownHeight          = 0.4;             // Maximum height in inches when down limit switch is closed
 
   private static final double  kHeightStowed           = 0.0;             // By definition - full down
   private static final double  kHeightCoralStation     = 0.0;             // By definition - at coral station
 
-  private static final double  kHeightCoralL1          = 7.75;            // By definition - at L1 for scoring coral
+  private static final double  kHeightCoralL1          = 8.0;            // By definition - at L1 for scoring coral
   private static final double  kHeightCoralL2          = 8.0;             // By definition - at L2 for scoring coral
   private static final double  kHeightCoralL3          = 15.5;            // By definition - at L3 for scoring coral
   private static final double  kHeightCoralL4          = 28.25;            // By definition - at L4 for scoring coral
@@ -98,7 +97,7 @@ public class Elevator extends SubsystemBase
   private static final double  kHeightAlgaeNet         = 30.75;           // By definition - at scoring algae in net
 
   /** Elevator manual move parameters */
-  private enum JoystickMode
+  public enum JoystickMode
   {
     INIT,   // Initialized state
     UP,     // Move upward

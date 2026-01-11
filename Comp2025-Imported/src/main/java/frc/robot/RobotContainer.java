@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.json.simple.parser.ParseException;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
@@ -27,7 +29,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.util.struct.parser.ParseException;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -60,6 +61,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.HID;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Manipulator;
 import frc.robot.subsystems.Power;
 import frc.robot.subsystems.Telemetry;
@@ -107,10 +109,13 @@ public class RobotContainer
 
   private final Telemetry                             logger          = new Telemetry(kMaxSpeed.in(MetersPerSecond));
 
-  // The robot's shared subsystems
+  // Utility classes for LED and HID controls
+  private final LED                                   m_led           = new LED( );
   private final HID                                   m_hid           = new HID(m_driverPad.getHID( ), m_operatorPad.getHID( ));
-  private final Power                                 m_power         = new Power( );
   private final Vision                                m_vision        = new Vision( );
+
+  // The robot's shared subsystems
+  private final Power                                 m_power         = new Power( );
 
   // These subsystems may use LED or vision and must be created afterward
   private final CommandSwerveDrivetrain               m_drivetrain    = TunerConstants.createDrivetrain( );
@@ -118,12 +123,12 @@ public class RobotContainer
   private final Manipulator                           m_manipulator   = new Manipulator( );
 
   // Selected autonomous command
-  private final NetworkTableInstance                  ntInst          = NetworkTableInstance.getDefault( );
-  private final NetworkTable                          table           = ntInst.getTable(Constants.kRobotString);
+  private final NetworkTableInstance                  kNTInst         = NetworkTableInstance.getDefault( );
+  private final NetworkTable                          kRobotTable     = kNTInst.getTable(Constants.kRobotString);
   private final IntegerPublisher                      m_reefLevelPub  =
-      table.getIntegerTopic(ELConsts.kReefLevelString).publish( );   // Level of the reef to score or acquire from (1-4)
+      kRobotTable.getIntegerTopic(ELConsts.kReefLevelString).publish( );  // Level of the reef to score or acquire from (1-4)
   private final IntegerPublisher                      m_reefBranchPub =
-      table.getIntegerTopic(VIConsts.kReefBranchString).publish( );  // Branch of the reef to score or acquire from (left, middle, right)
+      kRobotTable.getIntegerTopic(VIConsts.kReefBranchString).publish( ); // Branch of the reef to score or acquire from (left, middle, right)
   private Command                                     m_autoCommand;  // Selected autonomous command
   private List<PathPlannerPath>                       m_ppPathList;   // Path list for the selected auto
 
@@ -198,7 +203,7 @@ public class RobotContainer
    * 
    * The main container for the robot. Contains subsystems, OI devices, and commands.
    */
-  public RobotContainer( )
+  public RobotContainer(Robot robot)
   {
     Robot.timeMarker("robotContainer: before heading controller and field layout");
 
@@ -208,6 +213,10 @@ public class RobotContainer
     addDashboardWidgets( );           // Add some dashboard widgets for commands
     configureButtonBindings( );       // Configure game controller buttons
     initDefaultCommands( );           // Initialize subsystem default commands
+
+    // Add periodic calls for non-subsystem classes
+    robot.addPeriodic(( ) -> m_hid.periodic( ), Seconds.of(0.020));
+    robot.addPeriodic(( ) -> m_led.periodic( ), Seconds.of(0.020));
 
     Robot.timeMarker("robotContainer: after default commands");
   }
@@ -267,7 +276,7 @@ public class RobotContainer
 
       if ((m_autoCommand = getAutonomousCommand( )) != null)
       {
-        m_autoCommand.schedule( );
+        CommandScheduler.getInstance( ).schedule(m_autoCommand);
       }
     }));
 
@@ -711,6 +720,7 @@ public class RobotContainer
    */
   public void printAllFaults( )
   {
+    m_led.printFaults( );
     m_power.printFaults( );
 
     m_elevator.printFaults( );
