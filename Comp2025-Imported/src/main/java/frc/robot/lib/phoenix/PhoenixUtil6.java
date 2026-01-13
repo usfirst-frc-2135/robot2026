@@ -345,7 +345,7 @@ public class PhoenixUtil6
    * 
    * Print fault flags for a CANdle
    * 
-   * @param candle
+   * @param candles
    *          reference to a CANdle LED controller
    * @param name
    *          descriptive name of the CANdle
