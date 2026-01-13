@@ -20,6 +20,7 @@ public class Robot extends TimedRobot
     kStopped, kFixedSpeed, kJoystickControl, kClosedLoop
   }
 
+  private final static RobotContainer               m_container     = new RobotContainer( );
   private final static XboxController               m_controller    = new XboxController(0);
   private final static ExampleSmartMotorController  m_motor1        = new ExampleSmartMotorController(5, kEncoderCPR);
   private final static ExampleSmartMotorController  m_motor2        = new ExampleSmartMotorController(6, kEncoderCPR);
@@ -27,13 +28,13 @@ public class Robot extends TimedRobot
   private final static TalonSRXSimCollection        m_motor1Sim     = m_motor1.getMotorSimulation( );
   private final static ElevSim                      m_elevSim       = new ElevSim(m_motor1Sim, kEncoderCPR);
 
-  private final static double                       kv              = 1.0;    // Max velocity - RPS
-  private final static double                       ka              = 2.0;    // Max acceleration - RPS^2
+  private final static double                       kv              = 1.0; // Max velocity - RPS
+  private final static double                       ka              = 2.0; // Max acceleration - RPS^2
 
   private final static TrapezoidProfile.Constraints m_constraints   = new TrapezoidProfile.Constraints(kv, ka);
 
-  private final static double                       m_goal1         = 0.5;    // Goal 1 position
-  private final static double                       m_goal2         = -1.0;   // Goal 2 position
+  private final static double                       m_goal1         = 0.5; // Goal 1 position
+  private final static double                       m_goal2         = -1.0; // Goal 2 position
 
   private ControlMode                               m_controlMode   = ControlMode.kStopped;
   private double                                    m_fixedSpeed    = 0.3;
@@ -56,7 +57,8 @@ public class Robot extends TimedRobot
   }
 
   /**
-   * robotPeriodic - periodic processing for this motor/controller called every 20 msec
+   * robotPeriodic - periodic processing for this motor/controller called every 20
+   * msec
    */
   @Override
   public void robotPeriodic( )
@@ -86,7 +88,8 @@ public class Robot extends TimedRobot
   }
 
   /**
-   * teleopPeriodic - WHEN ENABLED: periodic processing for this motor/controller called every 20 msec
+   * teleopPeriodic - WHEN ENABLED: periodic processing for this motor/controller
+   * called every 20 msec
    * 
    * Button definitions
    * A, B - sets the motor to a constant percentOutput value (runs continuously)
@@ -107,7 +110,7 @@ public class Robot extends TimedRobot
       DataLogManager.log(String.format("%s button pressed - percent output: %.2f", (aButton) ? "A" : "B", m_fixedSpeed));
       m_percentOutput = (aButton) ? m_fixedSpeed : -m_fixedSpeed;
     }
-    else if (m_controller.getRightBumperPressed( ))
+    else if (m_controller.getRightBumperButtonPressed( ))
     {
       m_controlMode = ControlMode.kStopped;
       DataLogManager.log(String.format("Left bumper pressed - STOP!"));
@@ -116,7 +119,7 @@ public class Robot extends TimedRobot
       m_motor2.resetEncoder( );
       m_elevSim.reset( );
     }
-    else if (m_controller.getLeftBumperPressed( ))
+    else if (m_controller.getLeftBumperButtonPressed( ))
     {
       m_controlMode = ControlMode.kJoystickControl;
       DataLogManager.log(String.format("Right bumper pressed - joystick control"));
