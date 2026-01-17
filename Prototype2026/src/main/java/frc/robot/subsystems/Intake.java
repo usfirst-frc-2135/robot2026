@@ -45,11 +45,10 @@ public class Intake extends SubsystemBase
   private static final double  kRollerSpeedToFeeder  = -0.4;
   private static final double  kRollerSpeedHold      = 0.1;
 
- 
   private static final double  kNoteDebounceTime     = 0.045;
   private BooleanPublisher     m_fuelDetectedPub;
 
-  private boolean              m_upperrollerValid;        // Health indicator for motor 
+  private boolean              m_upperrollerValid; // Health indicator for motor
   private boolean              m_lowerrollerValid;
   public double                m_targetDegrees       = 0.0;
   private final DigitalInput   m_fuelInIntake        = new DigitalInput(0);
@@ -58,14 +57,13 @@ public class Intake extends SubsystemBase
   private DoublePublisher      m_rollSupCurPub;
 
   private Debouncer            m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
-  private boolean              m_fuelDetected;       // Detection state of note in rollers
+  private boolean              m_fuelDetected; // Detection state of note in rollers
 
   private final Alert          m_upperrollerAlert    =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
   private final Alert          m_lowerrollerAlert    =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
-  
 
   public Intake( )
   {
@@ -101,7 +99,8 @@ public class Intake extends SubsystemBase
 
   private void initDashboard( )
   {
-    // Get the default instance of NetworkTables that was created automatically when the robot program starts
+    // Get the default instance of NetworkTables that was created automatically when
+    // the robot program starts
     NetworkTableInstance inst = NetworkTableInstance.getDefault( );
     NetworkTable table = inst.getTable("intake");
 
@@ -157,7 +156,7 @@ public class Intake extends SubsystemBase
       m_upperrollerMotor.set(output);
       m_lowerrollerMotor.set(output);
     }
-        return null;
+    return null;
   }
 
   public boolean isFuelDetected( )
@@ -165,11 +164,4 @@ public class Intake extends SubsystemBase
     return m_fuelDetected;
   }
 
-  
-
-
-  
-
-  
- 
 }
