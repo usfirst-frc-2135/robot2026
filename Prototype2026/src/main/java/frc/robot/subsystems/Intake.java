@@ -7,7 +7,6 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
@@ -39,7 +38,6 @@ public class Intake extends SubsystemBase
 
   private final WPI_TalonSRX   m_upperrollerMotor    = new WPI_TalonSRX(1);
   private final WPI_TalonSRX   m_lowerrollerMotor    = new WPI_TalonSRX(2);
-  private final CANcoder       m_CANcoder            = new CANcoder(3);
 
   private static final double  kRollerSpeedAcquire   = 0.5;
   private static final double  kRollerSpeedExpel     = -0.4;
@@ -47,17 +45,13 @@ public class Intake extends SubsystemBase
   private static final double  kRollerSpeedToFeeder  = -0.4;
   private static final double  kRollerSpeedHold      = 0.1;
 
-  private static final double  kRotaryGearRatio      = 30.83;
-  private static final double  kRotaryLengthMeters   = 0.3;       // Simulation
-  private static final double  kRotaryWeightKg       = 4.0;       // Simulation
-  private static final Voltage kRotaryManualVolts    = Volts.of(3.5);
+ 
   private static final double  kNoteDebounceTime     = 0.045;
   private BooleanPublisher     m_fuelDetectedPub;
 
   private boolean              m_upperrollerValid;        // Health indicator for motor 
   private boolean              m_lowerrollerValid;
   public double                m_targetDegrees       = 0.0;
-  public boolean               m_canCoderValid;
   private final DigitalInput   m_fuelInIntake        = new DigitalInput(0);
 
   private DoublePublisher      m_rollSpeedPub;
@@ -71,6 +65,7 @@ public class Intake extends SubsystemBase
 
   private final Alert          m_lowerrollerAlert    =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
+  
 
   public Intake( )
   {
@@ -114,7 +109,6 @@ public class Intake extends SubsystemBase
     m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
     m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
 
-    DoublePublisher m_ccDegreesPub = table.getDoubleTopic("ccDegrees").publish( );
     m_fuelDetectedPub = table.getBooleanTopic("fuelDetected").publish( );
 
   }
@@ -127,7 +121,7 @@ public class Intake extends SubsystemBase
 
   }
 
-  private void setRollerMode(INRollerMode mode)
+  public Command setRollerMode(INRollerMode mode)
   {
     double output = 0.0;
 
@@ -163,12 +157,18 @@ public class Intake extends SubsystemBase
       m_upperrollerMotor.set(output);
       m_lowerrollerMotor.set(output);
     }
+        return null;
   }
 
   public boolean isFuelDetected( )
   {
     return m_fuelDetected;
   }
+
+  
+
+
+  
 
   
  

@@ -3,14 +3,23 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.INConsts;
+import frc.robot.Constants.INConsts.INRollerMode;
+import frc.robot.subsystems.Intake;
 
 public class RobotContainer
 {
+  private static final CommandXboxController          m_driverPad     = new CommandXboxController(0);
+  private static final CommandXboxController          m_operatorPad   = new CommandXboxController(1);
   private static final boolean m_isComp    = detectRobot( );
   private static final double  kEncoderCPR = 4096;
+  private static double        m_timeMark        = Timer.getFPGATimestamp( );
+  private final Intake                                m_intake        = new Intake( );
 
   private static enum ControlMode
   {
@@ -65,11 +74,12 @@ public class RobotContainer
 
     initDefaultCommands( );           // Initialize subsystem default commands
 
-    Robot.timeMarker("robotContainer: after default commands");
+    //Robot.timeMarker("robotContainer: after default commands");
   }
 
   private void configureButtonBindings( )
   {
+    m_driverPad.a( ).whileTrue(m_intake.setRollerMode(INConsts.INRollerMode.ACQUIRE));
     ///////////////////////////////////////////////////////
     //
     // Driver Controller Assignments
@@ -78,19 +88,16 @@ public class RobotContainer
     //
     //  --- Normal button definitions ---
     //
-    m_driverPad.a( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim       //
-        .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
-        .withVelocityY(0)                                    //
-        .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
-    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B")); // drive to stage right
-    m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X")); // drive to stage left
-    m_driverPad.y( ).onTrue(new LogCommand("driverPad", "Y")); // drive to stage center
+    
+    // m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B")); // drive to stage right
+    // m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X")); // drive to stage left
+    // m_driverPad.y( ).onTrue(new LogCommand("driverPad", "Y")); // drive to stage center
     //
     //  --- SysId button definitions ---
     //
     // Run SysId routines when holding A, B and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    // m_driverPad.a( ).and(m_driverPad.y( )).whileTrue(m_drivetrain.sysIdDynamic(Direction.kForward));
+    
     // m_driverPad.a( ).and(m_driverPad.x( )).whileTrue(m_drivetrain.sysIdDynamic(Direction.kReverse));
     // m_driverPad.b( ).and(m_driverPad.y( )).whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kForward));
     // m_driverPad.b( ).and(m_driverPad.x( )).whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kReverse));
@@ -98,31 +105,13 @@ public class RobotContainer
     //
     // Driver - Bumpers, start, back
     //
-    m_driverPad.leftBumper( ).whileTrue(m_drivetrain.drivePathtoPose(m_drivetrain, VIConsts.kAmpPose)); // drive to amp
-    m_driverPad.rightBumper( ).onTrue(new AcquireNote(m_intake, m_led, m_hid));
-    m_driverPad.rightBumper( ).onFalse(new RetractIntake(m_intake, m_led, m_hid));
-    m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
-    m_driverPad.start( ).onTrue(m_drivetrain.runOnce(( ) -> m_drivetrain.seedFieldCentric( )));         // aka Menu button
+    
+    //m_driverPad.rightBumper( ).onTrue(new AcquireNote(m_intake));
 
     //
     // Driver - POV buttons
     //
-    m_driverPad.pov(0).whileTrue(m_drivetrain.applyRequest(( ) -> facing    //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(0.0))));
-    m_driverPad.pov(90).whileTrue(m_drivetrain.applyRequest(( ) -> facing   //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(270.0))));
-    m_driverPad.pov(180).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(180.0))));
-    m_driverPad.pov(270).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(90.0))));
+    
 
     //
     // Driver Left/Right Trigger
@@ -130,12 +119,10 @@ public class RobotContainer
     // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold)
-        .whileTrue(m_drivetrain.drivePathtoPose(m_drivetrain, VIConsts.kSpeakerPose));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new ScoreSpeaker(m_shooter, m_intake, m_led));
+    //m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new ScoreSpeaker(m_shooter, m_intake, m_led));
 
-    m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
-    m_driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
+    //m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
+    //m_driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
 
     ///////////////////////////////////////////////////////
     //
@@ -143,30 +130,50 @@ public class RobotContainer
     //
     // Operator - A, B, X, Y
     //
-    m_operatorPad.a( ).onTrue(m_shooter.getShooterScoreCommand( ));
-    m_operatorPad.b( ).onTrue(m_shooter.getShooterStopCommand( ));
-    m_operatorPad.x( ).onTrue(new PassNote(m_shooter, m_intake, m_led));
-    m_operatorPad.x( ).onFalse(m_shooter.getShooterScoreCommand( ));
-    m_operatorPad.y( ).onTrue(new ExpelNote(m_intake, m_led));
+    // m_operatorPad.a( ).onTrue(m_shooter.getShooterScoreCommand( ));
+    // m_operatorPad.b( ).onTrue(m_shooter.getShooterStopCommand( ));
+    // m_operatorPad.x( ).onTrue(new PassNote(m_shooter, m_intake, m_led));
+    // m_operatorPad.x( ).onFalse(m_shooter.getShooterScoreCommand( ));
+    // m_operatorPad.y( ).onTrue(new ExpelNote(m_intake, m_led));
 
     //
     // Operator - Bumpers, start, back
     //
-    m_operatorPad.leftBumper( ).onTrue(new HandoffToFeeder(m_intake, m_feeder, m_led));
-    m_operatorPad.rightBumper( ).onTrue(new AcquireNote(m_intake, m_led, m_hid));
-    m_operatorPad.rightBumper( ).onFalse(new RetractIntake(m_intake, m_led, m_hid));
-    m_operatorPad.back( ).toggleOnTrue(m_climber.getJoystickCommand(( ) -> getClimberAxis( )));                                     // aka View button
-    m_operatorPad.start( ).onTrue(new InstantCommand(m_vision::rotateCameraStreamMode).ignoringDisable(true));  // aka Menu button
+    //m_operatorPad.leftBumper( ).onTrue(new HandoffToFeeder(m_intake, m_feeder, m_led));
+    //m_operatorPad.rightBumper( ).onTrue(new AcquireNote(m_intake, m_led, m_hid));
+    //m_operatorPad.rightBumper( ).onFalse(new RetractIntake(m_intake, m_led, m_hid));
+        
+    
 
     //
     // Operator - POV buttons
     //
 
 
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new ScoreSpeaker(m_shooter, m_intake, m_led));
+    //m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new ScoreSpeaker(m_shooter, m_intake, m_led));
 
-    m_operatorPad.leftStick( ).toggleOnTrue(m_feeder.getJoystickCommand(( ) -> getFeederAxis( )));
-    m_operatorPad.rightStick( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeAxis( )));
+    //m_operatorPad.rightStick( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeAxis( )));
+  }
+  private void initDefaultCommands( )
+  {
+    
+
+    // Default command - Motion Magic hold
+    //m_intake.setDefaultCommand(m_intake.getHoldPositionCommand(INRollerMode.HOLD, m_intake::getCurrentPosition));
+    
+
+    // Default command - manual mode
+    // m_intake.setDefaultCommand(m_intake.getJoystickCommand(( ) -> getIntakeAxis( )));
+    // m_feeder.s
+  }
+
+  public static void timeMarker(String msg)
+  {
+    double now = Timer.getFPGATimestamp( );
+
+    DataLogManager.log(String.format("***** TimeMarker ***** absolute: %.3f relative: %.3f - %s", now, now - m_timeMark, msg));
+
+    m_timeMark = now;
   }
 
 }
