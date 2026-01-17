@@ -4,77 +4,52 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Constants.DriveConstants.*;
 
 public class CANDriveSubsystem extends SubsystemBase
 {
-  private final SparkMax          leftLeader;
-  private final SparkMax          leftFollower;
-  private final SparkMax          rightLeader;
-  private final SparkMax          rightFollower;
-
+  private final WPI_TalonSRX      leftFront = new WPI_TalonSRX(1);
+  private final WPI_TalonSRX      leftBack;
+  private final WPI_TalonSRX      rightFront;
+  private final WPI_TalonSRX      rightBack;
   private final DifferentialDrive drive;
 
   public CANDriveSubsystem( )
   {
-    // create brushed motors for drive
-    leftLeader = new SparkMax(LEFT_LEADER_ID, MotorType.kBrushed);
-    leftFollower = new SparkMax(LEFT_FOLLOWER_ID, MotorType.kBrushed);
-    rightLeader = new SparkMax(RIGHT_LEADER_ID, MotorType.kBrushed);
-    rightFollower = new SparkMax(RIGHT_FOLLOWER_ID, MotorType.kBrushed);
-
-    // set up differential drive class
-    drive = new DifferentialDrive(leftLeader, rightLeader);
-
-    // Set can timeout. Because this project only sets parameters once on
-    // construction, the timeout can be long without blocking robot operation. Code
-    // which sets or gets parameters during operation may need a shorter timeout.
-    leftLeader.setCANTimeout(250);
-    rightLeader.setCANTimeout(250);
-    leftFollower.setCANTimeout(250);
-    rightFollower.setCANTimeout(250);
-
-    // Create the configuration to apply to motors. Voltage compensation
-    // helps the robot perform more similarly on different
-    // battery voltages (at the cost of a little bit of top speed on a fully charged
-    // battery). The current limit helps prevent tripping
-    // breakers.
-    SparkMaxConfig config = new SparkMaxConfig( );
-    config.voltageCompensation(12);
-    config.smartCurrentLimit(DRIVE_MOTOR_CURRENT_LIMIT);
-
-    // Set configuration to follow each leader and then apply it to corresponding
-    // follower. Resetting in case a new controller is swapped
-    // in and persisting in case of a controller reset due to breaker trip
-    config.follow(leftLeader);
-    leftFollower.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    config.follow(rightLeader);
-    rightFollower.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    // Remove following, then apply config to right leader
-    config.disableFollowerMode( );
-    rightLeader.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // Set config to inverted and then apply to left leader. Set Left side inverted
-    // so that postive values drive both sides forward
-    config.inverted(true);
-    leftLeader.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    this.leftFront.configFactoryDefault( );
+    this.leftBack = new WPI_TalonSRX(2);
+    this.leftBack.configFactoryDefault( );
+    this.rightFront = new WPI_TalonSRX(3);
+    this.rightFront.configFactoryDefault( );
+    this.rightBack = new WPI_TalonSRX(4);
+    this.rightBack.configFactoryDefault( );
+    this.leftBack.set(ControlMode.Follower, (double) this.leftFront.getDeviceID( ));
+    this.rightBack.set(ControlMode.Follower, (double) this.rightFront.getDeviceID( ));
+    this.drive = new DifferentialDrive(this.leftFront, this.rightFront);
+    this.leftFront.setSafetyEnabled(true);
+    this.leftFront.setExpiration(250.0);
+    this.leftBack.setSafetyEnabled(true);
+    this.leftBack.setExpiration(250.0);
+    this.rightFront.setSafetyEnabled(true);
+    this.rightFront.setExpiration(250.0);
+    this.rightBack.setSafetyEnabled(true);
+    this.rightBack.setExpiration(250.0);
+    this.rightFront.setInverted(true);
+    TalonSRXConfiguration config = new TalonSRXConfiguration( );
+    config.peakCurrentLimit = 60;
+    config.continuousCurrentLimit = 40;
+    config.peakCurrentDuration = 1000;
   }
 
-  @Override
   public void periodic( )
   {}
 
   public void driveArcade(double xSpeed, double zRotation)
   {
-    drive.arcadeDrive(xSpeed, zRotation);
+    this.drive.arcadeDrive(xSpeed, zRotation);
   }
-
 }
