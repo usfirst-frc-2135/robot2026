@@ -52,8 +52,8 @@ public class Shooter extends SubsystemBase
     {
         REVERSE,    // Shooter runs in reverse direction to handle jams
         STOP,       // Shooter is stopped
-        SCORE,      // Shooter ramped to an initial speed before shooting
-        PASS        // Shooter slowed to passing speed
+        SCORE     // Shooter ramped to an initial speed before shooting
+
     }
 
     // Devices  objects
@@ -193,7 +193,6 @@ public class Shooter extends SubsystemBase
 
         // Add commands
         SmartDashboard.putData("ShRunScore", getShooterScoreCommand( ));
-        SmartDashboard.putData("ShRunPass", getShooterPassCommand( ));
         SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
     }
 
@@ -234,9 +233,6 @@ public class Shooter extends SubsystemBase
                 break;
             case SCORE :
                 m_targetRPM = m_flywheelScoreEntry.get(0.0);
-                break;
-            case PASS :
-                m_targetRPM = kFlywheelPassRPM;
                 break;
         }
 
@@ -309,23 +305,6 @@ public class Shooter extends SubsystemBase
         );
     }
 
-    /****************************************************************************
-     * 
-     * Create shooter mode command for passing
-     * 
-     * @return instant command that runs shooter motors for scoring
-     */
-    public Command getShooterPassCommand( )
-    {
-        return getShooterCommand(ShooterMode.PASS).withName("ShooterPass");
-    }
-
-    /****************************************************************************
-     * 
-     * Create shooter mode command for scoring
-     * 
-     * @return instant command that runs shooter motors for scoring
-     */
     public Command getShooterScoreCommand( )
     {
         return getShooterCommand(ShooterMode.SCORE).withName("ShooterScore");

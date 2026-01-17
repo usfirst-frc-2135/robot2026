@@ -82,6 +82,7 @@ public class RobotContainer
   private void configureButtonBindings( )
   {
     m_driverPad.a( ).whileTrue(m_shooter.getShooterScoreCommand( ));
+    m_driverPad.a( ).whileTrue(m_shooter.getShooterStopCommand( ));
     ///////////////////////////////////////////////////////
     //
     // Driver Controller Assignments
