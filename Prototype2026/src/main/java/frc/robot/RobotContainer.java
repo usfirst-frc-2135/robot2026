@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.INConsts;
 import frc.robot.Constants.INConsts.INRollerMode;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer
 {
@@ -20,6 +21,7 @@ public class RobotContainer
   private static final double                kEncoderCPR   = 4096;
   private static double                      m_timeMark    = Timer.getFPGATimestamp( );
   private final Intake                       m_intake      = new Intake( );
+  private final Shooter                      m_shooter     = new Shooter( );
 
   private static enum ControlMode
   {
@@ -79,7 +81,7 @@ public class RobotContainer
 
   private void configureButtonBindings( )
   {
-    m_driverPad.a( ).whileTrue(m_intake.setRollerMode(INConsts.INRollerMode.ACQUIRE));
+    m_driverPad.a( ).whileTrue(m_shooter.getShooterScoreCommand( ));
     ///////////////////////////////////////////////////////
     //
     // Driver Controller Assignments
