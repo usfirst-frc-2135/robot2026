@@ -13,11 +13,42 @@ import frc.robot.ExampleSmartMotorController.PIDMode;
 
 public class Robot extends TimedRobot
 {
-  private static final double kEncoderCPR = 4096;
+  private static final boolean m_isComp    = detectRobot( );
+  private static final double  kEncoderCPR = 4096;
 
   private static enum ControlMode
   {
     kStopped, kFixedSpeed, kJoystickControl, kClosedLoop
+  }
+
+  public static boolean isComp( )
+  {
+    return m_isComp;
+  }
+
+  private static boolean detectRobot( )
+  {
+    // Detect which robot/RoboRIO
+    String serialNum = System.getenv("serialnum");
+    String robotName = "UNKNOWN";
+    boolean isComp = false;
+
+    DataLogManager.log(String.format("robotContainer: RoboRIO SN: %s", serialNum));
+    if (serialNum == null)
+      robotName = "SIMULATION";
+    else if (serialNum.equals("032B1F7E"))
+    {
+      isComp = true;
+      robotName = "COMPETITION (A)";
+    }
+    else if (serialNum.equals("03260A3A"))
+    {
+      isComp = false;
+      robotName = "PRACTICE/BETA (B)";
+    }
+    DataLogManager.log(String.format("robotContainer: Detected the %s robot (RoboRIO)!", robotName));
+
+    return isComp;
   }
 
   private final static RobotContainer               m_container     = new RobotContainer( );
