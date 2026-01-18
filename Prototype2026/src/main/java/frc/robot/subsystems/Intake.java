@@ -10,49 +10,59 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.INConsts.INRollerMode;
+import frc.robot.Constants.INConsts.RollerMode;
 import frc.robot.lib.phoenix.CTREConfigs6;
 import frc.robot.lib.phoenix.PhoenixUtil6;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 public class Intake extends SubsystemBase
 {
-  private static final String  kSubsystemName        = "Intake";
-  private static final boolean kRollerMotorInvert    = false;
+  private static final String       kSubsystemName        = "Intake";
+  private static final boolean      kRollerMotorInvert    = false;
 
-  private final TalonFX        m_upperrollerMotor    = new TalonFX(0);
-  private final TalonFX        m_lowerrollerMotor    = new TalonFX(1);
+  private final TalonFX             m_upperrollerMotor    = new TalonFX(0);
+  private final TalonFX             m_lowerrollerMotor    = new TalonFX(1);
 
-  private static final double  kRollerSpeedAcquire   = 0.5;
-  private static final double  kRollerSpeedExpel     = -0.4;
-  private static final double  kRollerSpeedToShooter = -1.0;
-  private static final double  kRollerSpeedToFeeder  = -0.4;
-  private static final double  kRollerSpeedHold      = 0.1;
+  private static final DutyCycleOut kUpperRollerStop      = new DutyCycleOut(0.0).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kFuelSpeedAcquire     = new DutyCycleOut(0.5).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kFuelSpeedExpel       = new DutyCycleOut(-0.27).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kFuelSpeedHold        = new DutyCycleOut(0.2).withIgnoreHardwareLimits(true);
 
-  private static final double  kNoteDebounceTime     = 0.045;
-  private BooleanPublisher     m_fuelDetectedPub;
+  private DutyCycleOut              m_rollerRequestVolts  = kUpperRollerStop;
 
-  private boolean              m_upperrollerValid; // Health indicator for motor
-  private boolean              m_lowerrollerValid;
-  private final DigitalInput   m_fuelInIntake        = new DigitalInput(0);
+  private static final double       kRollerSpeedToShooter = -1.0;
+  private static final double       kRollerSpeedToFeeder  = -0.4;
+  private static final double       kRollerSpeedHold      = 0.1;
 
-  private DoublePublisher      m_rollSpeedPub;
-  private DoublePublisher      m_rollSupCurPub;
+  private static final double       kNoteDebounceTime     = 0.045;
+  private BooleanPublisher          m_fuelDetectedPub;
 
-  private Debouncer            m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
-  private boolean              m_fuelDetected; // Detection state of note in rollers
+  private boolean                   m_upperrollerValid; // Health indicator for motor
+  private boolean                   m_lowerrollerValid;
+  private final DigitalInput        m_fuelInIntake        = new DigitalInput(0);
 
-  private final CANrange       m_fuelDetector        = new CANrange(5);
+  private DoublePublisher           m_rollSpeedPub;
+  private DoublePublisher           m_rollSupCurPub;
 
-  private final Alert          m_upperrollerAlert    =
+  private Debouncer                 m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
+  private boolean                   m_fuelDetected; // Detection state of note in rollers
+
+  private final CANrange            m_fuelDetector        = new CANrange(5);
+
+  private final Alert               m_upperrollerAlert    =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
-  private final Alert          m_lowerrollerAlert    =
+  private final Alert               m_lowerrollerAlert    =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
   public Intake( )
@@ -82,79 +92,85 @@ public class Intake extends SubsystemBase
   {
     // Get the default instance of NetworkTables that was created automatically when
     // the robot program starts
+    SmartDashboard.putData("IntakeRun", IntakeOn( ));
+    SmartDashboard.putData("IntakeStop", IntakeStop( ));
 
   }
 
   public void initialize( )
   {
+    DataLogManager.log(String.format("%s: Subsystem initialized!", getSubsystem( )));
+    setRollerMode(RollerMode.STOP);
     // setRollerMode(INRollerMode.STOP);
     // setRotaryStopped( );
-
+    //SmartDashboard.putData("ShRunScore", ( ));
+    //SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
   }
 
-  // public Command setRollerMode(INRollerMode mode)
-  // {
-  //m_RequestVolts = kClawRollerStop;
-
-  // if (mode == INRollerMode.HOLD)
-  // {
-  //   DataLogManager.log(String.format("%s: Claw mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_clawMotor.get( )));
-  // }
-  // else
-  // {
-  // if (mode == ClawMode.ALGAEHOLD)
-  // {
-  //   double rotations = m_clawMotor.getPosition( ).getValueAsDouble( );
-  //   Slot0Configs slot0Configs = new Slot0Configs( ).withKP(25);
-  //   m_clawMotor.getConfigurator( ).apply(slot0Configs);
-  //   PositionDutyCycle positionDutyCycle = new PositionDutyCycle(rotations).withSlot(0).withEnableFOC(true);
-  //   m_clawMotor.setControl(positionDutyCycle);
-  // }
-  // else
+  private void setRollerMode(RollerMode mode)
   {
-    //   switch (mode)
-    //   {
-    //     default :
-    //       DataLogManager.log(String.format("%s: Claw mode is invalid: %s", getSubsystem( ), mode));
-    //     case STOP :
-    //       m_clawRequestVolts = (m_algaeDetected) ? kAlgaeSpeedHold : kClawRollerStop;
-    //       break;
-    //     case ALGAEACQUIRE :
-    //       m_clawRequestVolts = kAlgaeSpeedAcquire;
-    //       break;
-    //     case ALGAEEXPEL :
-    //       m_clawRequestVolts = kAlgaeSpeedExpel;
-    //       break;
-    //     case ALGAESHOOT :
-    //       m_clawRequestVolts = kAlgaeSpeedShoot;
-    //       break;
-    //     case ALGAEPROCESSOR :
-    //       m_clawRequestVolts = kAlgaeSpeedProcessor;
-    //       break;
-    //     case CORALACQUIRE :
-    //       m_clawRequestVolts = kCoralSpeedAcquire;
-    //       break;
-    //     case CORALEXPEL :
-    //       m_clawRequestVolts = ((int) m_reefLevel.get( ) == 1) ? kCoralSpeedExpelL1 : kCoralSpeedExpel;
-    //       DataLogManager.log(String.format("%s: reefLevel.get is %d", getSubsystem( ), (int) m_reefLevel.get( )));
-    //       break;
-    //     case ALGAEHOLD :  // Special case above the switch - this case doesn't execute!
-    //       m_clawRequestVolts = kAlgaeSpeedHold;
-    //       break;
-    //   }
+    m_rollerRequestVolts = kUpperRollerStop;
+    if (mode == RollerMode.FUELHOLD)
+    {
+      DataLogManager
+          .log(String.format("%s: Roller mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_upperrollerMotor.get( )));
+    }
+    else
+    {
+      // if (mode == RollerMode.FUELHOLD)
+      // {
+      //   double rotations = m_upperrollerMotor.getPosition( ).getValueAsDouble( );
+      //   Slot0Configs slot0Configs = new Slot0Configs( ).withKP(25);
+      //   m_upperrollerMotor.getConfigurator( ).apply(slot0Configs);
+      //   PositionDutyCycle positionDutyCycle = new PositionDutyCycle(rotations).withSlot(0).withEnableFOC(true);
+      //   m_upperrollerMotor.setControl(positionDutyCycle);
+      // }
+      // else
+      {
+        switch (mode)
+        {
+          default :
+            DataLogManager.log(String.format("%s: Claw mode is invalid: %s", getSubsystem( ), mode));
+          case STOP :
+            m_rollerRequestVolts = (m_fuelDetected) ? kFuelSpeedHold : kUpperRollerStop;
+            break;
+          case FUELACQUIRE :
+            m_rollerRequestVolts = kFuelSpeedAcquire;
+            break;
+          case FUELEXPEL :
+            m_rollerRequestVolts = kFuelSpeedExpel;
+            break;
+        }
+        m_upperrollerMotor.setControl(m_rollerRequestVolts);
+      }
+    }
+  }
 
-    //   m_clawMotor.setControl(m_clawRequestVolts);
-    // }
+  private Command getRollerCommand(RollerMode mode)
+  {
+    return new InstantCommand(        // Command that runs exactly once
+        ( ) -> setRollerMode(mode),  // Method to call
+        this                          // Subsystem requirement
+    );
+  }
 
-    //     DataLogManager.log(String.format("%s: Claw mode is now - %s", getSubsystem( ), mode));
-    //   }
+  public Command IntakeOn( )
+  {
+    return getRollerCommand(RollerMode.FUELACQUIRE).withName("IntakeOn");
+  }
 
-    // }
-
-    // public boolean isFuelDetected( )
-    // {
-
-    // }
-
+  public Command IntakeStop( )
+  {
+    return getRollerCommand(RollerMode.STOP).withName("IntakeStopper");
   }
 }
+
+//   //     DataLogManager.log(String.format("%s: Claw mode is now - %s", getSubsystem( ), mode));
+//   //   }
+
+//   // }
+
+//   // public boolean isFuelDetected( )
+//   // {
+
+//   // }

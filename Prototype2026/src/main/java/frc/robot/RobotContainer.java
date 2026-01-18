@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.INConsts;
-import frc.robot.Constants.INConsts.INRollerMode;
+import frc.robot.Constants.INConsts.RollerMode;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
@@ -51,8 +51,8 @@ public class RobotContainer
 
   private void configureButtonBindings( )
   {
-    m_driverPad.a( ).onTrue(m_shooter.getShooterScoreCommand( ));
-    m_driverPad.b( ).onTrue(m_shooter.getShooterStopCommand( ));
+    // m_driverPad.a( ).onTrue(m_shooter.getShooterScoreCommand( ));
+    // m_driverPad.b( ).onTrue(m_shooter.getShooterStopCommand( ));
 
     ///////////////////////////////////////////////////////
     //
