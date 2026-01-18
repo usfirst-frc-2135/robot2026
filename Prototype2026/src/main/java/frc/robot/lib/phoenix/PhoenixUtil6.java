@@ -15,7 +15,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants;
 
 /****************************************************************************
  * 

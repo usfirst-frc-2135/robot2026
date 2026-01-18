@@ -2,6 +2,8 @@ package frc.robot;
 
 public class Constants
 {
+  public static final String kCompSN     = "00000000";
+  public static final String kPracticeSN = "99999999";
 
   public static final class INConsts
   {
