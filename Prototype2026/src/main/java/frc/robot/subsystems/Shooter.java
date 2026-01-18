@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase
     }
 
     // Devices  objects
-    private final TalonFX                       m_lowerMotor            = new TalonFX(2);
+    private final TalonFX                       m_lowerMotor            = new TalonFX(10);
 
     // Alerts
     private final Alert                         m_lowerAlert            =
@@ -192,8 +192,8 @@ public class Shooter extends SubsystemBase
         m_flywheelScoreEntry.set(kFlywheelScoreRPM);
 
         // Add commands
-        SmartDashboard.putData("ShRunScore", getShooterScoreCommand( ));
-        SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
+        //SmartDashboard.putData("ShRunScore", getShooterScoreCommand( ));
+        //SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
     }
 
     // Put methods for controlling this subsystem here. Call these from Commands.
@@ -232,7 +232,7 @@ public class Shooter extends SubsystemBase
                 m_targetRPM = 0.0;
                 break;
             case SCORE :
-                m_targetRPM = m_flywheelScoreEntry.get(0.0);
+                m_targetRPM = m_flywheelScoreEntry.get(5.0);
                 break;
         }
 

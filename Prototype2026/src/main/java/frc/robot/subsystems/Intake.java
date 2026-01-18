@@ -22,61 +22,61 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 public class Intake extends SubsystemBase
 {
-  private static final String  kSubsystemName        = "Intake";
-  private static final boolean kRollerMotorInvert    = false;
+  // private static final String  kSubsystemName        = "Intake";
+  // private static final boolean kRollerMotorInvert    = false;
 
-  private final TalonFX        m_upperrollerMotor    = new TalonFX(0);
-  private final TalonFX        m_lowerrollerMotor    = new TalonFX(1);
+  // private final TalonFX        m_upperrollerMotor    = new TalonFX(0);
+  // private final TalonFX        m_lowerrollerMotor    = new TalonFX(1);
 
-  private static final double  kRollerSpeedAcquire   = 0.5;
-  private static final double  kRollerSpeedExpel     = -0.4;
-  private static final double  kRollerSpeedToShooter = -1.0;
-  private static final double  kRollerSpeedToFeeder  = -0.4;
-  private static final double  kRollerSpeedHold      = 0.1;
+  // private static final double  kRollerSpeedAcquire   = 0.5;
+  // private static final double  kRollerSpeedExpel     = -0.4;
+  // private static final double  kRollerSpeedToShooter = -1.0;
+  // private static final double  kRollerSpeedToFeeder  = -0.4;
+  // private static final double  kRollerSpeedHold      = 0.1;
 
-  private static final double  kNoteDebounceTime     = 0.045;
-  private BooleanPublisher     m_fuelDetectedPub;
+  // private static final double  kNoteDebounceTime     = 0.045;
+  // private BooleanPublisher     m_fuelDetectedPub;
 
-  private boolean              m_upperrollerValid; // Health indicator for motor
-  private boolean              m_lowerrollerValid;
-  private final DigitalInput   m_fuelInIntake        = new DigitalInput(0);
+  // private boolean              m_upperrollerValid; // Health indicator for motor
+  // private boolean              m_lowerrollerValid;
+  // private final DigitalInput   m_fuelInIntake        = new DigitalInput(0);
 
-  private DoublePublisher      m_rollSpeedPub;
-  private DoublePublisher      m_rollSupCurPub;
+  // private DoublePublisher      m_rollSpeedPub;
+  // private DoublePublisher      m_rollSupCurPub;
 
-  private Debouncer            m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
-  private boolean              m_fuelDetected; // Detection state of note in rollers
+  // private Debouncer            m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
+  // private boolean              m_fuelDetected; // Detection state of note in rollers
 
-  private final CANrange       m_fuelDetector        = new CANrange(5);
+  // private final CANrange       m_fuelDetector        = new CANrange(5);
 
-  private final Alert          m_upperrollerAlert    =
-      new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
+  // private final Alert          m_upperrollerAlert    =
+  //     new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
-  private final Alert          m_lowerrollerAlert    =
-      new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
+  // private final Alert          m_lowerrollerAlert    =
+  //     new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
-  public Intake( )
-  {
+  // public Intake( )
+  // {
 
-    setName(kSubsystemName);
-    setSubsystem(kSubsystemName);
+  //   setName(kSubsystemName);
+  //   setSubsystem(kSubsystemName);
 
-    m_upperrollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_upperrollerMotor, kSubsystemName + "Claw",
-        CTREConfigs6.upperRollerFXConfig(m_fuelDetector.getDeviceID( )));
+  //   m_upperrollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_upperrollerMotor, kSubsystemName + "Claw",
+  //       CTREConfigs6.upperRollerFXConfig(m_fuelDetector.getDeviceID( )));
 
-    m_upperrollerAlert.set(!m_upperrollerValid);
+  //   m_upperrollerAlert.set(!m_upperrollerValid);
 
-    initDashboard( );
-    initialize( );
+  //   initDashboard( );
+  //   initialize( );
 
-  }
+  // }
 
-  public void periodic( )
-  {
-    m_rollSpeedPub.set(m_upperrollerMotor.get( ));
-    // This method will be called once per scheduler run
+  // public void periodic( )
+  // {
+  //   m_rollSpeedPub.set(m_upperrollerMotor.get( ));
+  //   // This method will be called once per scheduler run
 
-  }
+  // }
 
   private void initDashboard( )
   {
