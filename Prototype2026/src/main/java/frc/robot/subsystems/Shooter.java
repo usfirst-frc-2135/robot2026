@@ -80,7 +80,7 @@ public class Shooter extends SubsystemBase
   private DoublePublisher                     m_lowerRPMPub;
   private DoublePublisher                     m_targetRPMPub;
   private BooleanPublisher                    m_isAtTargetRPMPub;
-  private DoubleEntry                         m_flywheelScoreEntry;
+  private DoubleEntry                         m_scoreRPMEntry;
 
   /****************************************************************************
    * 
@@ -132,8 +132,7 @@ public class Shooter extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Periodic actions that run every scheduler loop time (20 msec) during
-   * simulation
+   * Periodic actions that run every scheduler loop time (20 msec) during simulation
    */
   @Override
   public void simulationPeriodic( )
@@ -171,15 +170,15 @@ public class Shooter extends SubsystemBase
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );
     m_isAtTargetRPMPub = table.getBooleanTopic("atTargetRPM").publish( );
 
-    m_flywheelScoreEntry = table.getDoubleTopic("flywheelRPM").getEntry(0.0);
-    m_flywheelScoreEntry.set(kFlywheelScoreRPM);
+    m_scoreRPMEntry = table.getDoubleTopic("scoreRPM").getEntry(0.0);
+    m_scoreRPMEntry.set(kFlywheelScoreRPM);
 
     // Add commands
     SmartDashboard.putData("ShRunScore", getShooterScoreCommand( ));
     SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
   }
 
-  // Put methods for controlling this subsystem here. Call these from Commands.
+  // Put methods for controlling this subsystem below here. Call these from Commands.
 
   /****************************************************************************
    * 
@@ -218,7 +217,7 @@ public class Shooter extends SubsystemBase
         m_targetRPM = kFlywheelPassRPM;
         break;
       case SCORE :
-        m_targetRPM = m_flywheelScoreEntry.get(0.0);
+        m_targetRPM = m_scoreRPMEntry.get(0.0);
         break;
     }
 

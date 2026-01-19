@@ -47,7 +47,7 @@ public class Intake extends SubsystemBase
   private static final double       kNoteDebounceTime     = 0.045;
   private BooleanPublisher          m_fuelDetectedPub;
 
-  private boolean                   m_upperrollerValid; // Health indicator for motor
+  private boolean                   m_upperrollerValid;   // Health indicator for motor
   private boolean                   m_lowerrollerValid;
   private final DigitalInput        m_fuelInIntake        = new DigitalInput(0);
 
@@ -55,7 +55,7 @@ public class Intake extends SubsystemBase
   private DoublePublisher           m_rollSupCurPub;
 
   private Debouncer                 m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
-  private boolean                   m_fuelDetected; // Detection state of note in rollers
+  private boolean                   m_fuelDetected;       // Detection state of note in rollers
 
   private final CANrange            m_fuelDetector        = new CANrange(5);
 
@@ -65,9 +65,12 @@ public class Intake extends SubsystemBase
   private final Alert               m_lowerrollerAlert    =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
+  /****************************************************************************
+   * 
+   * Constructor
+   */
   public Intake( )
   {
-
     setName(kSubsystemName);
     setSubsystem(kSubsystemName);
 
@@ -78,25 +81,31 @@ public class Intake extends SubsystemBase
 
     initDashboard( );
     initialize( );
-
   }
 
+  /****************************************************************************
+   * 
+   * Periodic actions that run every scheduler loop time (20 msec)
+   */
   public void periodic( )
   {
-    m_rollSpeedPub.set(m_upperrollerMotor.get( ));
     // This method will be called once per scheduler run
 
+    // m_rollSpeedPub.set(m_upperrollerMotor.get( ));
   }
 
   private void initDashboard( )
   {
-    // Get the default instance of NetworkTables that was created automatically when
-    // the robot program starts
+    // Get the default instance of NetworkTables that was created automatically when the robot program starts
+
     SmartDashboard.putData("IntakeRun", IntakeOn( ));
     SmartDashboard.putData("IntakeStop", IntakeStop( ));
-
   }
 
+  /****************************************************************************
+   * 
+   * Initialize subsystem during robot mode changes
+   */
   public void initialize( )
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getSubsystem( )));
