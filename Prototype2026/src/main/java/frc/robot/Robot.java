@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.ExampleSmartMotorController.PIDMode;
 
 public class Robot extends TimedRobot
@@ -74,6 +75,8 @@ public class Robot extends TimedRobot
     m_motor2.periodic( );
 
     m_elevSim.periodic( );
+
+    CommandScheduler.getInstance( ).run( );
   }
 
   /**
