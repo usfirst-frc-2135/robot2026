@@ -18,12 +18,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class CANDriveSubsystem extends SubsystemBase
 {
   private final WPI_TalonSRX      leftFront  = new WPI_TalonSRX(LEFT_LEADER_ID);
-  private final WPI_TalonSRX      leftBack   = new WPI_TalonSRX(LEFT_FOLLOWER_ID);;
+  private final WPI_TalonSRX      leftBack   = new WPI_TalonSRX(LEFT_FOLLOWER_ID);
   private final WPI_TalonSRX      rightFront = new WPI_TalonSRX(RIGHT_LEADER_ID);
   private final WPI_TalonSRX      rightBack  = new WPI_TalonSRX(RIGHT_FOLLOWER_ID);
-  MotorControllerGroup            leftSide   = new MotorControllerGroup(leftFront, leftBack);
-  MotorControllerGroup            rightSide  = new MotorControllerGroup(rightFront, rightBack);
-  private final DifferentialDrive drive      = new DifferentialDrive(leftSide, rightSide);
+  // MotorControllerGroup            leftSide   = new MotorControllerGroup(leftFront, leftBack);
+  // MotorControllerGroup            rightSide  = new MotorControllerGroup(rightFront, rightBack);
+  private final DifferentialDrive drive      = new DifferentialDrive(leftFront, rightFront);
 
   // These represent our regular encoder objects, which we would
   // create to use on a real robot.
@@ -34,19 +34,17 @@ public class CANDriveSubsystem extends SubsystemBase
     leftBack.configFactoryDefault( );
     rightFront.configFactoryDefault( );
     rightBack.configFactoryDefault( );
+    leftBack.follow(leftFront);
+    rightBack.follow(rightFront);
 
-    rightSide.setInverted(true);
+    rightFront.setInverted(true);
 
-    // this.leftFront.setSafetyEnabled(true);
+    // rightSide.setInverted(true);
 
+    this.leftFront.setSafetyEnabled(true);
     this.leftFront.setExpiration(250.0);
-    this.leftBack.setSafetyEnabled(true);
-    this.leftBack.setExpiration(250.0);
     this.rightFront.setSafetyEnabled(true);
     this.rightFront.setExpiration(250.0);
-    this.rightBack.setSafetyEnabled(true);
-    this.rightBack.setExpiration(250.0);
-    this.rightFront.setInverted(true);
 
     TalonSRXConfiguration config = new TalonSRXConfiguration( );
     config.peakCurrentLimit = 60;
@@ -59,6 +57,6 @@ public class CANDriveSubsystem extends SubsystemBase
 
   public void driveArcade(double xSpeed, double zRotation)
   {
-    this.drive.arcadeDrive(xSpeed, zRotation);
+    drive.arcadeDrive(xSpeed, zRotation);
   }
 }
