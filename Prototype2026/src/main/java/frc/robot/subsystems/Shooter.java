@@ -42,12 +42,14 @@ public class Shooter extends SubsystemBase
   private static final double kFlywheelPassRPM   = 3000.0; // RPM to pass
   private static final double kToleranceRPM      = 150.0; // Tolerance band around target RPM
   private static final double kFlywheelGearRatio = (18.0 / 18.0);
+  public static final boolean      m_lowerMotorInvert    = false;
 
   /** Shooter (speed) modes */
   private enum ShooterMode
   {
     STOP,       // Shooter is stopped
     PASS,       // Shooter speed for passing fuel
+    REVERSE,
     SCORE       // Shooter speed for shooting
   }
 
@@ -78,6 +80,7 @@ public class Shooter extends SubsystemBase
 
   // Network tables publisher objects
   private DoublePublisher                     m_lowerRPMPub;
+  
   private DoublePublisher                     m_targetRPMPub;
   private BooleanPublisher                    m_isAtTargetRPMPub;
   private DoubleEntry                         m_scoreRPMEntry;
@@ -176,6 +179,7 @@ public class Shooter extends SubsystemBase
     // Add commands
     SmartDashboard.putData("ShRunScore", getShooterScoreCommand( ));
     SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
+    SmartDashboard.putData("ShRunReverse", getShooterReverseCommand( ));
   }
 
   // Put methods for controlling this subsystem below here. Call these from Commands.
@@ -219,12 +223,19 @@ public class Shooter extends SubsystemBase
       case SCORE :
         m_targetRPM = m_scoreRPMEntry.get(0.0);
         break;
+      case REVERSE :
+        m_targetRPM = -(m_scoreRPMEntry.get(0.0));
+        
+        break;
     }
 
     double rotPerSecond = m_targetRPM / 60.0;
     if (m_lowerValid)
     {
-      if (m_targetRPM > 100.0)
+      if(m_targetRPM<0){
+        setShooterVelocity(rotPerSecond);
+      }
+      else if (m_targetRPM > 100.0)
         setShooterVelocity(rotPerSecond);
       else
         setShooterStopped( );
@@ -294,6 +305,11 @@ public class Shooter extends SubsystemBase
   public Command getShooterScoreCommand( )
   {
     return getShooterCommand(ShooterMode.SCORE).withName("ShooterScore");
+  }
+
+  public Command getShooterReverseCommand( )
+  {
+    return getShooterCommand(ShooterMode.REVERSE).withName("ShooterReverse");
   }
 
   /****************************************************************************
