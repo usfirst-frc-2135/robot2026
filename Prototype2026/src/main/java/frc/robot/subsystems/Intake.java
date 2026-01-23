@@ -100,6 +100,7 @@ public class Intake extends SubsystemBase
 
     SmartDashboard.putData("IntakeRun", IntakeOn( ));
     SmartDashboard.putData("IntakeStop", IntakeStop( ));
+    SmartDashboard.putData("IntakeReverse", IntakeReverse( ));
   }
 
   /****************************************************************************
@@ -167,6 +168,12 @@ public class Intake extends SubsystemBase
   {
     return getRollerCommand(RollerMode.FUELACQUIRE).withName("IntakeOn");
   }
+
+  public Command IntakeReverse( )
+  {
+    return getRollerCommand(RollerMode.FUELEXPEL).withName("IntakeReverse");
+  }
+
 
   public Command IntakeStop( )
   {
