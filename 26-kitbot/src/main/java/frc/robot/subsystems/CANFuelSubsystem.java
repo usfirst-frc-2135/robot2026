@@ -19,20 +19,24 @@ public class CANFuelSubsystem extends SubsystemBase
   public CANFuelSubsystem( )
   {
     // create brushed motors for each of the motors on the launcher mechanism
-    feederRoller = new WPI_TalonSRX(FEEDER_MOTOR_ID);
-    feederRoller.configFactoryDefault( );
     intakeLauncherRoller = new WPI_TalonSRX(INTAKE_LAUNCHER_MOTOR_ID);
-    intakeLauncherRoller.configFactoryDefault( );
-    intakeLauncherRoller.setInverted(true);
+    feederRoller = new WPI_TalonSRX(FEEDER_MOTOR_ID);
+
     // create the configuration for the feeder roller, set a current limit and apply
     // the config to the controller
+    feederRoller.configFactoryDefault( );
     TalonSRXConfiguration feederConfig = new TalonSRXConfiguration( );
     feederConfig.continuousCurrentLimit = (FEEDER_MOTOR_CURRENT_LIMIT);
+    feederRoller.configAllSettings(feederConfig);
+
     // create the configuration for the launcher roller, set a current limit, set
     // the motor to inverted so that positive values are used for both intaking and
     // launching, and apply the config to the controller
+    intakeLauncherRoller.configFactoryDefault( );
     TalonSRXConfiguration launcherConfig = new TalonSRXConfiguration( );
     launcherConfig.continuousCurrentLimit = (LAUNCHER_MOTOR_CURRENT_LIMIT);
+    intakeLauncherRoller.configAllSettings(launcherConfig);
+    intakeLauncherRoller.setInverted(true);
 
     // put default values for various fuel operations onto the dashboard
     // all commands using this subsystem pull values from the dashbaord to allow
