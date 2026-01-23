@@ -17,15 +17,12 @@ import frc.robot.commands.Drive;
 import frc.robot.commands.Eject;
 import frc.robot.commands.ExampleAuto;
 import frc.robot.commands.Intake;
+import frc.robot.commands.Launch;
 import frc.robot.commands.LaunchSequence;
+import frc.robot.commands.SpinUp;
 import frc.robot.subsystems.CANDriveSubsystem;
 import frc.robot.subsystems.CANFuelSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -49,8 +46,6 @@ public class RobotContainer
   // The autonomous chooser
   private final SendableChooser<Command> autoChooser        = new SendableChooser<>( );
 
-  private final Field2d                  kField             = new Field2d( );
-
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -64,8 +59,6 @@ public class RobotContainer
     autoChooser.setDefaultOption("Basic", new ExampleAuto(driveSubsystem, fuelSubsystem));
 
     SmartDashboard.putData("Auto Mode", autoChooser);
-
-    SmartDashboard.putData("Field", kField);
 
   }
 
@@ -84,18 +77,17 @@ public class RobotContainer
   private void configureBindings( )
   {
 
-    // While the left bumper on operator controller is held, intake Fuel
-    operatorController.leftBumper( ).whileTrue(new Intake(fuelSubsystem));
-    // While the right bumper on the operator controller is held, spin up for 1
-    // second, then launch fuel. When the button is released, stop.
-    operatorController.rightBumper( ).whileTrue(new LaunchSequence(fuelSubsystem));
-    // While the A button is held on the operator controller, eject fuel back out
-    // the intake
     operatorController.a( ).onTrue(new Eject(fuelSubsystem));
+
+    operatorController.x( ).onTrue(new SpinUp(fuelSubsystem));
+
+    operatorController.y( ).onTrue(new Launch(fuelSubsystem));
+
+    operatorController.leftTrigger( ).whileTrue(new Intake(fuelSubsystem));
 
     driverController.a( ).onTrue(new Drive(driveSubsystem, operatorController));
 
-    operatorController.b( ).onTrue(new LaunchSequence(fuelSubsystem));
+    operatorController.rightTrigger( ).onTrue(new LaunchSequence(fuelSubsystem));
 
     // Set the default command for the drive subsystem to the command provided by
     // factory with the values provided by the joystick axes on the driver

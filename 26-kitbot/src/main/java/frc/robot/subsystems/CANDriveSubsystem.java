@@ -47,9 +47,6 @@ public class CANDriveSubsystem extends SubsystemBase
     this.rightFront.setExpiration(250.0);
 
     TalonSRXConfiguration config = new TalonSRXConfiguration( );
-    config.peakCurrentLimit = 60;
-    config.continuousCurrentLimit = 40;
-    config.peakCurrentDuration = 1000;
   }
 
   public void periodic( )
