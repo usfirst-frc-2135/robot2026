@@ -12,7 +12,6 @@ import static frc.robot.Constants.DriveConstants.RIGHT_LEADER_ID;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CANDriveSubsystem extends SubsystemBase
@@ -21,8 +20,6 @@ public class CANDriveSubsystem extends SubsystemBase
   private final WPI_TalonSRX      leftBack   = new WPI_TalonSRX(LEFT_FOLLOWER_ID);
   private final WPI_TalonSRX      rightFront = new WPI_TalonSRX(RIGHT_LEADER_ID);
   private final WPI_TalonSRX      rightBack  = new WPI_TalonSRX(RIGHT_FOLLOWER_ID);
-  // MotorControllerGroup            leftSide   = new MotorControllerGroup(leftFront, leftBack);
-  // MotorControllerGroup            rightSide  = new MotorControllerGroup(rightFront, rightBack);
   private final DifferentialDrive drive      = new DifferentialDrive(leftFront, rightFront);
 
   // These represent our regular encoder objects, which we would
@@ -41,10 +38,10 @@ public class CANDriveSubsystem extends SubsystemBase
 
     // rightSide.setInverted(true);
 
-    this.leftFront.setSafetyEnabled(true);
-    this.leftFront.setExpiration(250.0);
-    this.rightFront.setSafetyEnabled(true);
-    this.rightFront.setExpiration(250.0);
+    // this.leftFront.setSafetyEnabled(true);
+    // this.leftFront.setExpiration(250.0);
+    // this.rightFront.setSafetyEnabled(true);
+    // this.rightFront.setExpiration(250.0);
 
     TalonSRXConfiguration config = new TalonSRXConfiguration( );
   }

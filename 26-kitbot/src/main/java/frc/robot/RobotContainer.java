@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Constants.OperatorConstants.DRIVER_CONTROLLER_PORT;
 import static frc.robot.Constants.OperatorConstants.OPERATOR_CONTROLLER_PORT;
 
-import java.lang.management.OperatingSystemMXBean;
-
 import frc.robot.commands.Drive;
 import frc.robot.commands.Eject;
 import frc.robot.commands.ExampleAuto;
@@ -85,8 +83,6 @@ public class RobotContainer
 
     operatorController.leftTrigger( ).whileTrue(new Intake(fuelSubsystem));
 
-    driverController.a( ).onTrue(new Drive(driveSubsystem, operatorController));
-
     operatorController.rightTrigger( ).onTrue(new LaunchSequence(fuelSubsystem));
 
     // Set the default command for the drive subsystem to the command provided by
@@ -98,21 +94,6 @@ public class RobotContainer
 
     fuelSubsystem.setDefaultCommand(fuelSubsystem.run(( ) -> fuelSubsystem.stop( )));
   }
-
-  // public void resetPoseAndLimelight(Pose2d pose)
-  // {
-  //   resetPose(pose);
-  //   LimelightHelpers.SetRobotOrientation(Constants.kLLLeftName, pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
-  //   LimelightHelpers.SetRobotOrientation(Constants.kLLRightName, pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
-  // }
-
-  // private Command getResetPoseCommand( )
-  // {
-  //   return this
-  //       .runOnce(( ) -> resetPoseAndLimelight(new Pose2d(new Translation2d(m_setPoseSub.get( )[0], m_setPoseSub.get( )[1]),
-  //           new Rotation2d(m_setPoseSub.get( )[2])))) //
-  //       .withName("ResetOdometry").ignoringDisable(true);
-  // }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
