@@ -12,8 +12,10 @@ import static frc.robot.Constants.DriveConstants.DRIVE_MOTOR_CURRENT_LIMIT;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static frc.robot.Constants.DriveConstants.*;
 
 public class CANDriveSubsystem extends SubsystemBase
 {
@@ -23,11 +25,17 @@ public class CANDriveSubsystem extends SubsystemBase
   private final WPI_TalonSRX      rightBack  = new WPI_TalonSRX(RIGHT_FOLLOWER_ID);
   private final DifferentialDrive drive      = new DifferentialDrive(leftFront, rightFront);
 
-  // These represent our regular encoder objects, which we would
-  // create to use on a real robot.
-
   public CANDriveSubsystem( )
   {
+    // create brushed motors for drive
+
+    // set up differential drive class
+
+    // Create the configuration to apply to motors. Voltage compensation
+    // helps the robot perform more similarly on different
+    // battery voltages (at the cost of a little bit of top speed on a fully charged
+    // battery). The current limit helps prevent tripping
+    // breakers.
     leftFront.configFactoryDefault( );
     leftBack.configFactoryDefault( );
     rightFront.configFactoryDefault( );
@@ -49,16 +57,18 @@ public class CANDriveSubsystem extends SubsystemBase
     leftBack.follow(leftFront);
     rightBack.follow(rightFront);
 
+    // Set config to inverted and then apply to left leader. Set Left side inverted
+    // so that postive values drive both sides forward
     rightFront.setInverted(true);
     rightBack.setInverted(true);
 
   }
 
-  public void periodic( )
-  {}
+  @Override
+  public void periodic() {
+  }
 
-  public void driveArcade(double xSpeed, double zRotation)
-  {
+  public void driveArcade(double xSpeed, double zRotation) {
     drive.arcadeDrive(xSpeed, zRotation);
   }
 }

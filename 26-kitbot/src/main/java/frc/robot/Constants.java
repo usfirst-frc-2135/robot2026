@@ -14,10 +14,8 @@ package frc.robot;
  * It is advised to statically import this class (or one of its inner classes)
  * wherever the constants are needed, to reduce verbosity.
  */
-public final class Constants
-{
-  public static final class DriveConstants
-  {
+public final class Constants {
+  public static final class DriveConstants {
     // Motor controller IDs for drivetrain motors
     public static final int LEFT_LEADER_ID            = 1;
     public static final int RIGHT_LEADER_ID           = 2;
@@ -32,12 +30,12 @@ public final class Constants
   public static final class FuelConstants
   {
     // Motor controller IDs for Fuel Mechanism motors
-    public static final int    FEEDER_MOTOR_ID              = 6;
-    public static final int    INTAKE_LAUNCHER_MOTOR_ID     = 5;
+    public static final int FEEDER_MOTOR_ID = 6;
+    public static final int INTAKE_LAUNCHER_MOTOR_ID = 5;
 
     // Current limit and nominal voltage for fuel mechanism motors.
-    public static final int    FEEDER_MOTOR_CURRENT_LIMIT   = 60;
-    public static final int    LAUNCHER_MOTOR_CURRENT_LIMIT = 60;
+    public static final int FEEDER_MOTOR_CURRENT_LIMIT = 60;
+    public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 60;
 
     // Voltage values for various fuel operations. These values may need to be tuned
     // based on exact robot construction.
@@ -51,17 +49,15 @@ public final class Constants
 
   }
 
-  public static final class OperatorConstants
-  {
+  public static final class OperatorConstants {
     // Port constants for driver and operator controllers. These should match the
     // values in the Joystick tab of the Driver Station software
-    public static final int    DRIVER_CONTROLLER_PORT   = 0;
-    public static final int    OPERATOR_CONTROLLER_PORT = 1;
+    public static final int DRIVER_CONTROLLER_PORT = 0;
+    public static final int OPERATOR_CONTROLLER_PORT = 1;
 
     // This value is multiplied by the joystick value when rotating the robot to
     // help avoid turning too fast and beign difficult to control
-    public static final double DRIVE_SCALING            = .7;
-    public static final double ROTATION_SCALING         = .8;
-
+    public static final double DRIVE_SCALING = .7;
+    public static final double ROTATION_SCALING = .8;
   }
 }

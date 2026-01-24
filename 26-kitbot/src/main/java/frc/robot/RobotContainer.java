@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -15,12 +16,9 @@ import frc.robot.commands.Drive;
 import frc.robot.commands.Eject;
 import frc.robot.commands.ExampleAuto;
 import frc.robot.commands.Intake;
-import frc.robot.commands.Launch;
 import frc.robot.commands.LaunchSequence;
-import frc.robot.commands.SpinUp;
 import frc.robot.subsystems.CANDriveSubsystem;
 import frc.robot.subsystems.CANFuelSubsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -54,9 +52,7 @@ public class RobotContainer
     // Set the options to show up in the Dashboard for selecting auto modes. If you
     // add additional auto modes you can add additional lines here with
     // autoChooser.addOption
-    autoChooser.setDefaultOption("Basic", new ExampleAuto(driveSubsystem, fuelSubsystem));
-
-    SmartDashboard.putData("Auto Mode", autoChooser);
+    autoChooser.setDefaultOption("Autonomous", new ExampleAuto(driveSubsystem, fuelSubsystem));
 
   }
 
@@ -75,13 +71,13 @@ public class RobotContainer
   private void configureBindings( )
   {
 
-    operatorController.a( ).onTrue(new Eject(fuelSubsystem));
+    operatorController.leftBumper( ).whileTrue(new Intake(fuelSubsystem));
 
-    operatorController.x( ).onTrue(new SpinUp(fuelSubsystem));
+    // second, then launch fuel. When the button is released, stop.
 
-    operatorController.y( ).onTrue(new Launch(fuelSubsystem));
+    operatorController.rightBumper( ).whileTrue(new LaunchSequence(fuelSubsystem));
 
-    operatorController.leftTrigger( ).whileTrue(new Intake(fuelSubsystem));
+    operatorController.a( ).whileTrue(new Eject(fuelSubsystem));
 
     operatorController.rightTrigger( ).onTrue(new LaunchSequence(fuelSubsystem));
 
