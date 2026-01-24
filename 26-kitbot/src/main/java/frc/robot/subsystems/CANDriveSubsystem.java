@@ -8,6 +8,7 @@ import static frc.robot.Constants.DriveConstants.LEFT_FOLLOWER_ID;
 import static frc.robot.Constants.DriveConstants.LEFT_LEADER_ID;
 import static frc.robot.Constants.DriveConstants.RIGHT_FOLLOWER_ID;
 import static frc.robot.Constants.DriveConstants.RIGHT_LEADER_ID;
+import static frc.robot.Constants.DriveConstants.DRIVE_MOTOR_CURRENT_LIMIT;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -31,10 +32,6 @@ public class CANDriveSubsystem extends SubsystemBase
     leftBack.configFactoryDefault( );
     rightFront.configFactoryDefault( );
     rightBack.configFactoryDefault( );
-    leftBack.follow(leftFront);
-    rightBack.follow(rightFront);
-
-    rightFront.setInverted(true);
 
     // rightSide.setInverted(true);
 
@@ -44,6 +41,17 @@ public class CANDriveSubsystem extends SubsystemBase
     // this.rightFront.setExpiration(250.0);
 
     TalonSRXConfiguration config = new TalonSRXConfiguration( );
+    config.voltageCompSaturation = 12.0;//max voltage
+    config.continuousCurrentLimit = DRIVE_MOTOR_CURRENT_LIMIT;
+    leftFront.configAllSettings(config);
+    rightFront.configAllSettings(config);
+
+    leftBack.follow(leftFront);
+    rightBack.follow(rightFront);
+
+    rightFront.setInverted(true);
+    rightBack.setInverted(true);
+
   }
 
   public void periodic( )
