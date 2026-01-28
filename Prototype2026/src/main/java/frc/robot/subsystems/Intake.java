@@ -1,15 +1,12 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.CANrange;
+import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.networktables.BooleanPublisher;
-import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -18,52 +15,45 @@ import frc.robot.Constants.INConsts.RollerMode;
 import frc.robot.lib.phoenix.CTREConfigs6;
 import frc.robot.lib.phoenix.PhoenixUtil6;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.hardware.CANrange;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.sim.TalonFXSimState;
-
 public class Intake extends SubsystemBase
 {
-  private static final String       kSubsystemName        = "Intake";
-  private static final boolean      kRollerMotorInvert    = false;
+  private static final String       kSubsystemName       = "Intake";
+  // private static final boolean      kRollerMotorInvert   = false;
 
-  private final TalonFX             m_upperrollerMotor    = new TalonFX(0);
-  private final TalonFX             m_lowerrollerMotor    = new TalonFX(1);
+  private final TalonFX             m_upperrollerMotor   = new TalonFX(0);
+  // private final TalonFX             m_lowerrollerMotor   = new TalonFX(1);
 
-  private static final DutyCycleOut kUpperRollerStop      = new DutyCycleOut(0.0).withIgnoreHardwareLimits(true);
-  private static final DutyCycleOut kFuelSpeedAcquire     = new DutyCycleOut(0.5).withIgnoreHardwareLimits(true);
-  private static final DutyCycleOut kFuelSpeedExpel       = new DutyCycleOut(-0.27).withIgnoreHardwareLimits(true);
-  private static final DutyCycleOut kFuelSpeedHold        = new DutyCycleOut(0.2).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kUpperRollerStop     = new DutyCycleOut(0.0).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kFuelSpeedAcquire    = new DutyCycleOut(0.5).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kFuelSpeedExpel      = new DutyCycleOut(-0.27).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kFuelSpeedHold       = new DutyCycleOut(0.2).withIgnoreHardwareLimits(true);
 
-  private DutyCycleOut              m_rollerRequestVolts  = kUpperRollerStop;
+  private DutyCycleOut              m_rollerRequestVolts = kUpperRollerStop;
 
-  private static final double       kRollerSpeedToShooter = -1.0;
-  private static final double       kRollerSpeedToFeeder  = -0.4;
-  private static final double       kRollerSpeedHold      = 0.1;
+  // private static final double       kRollerSpeedToShooter = -1.0;
+  // private static final double       kRollerSpeedToFeeder  = -0.4;
+  // private static final double       kRollerSpeedHold      = 0.1;
 
-  private static final double       kNoteDebounceTime     = 0.045;
-  private BooleanPublisher          m_fuelDetectedPub;
+  // private static final double       kNoteDebounceTime     = 0.045;
+  // private BooleanPublisher          m_fuelDetectedPub;
 
   private boolean                   m_upperrollerValid;   // Health indicator for motor
-  private boolean                   m_lowerrollerValid;
-  private final DigitalInput        m_fuelInIntake        = new DigitalInput(0);
+  // private boolean                   m_lowerrollerValid;
+  // private final DigitalInput        m_fuelInIntake        = new DigitalInput(0);
 
-  private DoublePublisher           m_rollSpeedPub;
-  private DoublePublisher           m_rollSupCurPub;
+  // private DoublePublisher           m_rollSpeedPub;
+  // private DoublePublisher           m_rollSupCurPub;
 
-  private Debouncer                 m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
+  // private Debouncer                 m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
   private boolean                   m_fuelDetected;       // Detection state of note in rollers
 
-  private final CANrange            m_fuelDetector        = new CANrange(5);
+  private final CANrange            m_fuelDetector       = new CANrange(5);
 
-  private final Alert               m_upperrollerAlert    =
+  private final Alert               m_upperRollerAlert   =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
-  private final Alert               m_lowerrollerAlert    =
-      new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
+  // private final Alert               m_lowerRollerAlert    =
+  //     new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
   /****************************************************************************
    * 
@@ -77,7 +67,7 @@ public class Intake extends SubsystemBase
     m_upperrollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_upperrollerMotor, kSubsystemName + "Claw",
         CTREConfigs6.upperRollerFXConfig(m_fuelDetector.getDeviceID( )));
 
-    m_upperrollerAlert.set(!m_upperrollerValid);
+    m_upperRollerAlert.set(!m_upperrollerValid);
 
     initDashboard( );
     initialize( );
@@ -173,7 +163,6 @@ public class Intake extends SubsystemBase
   {
     return getRollerCommand(RollerMode.FUELEXPEL).withName("IntakeReverse");
   }
-
 
   public Command IntakeStop( )
   {

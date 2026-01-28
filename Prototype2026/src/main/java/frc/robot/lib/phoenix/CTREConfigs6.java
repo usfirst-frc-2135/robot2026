@@ -40,7 +40,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     // shooterConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;
-    shooterConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    shooterConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     // Open Loop settings

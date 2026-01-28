@@ -4,9 +4,11 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
@@ -42,45 +44,46 @@ public class Shooter extends SubsystemBase
   private static final double kFlywheelPassRPM   = 3000.0; // RPM to pass
   private static final double kToleranceRPM      = 150.0; // Tolerance band around target RPM
   private static final double kFlywheelGearRatio = (18.0 / 18.0);
-  public static final boolean      m_lowerMotorInvert    = false;
+  public static final boolean m_leftMotorInvert  = false;
 
   /** Shooter (speed) modes */
   private enum ShooterMode
   {
     STOP,       // Shooter is stopped
     PASS,       // Shooter speed for passing fuel
-    REVERSE,
-    SCORE       // Shooter speed for shooting
+    REVERSE, SCORE       // Shooter speed for shooting
   }
 
   // Devices objects
-  private final TalonFX                       m_lowerMotor            = new TalonFX(12);
+  private final TalonFX                       m_leftMotor             = new TalonFX(13);
+  private final TalonFX                       m_rightMotor            = new TalonFX(14);
 
   // Alerts
-  private final Alert                         m_lowerAlert            =
+  private final Alert                         m_leftAlert             =
       new Alert(String.format("%s: Lower motor init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
-  private final TalonFXSimState               m_lowerMotorSim         = new TalonFXSimState(m_lowerMotor);
-  private final FlywheelSim                   m_lowerFlywheelSim      = new FlywheelSim(
+  private final TalonFXSimState               m_leftMotorSim          = new TalonFXSimState(m_leftMotor);
+  private final FlywheelSim                   m_leftFlywheelSim       = new FlywheelSim(
       LinearSystemId.createFlywheelSystem(DCMotor.getFalcon500(1), kMOI, kFlywheelGearRatio), DCMotor.getFalcon500(1), 0.0);
 
   // CTRE Status signals for sensors
-  private final StatusSignal<AngularVelocity> m_lowerVelocity; // Default 4Hz (250ms)
+  private final StatusSignal<AngularVelocity> m_leftVelocity; // Default 4Hz (250ms)
 
   // Declare module variables
-  private boolean                             m_lowerValid;
-  private double                              m_lowerRPM;                       // Current lower RPM
+  private boolean                             m_leftValid;
+  private boolean                             m_rightValid;
+  private double                              m_leftRPM;                       // Current lower RPM
   private double                              m_targetRPM             = 0;      // Requested target flywheel RPM
   private boolean                             m_isAtTargetRPM         = false;  // Indicates flywheel RPM is close to target
   private boolean                             m_isAtTargetRPMPrevious = false;
   private VelocityVoltage                     m_requestVelocity       = new VelocityVoltage(0.0);
   private VoltageOut                          m_requestVolts          = new VoltageOut(0.0);
-  private LinearFilter                        m_lowerFlywheelFilter   = LinearFilter.singlePoleIIR(0.060, 0.020);
+  private LinearFilter                        m_leftFlywheelFilter    = LinearFilter.singlePoleIIR(0.060, 0.020);
 
   // Network tables publisher objects
-  private DoublePublisher                     m_lowerRPMPub;
-  
+  private DoublePublisher                     m_leftRPMPub;
+
   private DoublePublisher                     m_targetRPMPub;
   private BooleanPublisher                    m_isAtTargetRPMPub;
   private DoubleEntry                         m_scoreRPMEntry;
@@ -94,12 +97,17 @@ public class Shooter extends SubsystemBase
     setName("Shooter");
     setSubsystem("Shooter");
 
-    m_lowerValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_lowerMotor, kSubsystemName + "Lower", CTREConfigs6.shooterFXConfig( ));
-    m_lowerAlert.set(!m_lowerValid);
+    m_leftValid =
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Lower", CTREConfigs6.shooterFXConfig( ));
+    m_leftAlert.set(!m_leftValid);
+
+    m_rightValid =
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.shooterFXConfig( ));
+    m_leftAlert.set(!m_rightValid);
+    m_rightMotor.setControl(new Follower(m_leftMotor.getDeviceID( ), MotorAlignmentValue.Opposed));
 
     // Initialize status signal objects
-    m_lowerVelocity = m_lowerMotor.getRotorVelocity( );
+    m_leftVelocity = m_leftMotor.getRotorVelocity( );
 
     initDashboard( );
     initialize( );
@@ -115,14 +123,14 @@ public class Shooter extends SubsystemBase
     // This method will be called once per scheduler run
 
     // Update network table publishers
-    if (m_lowerValid)
+    if (m_leftValid)
     {
       // Calculate flywheel RPM and update network tables publishers
-      BaseStatusSignal.refreshAll(m_lowerVelocity);
-      m_lowerRPM = m_lowerFlywheelFilter.calculate((m_lowerVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
-      m_lowerRPMPub.set(m_lowerRPM);
+      BaseStatusSignal.refreshAll(m_leftVelocity);
+      m_leftRPM = m_leftFlywheelFilter.calculate((m_leftVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
+      m_leftRPMPub.set(m_leftRPM);
 
-      m_isAtTargetRPM = ((m_lowerRPM > kToleranceRPM) && MathUtil.isNear(m_targetRPM, m_lowerRPM, kToleranceRPM));
+      m_isAtTargetRPM = ((m_leftRPM > kToleranceRPM) && MathUtil.isNear(m_targetRPM, m_leftRPM, kToleranceRPM));
       m_isAtTargetRPMPub.set(m_isAtTargetRPM);
 
       if (m_isAtTargetRPM != m_isAtTargetRPMPrevious)
@@ -143,17 +151,17 @@ public class Shooter extends SubsystemBase
     // This method will be called once per scheduler run during simulation
 
     // Set input flywheel voltage from the motor setting
-    m_lowerMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
-    m_lowerFlywheelSim.setInput(m_lowerMotorSim.getMotorVoltage( ));
+    m_leftMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    m_leftFlywheelSim.setInput(m_leftMotorSim.getMotorVoltage( ));
 
     // update for 20 msec loop
-    m_lowerFlywheelSim.update(0.020);
+    m_leftFlywheelSim.update(0.020);
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_lowerMotorSim.setRotorVelocity(m_lowerFlywheelSim.getAngularVelocity( ));
+    m_leftMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocity( ));
 
     // SimBattery estimates loaded battery voltages
-    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_lowerFlywheelSim.getCurrentDrawAmps( )));
+    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_leftFlywheelSim.getCurrentDrawAmps( )));
   }
 
   /****************************************************************************
@@ -167,7 +175,7 @@ public class Shooter extends SubsystemBase
     NetworkTable table = inst.getTable("shooter");
 
     // Initialize network tables publishers
-    m_lowerRPMPub = table.getDoubleTopic("lowerSpeed").publish( );
+    m_leftRPMPub = table.getDoubleTopic("lowerSpeed").publish( );
 
     // m_upperSpeedPub = table.getDoubleTopic("upperSpeed").publish( );
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );
@@ -225,14 +233,15 @@ public class Shooter extends SubsystemBase
         break;
       case REVERSE :
         m_targetRPM = -(m_scoreRPMEntry.get(0.0));
-        
+
         break;
     }
 
     double rotPerSecond = m_targetRPM / 60.0;
-    if (m_lowerValid)
+    if (m_leftValid)
     {
-      if(m_targetRPM<0){
+      if (m_targetRPM < 0)
+      {
         setShooterVelocity(rotPerSecond);
       }
       else if (m_targetRPM > 100.0)
@@ -255,7 +264,7 @@ public class Shooter extends SubsystemBase
    */
   private void setShooterVelocity(double rps)
   {
-    m_lowerMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
+    m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
   }
 
   /****************************************************************************
@@ -264,7 +273,7 @@ public class Shooter extends SubsystemBase
    */
   private void setShooterStopped( )
   {
-    m_lowerMotor.setControl(m_requestVolts.withOutput(0.0));
+    m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
   }
 
   ////////////////////////////////////////////////////////////////////////////
