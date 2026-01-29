@@ -28,6 +28,7 @@ public class CANFuelSubsystem extends SubsystemBase
     TalonSRXConfiguration feederConfig = new TalonSRXConfiguration( );
     feederConfig.continuousCurrentLimit = (FEEDER_MOTOR_CURRENT_LIMIT);
     feederRoller.configAllSettings(feederConfig);
+    feederRoller.setInverted(true);
 
     // create the configuration for the launcher roller, set a current limit, set
     // the motor to inverted so that positive values are used for both intaking and
@@ -36,8 +37,6 @@ public class CANFuelSubsystem extends SubsystemBase
     TalonSRXConfiguration launcherConfig = new TalonSRXConfiguration( );
     launcherConfig.continuousCurrentLimit = (LAUNCHER_MOTOR_CURRENT_LIMIT);
     intakeLauncherRoller.configAllSettings(launcherConfig);
-
-    intakeLauncherRoller.setInverted(true);
 
     // put default values for various fuel operations onto the dashboard
     // all commands using this subsystem pull values from the dashbaord to allow

@@ -10,12 +10,12 @@ import static frc.robot.Constants.DriveConstants.RIGHT_FOLLOWER_ID;
 import static frc.robot.Constants.DriveConstants.RIGHT_LEADER_ID;
 import static frc.robot.Constants.DriveConstants.DRIVE_MOTOR_CURRENT_LIMIT;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import static frc.robot.Constants.DriveConstants.*;
 
 public class CANDriveSubsystem extends SubsystemBase
 {
@@ -59,16 +59,19 @@ public class CANDriveSubsystem extends SubsystemBase
 
     // Set config to inverted and then apply to left leader. Set Left side inverted
     // so that postive values drive both sides forward
+    leftFront.setNeutralMode(NeutralMode.Coast);
+    rightFront.setNeutralMode(NeutralMode.Coast);
     rightFront.setInverted(true);
     rightBack.setInverted(true);
 
   }
 
   @Override
-  public void periodic() {
-  }
+  public void periodic( )
+  {}
 
-  public void driveArcade(double xSpeed, double zRotation) {
+  public void driveArcade(double xSpeed, double zRotation)
+  {
     drive.arcadeDrive(xSpeed, zRotation);
   }
 }

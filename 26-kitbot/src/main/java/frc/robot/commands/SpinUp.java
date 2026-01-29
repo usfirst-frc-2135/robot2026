@@ -9,13 +9,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CANFuelSubsystem;
 import static frc.robot.Constants.FuelConstants.*;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SpinUp extends Command {
+/*
+ * You should consider using the more terse Command factories API instead
+ * https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#
+ * defining-commands
+ */
+public class SpinUp extends Command
+{
   /** Creates a new Intake. */
 
   CANFuelSubsystem fuelSubsystem;
 
-  public SpinUp(CANFuelSubsystem fuelSystem) {
+  public SpinUp(CANFuelSubsystem fuelSystem)
+  {
     addRequirements(fuelSystem);
     this.fuelSubsystem = fuelSystem;
   }
@@ -23,27 +29,28 @@ public class SpinUp extends Command {
   // Called when the command is initially scheduled. Set the rollers to the
   // appropriate values for intaking
   @Override
-  public void initialize() {
+  public void initialize( )
+  {
     fuelSubsystem
-        .setIntakeLauncherRoller(
-            SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
+        .setIntakeLauncherRoller(SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
     fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Launching spin-up feeder value", SPIN_UP_FEEDER_VOLTAGE));
   }
 
   // Called every time the scheduler runs while the command is scheduled. This
   // command doesn't require updating any values while running
   @Override
-  public void execute() {
-  }
+  public void execute( )
+  {}
 
   // Called once the command ends or is interrupted. Stop the rollers
   @Override
-  public void end(boolean interrupted) {
-  }
+  public void end(boolean interrupted)
+  {}
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() {
+  public boolean isFinished( )
+  {
     return false;
   }
 }
