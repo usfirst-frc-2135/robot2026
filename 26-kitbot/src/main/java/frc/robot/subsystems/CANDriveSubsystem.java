@@ -61,6 +61,8 @@ public class CANDriveSubsystem extends SubsystemBase
     // so that postive values drive both sides forward
     leftFront.setNeutralMode(NeutralMode.Coast);
     rightFront.setNeutralMode(NeutralMode.Coast);
+    leftBack.setNeutralMode(NeutralMode.Coast);
+    rightBack.setNeutralMode(NeutralMode.Coast);
     rightFront.setInverted(true);
     rightBack.setInverted(true);
 
