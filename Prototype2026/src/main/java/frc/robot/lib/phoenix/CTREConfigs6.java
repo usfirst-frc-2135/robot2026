@@ -52,7 +52,7 @@ public final class CTREConfigs6
     shooterConfig.Slot0.kG = 0.0;                                   // Feedforward: Voltage or duty cylce to overcome gravity (arbitrary feedforward)
     shooterConfig.Slot0.kV = 0.1140;                                // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
-    shooterConfig.Slot0.kP = 0.18;                                  // Voltage or duty cycle per velocity unit (velocity modes)
+    shooterConfig.Slot0.kP = 0.180;                                  // Voltage or duty cycle per velocity unit (velocity modes)
     shooterConfig.Slot0.kI = 0.0;                                   // Voltage or duty cycle per accumulated unit
     shooterConfig.Slot0.kD = 0.0;                                   // Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
