@@ -62,6 +62,7 @@ import frc.robot.Constants;
 import frc.robot.commands.LogCommand;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.LimelightHelpers;
+import frc.robot.lib.Vision;
 
 // @formatter:off
 
@@ -443,7 +444,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // Get the default instance of NetworkTables that was created automatically when the robot program starts
         SmartDashboard.putData("SetPose", getResetPoseCommand( ));
 
-        SmartDashboard.putData("AlignToReefPID", getAlignToReefPIDCommand( ));
+        // SmartDashboard.putData("AlignToReefPID", getAlignToReefPIDCommand( ));
         SmartDashboard.putData("AlignToReefFollow", new DeferredCommand(( ) -> getAlignToReefFollowCommand( ), Set.of(this)));
         SmartDashboard.putData("AlignToReefPPFind", new DeferredCommand(( ) -> getAlignToReefPPFindCommand( ), Set.of(this)));
     }
