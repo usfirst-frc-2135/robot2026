@@ -74,7 +74,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final boolean        m_useLimelight           = true;
 
     /* What to publish over networktables for telemetry */
-    private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
+    private final NetworkTableInstance  kNTInst           = NetworkTableInstance.getDefault( );
 
     /* Robot pose for field positioning */
     private final Field2d               kField               = new Field2d();
