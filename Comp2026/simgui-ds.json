@@ -4,16 +4,21 @@
       "visible": true
     }
   },
+  "System Joysticks": {
+    "window": {
+      "visible": false
+    }
+  },
   "keyboardJoysticks": [
     {
       "axisConfig": [
         {
-          "decKey": 262,
+          "decKey": 264,
           "incKey": 265
         },
         {
           "decKey": 263,
-          "incKey": 264
+          "incKey": 262
         },
         {
           "decKey": 69,
