@@ -71,7 +71,7 @@ import frc.robot.lib.Vision;
  * Subsystem so it can easily be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final boolean   m_useLimelight           = true;
+    private static final boolean        m_useLimelight           = true;
 
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance  kNTInst           = NetworkTableInstance.getDefault( );
