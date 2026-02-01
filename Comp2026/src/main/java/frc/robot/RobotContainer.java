@@ -200,7 +200,6 @@ public class RobotContainer
   private void addDashboardWidgets( )
   {
     // Network tables publisher objects
-   
 
     // Build autonomous chooser objects on dashboard and fill the options
     SmartDashboard.putData("AutoMode", m_autoChooser);
@@ -240,12 +239,11 @@ public class RobotContainer
         m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
 
     // Add subsystem command objects and main scheduler to dashboard
-    
 
     SmartDashboard.putData(CommandScheduler.getInstance( ));
 
     // Add command groups to dashboard
-    
+
   }
 
   /****************************************************************************
@@ -406,7 +404,7 @@ public class RobotContainer
     // Note: Only one default command can be active per subsystem--use the manual modes during bring-up
 
     // Default command - Motion Magic hold
-    
+
   }
 
   /****************************************************************************
@@ -582,7 +580,6 @@ public class RobotContainer
   {
     m_vision.run( );
 
-
   }
 
   /****************************************************************************
@@ -604,6 +601,5 @@ public class RobotContainer
     m_led.printFaults( );
     m_power.printFaults( );
 
-   
   }
 }

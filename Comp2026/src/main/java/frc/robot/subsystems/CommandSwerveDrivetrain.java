@@ -71,10 +71,10 @@ import frc.robot.lib.Vision;
  * Subsystem so it can easily be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final boolean        m_useLimelight           = true;
+    private static final boolean        m_useLimelight       = true;
 
     /* What to publish over networktables for telemetry */
-    private final NetworkTableInstance  kNTInst           = NetworkTableInstance.getDefault( );
+    private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
 
     /* Robot pose for field positioning */
     private final Field2d               kField               = new Field2d();
@@ -82,7 +82,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final FieldObject2d         kLLPoseRight         = kField.getObject("llPose-right"); 
 
     private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
-    private final StructSubscriber<Pose2d>  m_driveStatePose  = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
+    private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
 
     /* Robot set pose */
     private final NetworkTable          kSwerveTable         = kNTInst.getTable("swerve");
@@ -436,19 +436,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /**
      * Add dashboard widgets and network table entries
      */
-    private void initDashboard() {
+    private void initDashboard( )
+    {
         m_setPosePub.set(new double[3]);
         SmartDashboard.putData("Field", kField);
 
         // Get the default instance of NetworkTables that was created automatically when
         // the robot program starts
-        SmartDashboard.putData("SetPose", getResetPoseCommand());
+        SmartDashboard.putData("SetPose", getResetPoseCommand( ));
 
         // SmartDashboard.putData("AlignToReefPID", getAlignToReefPIDCommand( ));
-        SmartDashboard.putData("AlignToReefFollow",
-                new DeferredCommand(() -> getAlignToReefFollowCommand(), Set.of(this)));
-        SmartDashboard.putData("AlignToReefPPFind",
-                new DeferredCommand(() -> getAlignToReefPPFindCommand(), Set.of(this)));
+        SmartDashboard.putData("AlignToReefFollow", new DeferredCommand(( ) -> getAlignToReefFollowCommand( ), Set.of(this)));
+        SmartDashboard.putData("AlignToReefPPFind", new DeferredCommand(( ) -> getAlignToReefPPFindCommand( ), Set.of(this)));
     }
 
     /****************************************************************************
@@ -466,67 +465,73 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * implementation of how to use vision should be tuned per-robot and to the
      * team's specification.
      */
-    private boolean visionUpdate(String limelightName, FieldObject2d fieldObject) {
+    private boolean visionUpdate(String limelightName, FieldObject2d fieldObject)
+    {
         boolean useMegaTag2 = true; // set to false to use MegaTag1
         boolean doRejectUpdate = false;
-        if (useMegaTag2 == false) {
+        if (useMegaTag2 == false)
+        {
             LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
 
-            if (mt1 == null) {
+            if (mt1 == null)
+            {
                 doRejectUpdate = true;
-            } else {
-                if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-                    if (mt1.rawFiducials[0].ambiguity > 0.7) {
+            }
+            else
+            {
+                if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
+                {
+                    if (mt1.rawFiducials[0].ambiguity > 0.7)
+                    {
                         doRejectUpdate = true;
                     }
-                    if (mt1.rawFiducials[0].distToCamera > 3.0) {
+                    if (mt1.rawFiducials[0].distToCamera > 3.0)
+                    {
                         doRejectUpdate = true;
                     }
                 }
-                if (mt1.tagCount == 0) {
+                if (mt1.tagCount == 0)
+                {
                     doRejectUpdate = true;
                 }
             }
 
-            if (!doRejectUpdate) {
-                fieldObject.setPose(mt1.pose.getX(), mt1.pose.getY(), mt1.pose.getRotation());
+            if (!doRejectUpdate)
+            {
+                fieldObject.setPose(mt1.pose.getX( ), mt1.pose.getY( ), mt1.pose.getRotation( ));
 
                 setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
                 addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
             }
-        } else if (useMegaTag2 == true) {
-            LimelightHelpers.SetRobotOrientation(limelightName, getState().Pose.getRotation().getDegrees(), 0, 0, 0, 0,
-                    0);
+        }
+        else if (useMegaTag2 == true)
+        {
+            LimelightHelpers.SetRobotOrientation(limelightName, getState( ).Pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
             LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
-            if (Math.abs(getPigeon2().getAngularVelocityZWorld().getValue().in(DegreesPerSecond)) > 720) // if our
-                                                                                                         // angular
-                                                                                                         // velocity is
-                                                                                                         // greater than
-                                                                                                         // 720 degrees
-                                                                                                         // per second,
-                                                                                                         // ignore
-                                                                                                         // vision
-                                                                                                         // updates
+            // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+            if (Math.abs(getPigeon2( ).getAngularVelocityZWorld( ).getValue( ).in(DegreesPerSecond)) > 720)
             {
                 doRejectUpdate = true;
             }
 
-            if (mt2 == null || mt2.tagCount == 0) {
+            if (mt2 == null || mt2.tagCount == 0)
+            {
                 doRejectUpdate = true;
             }
             // Reject if average tag distance is greater than 5 meters away
-            else if (mt2.avgTagDist > 5.0) {
+            else if (mt2.avgTagDist > 5.0)
+            {
                 doRejectUpdate = true;
             }
 
-            if (!doRejectUpdate) {
+            if (!doRejectUpdate)
+            {
                 final double kBase = 0.5;
                 final double kProportional = 0.9;
-                fieldObject.setPose(mt2.pose.getX(), mt2.pose.getY(), mt2.pose.getRotation());
+                fieldObject.setPose(mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ));
 
-                // Code used by some teams to scale std devs by distance (below) and used by
-                // several teams
+                // Code used by some teams to scale std devs by distance (below) and used by several teams
                 setVisionMeasurementStdDevs(VecBuilder.fill( //
                         Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
                         Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
@@ -543,12 +548,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * Resets swerve pose and limelight orientation
      * 
      * @param pose
-     *             new pose
+     *            new pose
      */
-    public void resetPoseAndLimelight(Pose2d pose) {
+    public void resetPoseAndLimelight(Pose2d pose)
+    {
         resetPose(pose);
-        LimelightHelpers.SetRobotOrientation(Constants.kLLLeftName, pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetRobotOrientation(Constants.kLLRightName, pose.getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(Constants.kLLLeftName, pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(Constants.kLLRightName, pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
     }
 
     /****************************************************************************
@@ -557,9 +563,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * generate a swerve setpoint, then set the target state for each module
      *
      * @param speeds
-     *               The desired robot-relative speeds
+     *            The desired robot-relative speeds
      */
-    public void driveRobotRelative(ChassisSpeeds speeds) {
+    public void driveRobotRelative(ChassisSpeeds speeds)
+    {
         // Note: it is important to not discretize speeds before or after
         // using the setpoint generator, as it will discretize them for you
         m_previousSetpoint = m_setpointGenerator.generateSetpoint(m_previousSetpoint, // The previous setpoint
@@ -567,7 +574,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 0.02 // The loop time of the robot code, in seconds
         );
 
-        setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(m_previousSetpoint.robotRelativeSpeeds()));
+        setControl(new SwerveRequest.ApplyRobotSpeeds( ).withSpeeds(m_previousSetpoint.robotRelativeSpeeds( )));
         // setModuleStates(m_previousSetpoint.moduleStates( )); // TODO: Original
         // setpoint generator sample code
     }
@@ -580,12 +587,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      *
      * Reset robot pose from dashboard widget
      */
-    private Command getResetPoseCommand() {
+    private Command getResetPoseCommand( )
+    {
         return this
                 .runOnce(
-                        () -> resetPoseAndLimelight(
-                                new Pose2d(new Translation2d(m_setPoseSub.get()[0], m_setPoseSub.get()[1]),
-                                        new Rotation2d(m_setPoseSub.get()[2])))) //
+                        ( ) -> resetPoseAndLimelight(new Pose2d(new Translation2d(m_setPoseSub.get( )[0], m_setPoseSub.get( )[1]),
+                                new Rotation2d(m_setPoseSub.get( )[2])))) //
                 .withName("ResetOdometry").ignoringDisable(true);
     }
 
@@ -593,22 +600,28 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      *
      * Log current module positions and calculate an average distance if requested
      */
-    public Command getModulePositionsCommand(boolean end) {
-        return this.runOnce(() -> {
-            if (!end) {
-                for (int i = 0; i < 4; i++) {
-                    m_moduleDistances[i] = this.getState().ModulePositions[i].distanceMeters;
+    public Command getModulePositionsCommand(boolean end)
+    {
+        return this.runOnce(( ) ->
+        {
+            if (!end)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    m_moduleDistances[i] = this.getState( ).ModulePositions[i].distanceMeters;
                 }
-            } else {
+            }
+            else
+            {
                 double average = 0;
-                for (int i = 0; i < 4; i++) {
-                    m_moduleDistances[i] = this.getState().ModulePositions[i].distanceMeters - m_moduleDistances[i];
+                for (int i = 0; i < 4; i++)
+                {
+                    m_moduleDistances[i] = this.getState( ).ModulePositions[i].distanceMeters - m_moduleDistances[i];
                     average += Math.abs(m_moduleDistances[i]);
                 }
                 average /= 4;
-                DataLogManager.log(String.format("%s:  0: %.3f 1: %.3f 2: %.3f 3: %.3f average %.3f", this.getName(),
-                        m_moduleDistances[0], m_moduleDistances[1], m_moduleDistances[2], m_moduleDistances[3],
-                        average));
+                DataLogManager.log(String.format("%s:  0: %.3f 1: %.3f 2: %.3f 3: %.3f average %.3f", this.getName( ),
+                        m_moduleDistances[0], m_moduleDistances[1], m_moduleDistances[2], m_moduleDistances[3], average));
             }
         }).ignoringDisable(true);
     }
@@ -617,24 +630,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      *
      * Construct a path following command used in autonomous
      */
-    public Command getPathCommand(PathPlannerPath ppPath) {
-        // Create a path following command using AutoBuilder. This will also trigger
-        // event markers.
+    public Command getPathCommand(PathPlannerPath ppPath)
+    {
+        // Create a path following command using AutoBuilder. This will also trigger event markers.
         return AutoBuilder.followPath(ppPath).withName("SwerveFollowPath");
     }
-
-    /****************************************************************************
-     *
-     * Create reef align command for PID driving
-     * 
-     * @return reefAlignCommand
-     *         command to align to a reef scoring position
-     */
-    // public Command getAlignToReefPIDCommand( )
-    // {
-    // return SwervePIDController.generateCommand(this,
-    // Seconds.of(2.5)).withName("AlignToReefPID");
-    // }
 
     /****************************************************************************
      *
@@ -649,14 +649,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @return reefAlignCommand
      *         command to align to a reef scoring position
      */
-    private Command getAlignToReefFollowCommand() {
-        Pose2d currentPose = m_driveStatePose.get();
+    private Command getAlignToReefFollowCommand( )
+    {
+        Pose2d currentPose = m_driveStatePose.get( );
         Pose2d goalPose = Vision.findGoalPose(currentPose);
 
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(currentPose, goalPose);
 
-        PathPlannerPath path = new PathPlannerPath(waypoints, kPathFindConstraints, null,
-                new GoalEndState(0.0, goalPose.getRotation()));
+        PathPlannerPath path =
+                new PathPlannerPath(waypoints, kPathFindConstraints, null, new GoalEndState(0.0, goalPose.getRotation( )));
         path.preventFlipping = true;
 
         return new SequentialCommandGroup( //
@@ -676,8 +677,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @return reefAlignCommand
      *         command to align to a reef scoring position
      */
-    private Command getAlignToReefPPFindCommand() {
-        Pose2d currentPose = m_driveStatePose.get();
+    private Command getAlignToReefPPFindCommand( )
+    {
+        Pose2d currentPose = m_driveStatePose.get( );
         Pose2d goalPose = Vision.findGoalPose(currentPose);
 
         return new SequentialCommandGroup( //
