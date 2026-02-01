@@ -18,11 +18,11 @@ import edu.wpi.first.math.util.Units;
  * globally (i.e. public static). Do not put anything functional in this class.
  *
  * <p>
- * It is advised to statically import this class (or one of its inner classes)
- * wherever the
+ * It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {
+public final class Constants
+{
   // bot serial nums
   public static final String kCompSN = "03260A3A";
   public static final String kPracticeSN = "03238074";
@@ -118,7 +118,8 @@ public final class Constants {
     public static final int kDIO0_ElevatorDown = 0; // REV Magnetic Limit Switch
   }
 
-  public static class OperatorConstants {
+  public static class OperatorConstants
+  {
     public static final int kDriverControllerPort = 0;
   }
 

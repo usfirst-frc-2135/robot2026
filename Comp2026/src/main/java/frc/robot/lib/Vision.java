@@ -77,7 +77,7 @@ public class Vision
   // Network tables publisher objects
   private static final NetworkTable         kRobotTable        = kNTInst.getTable(Constants.kRobotString);
   private static final IntegerSubscriber    m_reefLevel        = null; //TODO: need to update
-      
+
   private static final IntegerSubscriber    m_reefBranch       =
       kRobotTable.getIntegerTopic(VIConsts.kReefBranchString).subscribe((0));
 
