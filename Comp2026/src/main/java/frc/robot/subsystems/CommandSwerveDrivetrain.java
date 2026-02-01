@@ -441,8 +441,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_setPosePub.set(new double[3]);
         SmartDashboard.putData("Field", kField);
 
-        // Get the default instance of NetworkTables that was created automatically when
-        // the robot program starts
+        // Get the default instance of NetworkTables that was created automatically when the robot program starts
         SmartDashboard.putData("SetPose", getResetPoseCommand( ));
 
         // SmartDashboard.putData("AlignToReefPID", getAlignToReefPIDCommand( ));
@@ -454,16 +453,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * 
      * Limelight MegaTag example code for vision processing
      *
-     * This example of adding Limelight is very simple and may not be sufficient for
-     * on-field use.
-     * Users typically need to provide a standard deviation that scales with the
-     * distance to goal
+     * This example of adding Limelight is very simple and may not be sufficient for on-field use.
+     * Users typically need to provide a standard deviation that scales with the distance to goal
      * and changes with number of tags available.
      *
-     * This example is sufficient to show that vision integration is possible,
-     * though exact
-     * implementation of how to use vision should be tuned per-robot and to the
-     * team's specification.
+     * This example is sufficient to show that vision integration is possible, though exact
+     * implementation of how to use vision should be tuned per-robot and to the team's specification.
      */
     private boolean visionUpdate(String limelightName, FieldObject2d fieldObject)
     {
@@ -575,8 +570,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         );
 
         setControl(new SwerveRequest.ApplyRobotSpeeds( ).withSpeeds(m_previousSetpoint.robotRelativeSpeeds( )));
-        // setModuleStates(m_previousSetpoint.moduleStates( )); // TODO: Original
-        // setpoint generator sample code
+        // setModuleStates(m_previousSetpoint.moduleStates( )); // TODO: Original setpoint generator sample code
     }
 
     ////////////////////////////////////////////////////////////////////////////
