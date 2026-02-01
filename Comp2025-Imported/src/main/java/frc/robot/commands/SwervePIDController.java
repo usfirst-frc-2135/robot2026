@@ -37,8 +37,8 @@ import frc.robot.subsystems.Vision;
 public class SwervePIDController extends Command
 {
   // Constants
-  private static final double                   kMaxVelocity       = 3.8;                                 // Max robot velocity in MPS
-  private static final double                   kMaxAcceleration   = 4.0;                                 // Max robot acceleration in MPS^2
+  private static final double                   kMaxVelocity       = 3.8; // Max robot velocity in MPS
+  private static final double                   kMaxAcceleration   = 4.0; // Max robot acceleration in MPS^2
   private static final Rotation2d               kRotationTolerance = Rotation2d.fromDegrees(1.0);
   private static final Distance                 kPositionTolerance = Inches.of(1.5);
   private static final LinearVelocity           kSpeedTolerance    = InchesPerSecond.of(2.0);
@@ -135,7 +135,7 @@ public class SwervePIDController extends Command
     omegaPub.set(speeds.omegaRadiansPerSecond);
 
     m_swerve.setControl(new SwerveRequest.ApplyRobotSpeeds( ).withSpeeds(speeds));
-    // m_swerve.driveRobotRelative(speeds);     // TODO: swerve setpoint generator testing
+    // m_swerve.driveRobotRelative(speeds); // TODO: swerve setpoint generator testing
   }
 
   @Override
@@ -163,7 +163,7 @@ public class SwervePIDController extends Command
     boolean rotation = MathUtil.isNear(m_goalPose.getRotation( ).getRotations( ),
         driveStatePose.get( ).getRotation( ).getRotations( ), kRotationTolerance.getRotations( ), 0.0, 1.0);
     // DataLogManager.log(String.format("exp: %s act: %s tol: %s", m_goalPose.getRotation( ).getRotations( ),
-    //     driveStatePose.get( ).getRotation( ).getRotations( ), kRotationTolerance.getRotations( )));
+    // driveStatePose.get( ).getRotation( ).getRotations( ), kRotationTolerance.getRotations( )));
 
     boolean speed = Math.abs(driveSpeeds.get( ).vxMetersPerSecond) < kSpeedTolerance.in(MetersPerSecond)
         && Math.abs(driveSpeeds.get( ).vyMetersPerSecond) < kSpeedTolerance.in(MetersPerSecond);

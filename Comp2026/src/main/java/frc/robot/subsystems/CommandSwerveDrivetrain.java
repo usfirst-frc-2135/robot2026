@@ -5,7 +5,6 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
@@ -61,9 +60,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.commands.LogCommand;
-import frc.robot.commands.SwervePIDController;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.LimelightHelpers;
+import frc.robot.lib.Vision;
 
 // @formatter:off
 
@@ -445,7 +444,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // Get the default instance of NetworkTables that was created automatically when the robot program starts
         SmartDashboard.putData("SetPose", getResetPoseCommand( ));
 
-        SmartDashboard.putData("AlignToReefPID", getAlignToReefPIDCommand( ));
+        // SmartDashboard.putData("AlignToReefPID", getAlignToReefPIDCommand( ));
         SmartDashboard.putData("AlignToReefFollow", new DeferredCommand(( ) -> getAlignToReefFollowCommand( ), Set.of(this)));
         SmartDashboard.putData("AlignToReefPPFind", new DeferredCommand(( ) -> getAlignToReefPPFindCommand( ), Set.of(this)));
     }
@@ -637,10 +636,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @return reefAlignCommand
      *         command to align to a reef scoring position
      */
-    public Command getAlignToReefPIDCommand( )
-    {
-        return SwervePIDController.generateCommand(this, Seconds.of(2.5)).withName("AlignToReefPID");
-    }
+    // public Command getAlignToReefPIDCommand( )
+    // {
+    //     return SwervePIDController.generateCommand(this, Seconds.of(2.5)).withName("AlignToReefPID");
+    // }
 
     /****************************************************************************
      *
