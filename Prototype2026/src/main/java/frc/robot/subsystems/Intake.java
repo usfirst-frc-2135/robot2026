@@ -25,7 +25,7 @@ public class Intake extends SubsystemBase
   private static final String       kSubsystemName       = "Intake";
   // private static final boolean      kRollerMotorInvert   = false;
 
-  private final TalonFX             m_upperrollerMotor   = new TalonFX(0);
+  private final TalonFX             m_upperrollerMotor   = new TalonFX(5);
   // private final TalonFX             m_lowerrollerMotor   = new TalonFX(1);
 
   private static final DutyCycleOut kUpperRollerStop     = new DutyCycleOut(0.0).withIgnoreHardwareLimits(true);

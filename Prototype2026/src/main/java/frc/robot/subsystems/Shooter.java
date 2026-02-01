@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -35,6 +36,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.math.Conversions;
 import frc.robot.lib.phoenix.CTREConfigs6;
 import frc.robot.lib.phoenix.PhoenixUtil6;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Shooter extends SubsystemBase
 {
@@ -54,25 +57,45 @@ public class Shooter extends SubsystemBase
     REVERSE, SCORE       // Shooter speed for shooting
   }
 
+  private enum KickerMode
+  {
+    STOPKICKER,
+    REVERSEKICKER,
+    RUNKICKER
+  }
+
   // Devices objects
   private final TalonFX                       m_leftMotor             = new TalonFX(13);
   private final TalonFX                       m_rightMotor            = new TalonFX(14);
+  private final WPI_TalonSRX                  m_kickerMotor           = new WPI_TalonSRX(15);
 
   // Alerts
   private final Alert                         m_leftAlert             =
-      new Alert(String.format("%s: Lower motor init failed!", getSubsystem( )), AlertType.kError);
+      new Alert(String.format("%s: Left motor init failed!", getSubsystem( )), AlertType.kError);
+  private final Alert                         m_rightAlert             =
+      new Alert(String.format("%s: Right motor init failed!", getSubsystem( )), AlertType.kError);
+  private final Alert                         m_kickerAlert             =
+      new Alert(String.format("%s: Kicker motor init failed!", getSubsystem( )), AlertType.kError);
+
+  private static final DutyCycleOut kFuelSpeedAcquire    = new DutyCycleOut(0.5).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kFuelSpeedExpel      = new DutyCycleOut(-0.27).withIgnoreHardwareLimits(true);
+  private static final DutyCycleOut kFuelSpeedHold       = new DutyCycleOut(0.2).withIgnoreHardwareLimits(true);
 
   // Simulation objects
   private final TalonFXSimState               m_leftMotorSim          = new TalonFXSimState(m_leftMotor);
+  //private final TalonSRXSimState               m_kickerMotorSim          = new TalonSRXSimState(m_kickerMotor);
   private final FlywheelSim                   m_leftFlywheelSim       = new FlywheelSim(
       LinearSystemId.createFlywheelSystem(DCMotor.getFalcon500(1), kMOI, kFlywheelGearRatio), DCMotor.getFalcon500(1), 0.0);
 
   // CTRE Status signals for sensors
   private final StatusSignal<AngularVelocity> m_leftVelocity; // Default 4Hz (250ms)
+  //private final StatusSignal<AngularVelocity> m_kickerVelocity;
+  private final double m_kickerVelocity;
 
   // Declare module variables
   private boolean                             m_leftValid;
   private boolean                             m_rightValid;
+  private boolean                             m_kickerValid;
   private double                              m_leftRPM;                       // Current lower RPM
   private double                              m_targetRPM             = 0;      // Requested target flywheel RPM
   private boolean                             m_isAtTargetRPM         = false;  // Indicates flywheel RPM is close to target
@@ -92,22 +115,38 @@ public class Shooter extends SubsystemBase
    * 
    * Constructor
    */
+
+  TalonSRXConfiguration kickerSRXConfig( )
+  {
+    // Create a new config object with factory default settings
+    TalonSRXConfiguration kickerConfig = new TalonSRXConfiguration( );
+    return kickerConfig;
+  }
   public Shooter( )
   {
     setName("Shooter");
     setSubsystem("Shooter");
 
     m_leftValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Lower", CTREConfigs6.shooterFXConfig( ));
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left", CTREConfigs6.shooterFXConfig( ));
     m_leftAlert.set(!m_leftValid);
 
     m_rightValid =
         PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.shooterFXConfig( ));
-    m_leftAlert.set(!m_rightValid);
+    m_rightAlert.set(!m_rightValid);
     m_rightMotor.setControl(new Follower(m_leftMotor.getDeviceID( ), MotorAlignmentValue.Opposed));
+
+    m_kickerMotor.configAllSettings(kickerSRXConfig( ));
+
+    // m_kickerValid =
+    //     PhoenixUtil6.getInstance( ).talonSRXInitialize6(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs6.shooterFXConfig( ));
+    // m_kickerAlert.set(!m_kickerValid);
+    
 
     // Initialize status signal objects
     m_leftVelocity = m_leftMotor.getRotorVelocity( );
+    m_kickerVelocity = m_kickerMotor.getSelectedSensorVelocity(0);
+    double rpm = (m_kickerVelocity * 600) / 4096;
 
     initDashboard( );
     initialize( );
@@ -139,6 +178,23 @@ public class Shooter extends SubsystemBase
         m_isAtTargetRPMPrevious = m_isAtTargetRPM;
       }
     }
+
+    if (m_kickerValid)
+    {
+      // Calculate flywheel RPM and update network tables publishers
+      //BaseStatusSignal.refreshAll(m_kickerVelocity);
+      //m_leftRPM = m_leftFlywheelFilter.calculate((m_kickerVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
+      m_leftRPMPub.set(m_leftRPM);
+
+      m_isAtTargetRPM = ((m_leftRPM > kToleranceRPM) && MathUtil.isNear(m_targetRPM, m_leftRPM, kToleranceRPM));
+      m_isAtTargetRPMPub.set(m_isAtTargetRPM);
+
+      if (m_isAtTargetRPM != m_isAtTargetRPMPrevious)
+      {
+        DataLogManager.log(String.format("%s: At desired RPM: %.1f", getSubsystem( ), m_targetRPM));
+        m_isAtTargetRPMPrevious = m_isAtTargetRPM;
+      }
+    }
   }
 
   /****************************************************************************
@@ -159,6 +215,7 @@ public class Shooter extends SubsystemBase
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
     m_leftMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocity( ));
+    //m_kickerMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocity( ));
 
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_leftFlywheelSim.getCurrentDrawAmps( )));
@@ -330,6 +387,63 @@ public class Shooter extends SubsystemBase
   public Command getShooterStopCommand( )
   {
     return getShooterCommand(ShooterMode.STOP).withName("ShooterStop");
+  }
+
+  
+
+  
+
+  private void setKickerMode(KickerMode mode1)
+  {
+    DataLogManager.log(String.format("%s: Set kicker mode to %s", getSubsystem( ), mode1));
+
+    // Select the shooter RPM for the requested mode - NEVER NEGATIVE when running!
+    switch (mode1)
+    {
+      default :
+        DataLogManager.log(String.format("%s: Kicker mode is invalid: %s", getSubsystem( ), mode1));
+      case STOPKICKER :
+        m_targetRPM = 0.0;
+        break;
+      case RUNKICKER :
+        m_targetRPM = m_scoreRPMEntry.get(0.0);
+        break;
+      case REVERSEKICKER :
+        m_targetRPM = -(m_scoreRPMEntry.get(0.0));
+        break;
+    }
+  }
+  private Command getKickerCommand(KickerMode mode1)
+  {
+    return new InstantCommand(        // Command that runs exactly once
+        ( ) -> setKickerMode(mode1),  // Method to call
+        this                          // Subsystem requirement
+    );
+  }
+
+  private void setKickerVelocity(double rps)
+  {
+    m_kickerMotor.set((Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
+  }
+
+  public Command getKickerRunCommand( )
+  {
+    return getKickerCommand(KickerMode.RUNKICKER).withName("KickerRun");
+  }
+
+  public Command getKickerReverseCommand( )
+  {
+    return getKickerCommand(KickerMode.REVERSEKICKER).withName("KickererReverse");
+  }
+  /****************************************************************************
+   * 
+   * Create shooter mode command to stop motors
+   * 
+   * @return instant command that stops shooter motors
+   */
+  public Command getKickerStopCommand( )
+  {
+    return getKickerCommand(KickerMode.STOPKICKER).withName("KickerStop");
   }
 
 }
