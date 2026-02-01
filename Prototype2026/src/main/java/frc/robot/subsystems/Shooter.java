@@ -259,6 +259,7 @@ public class Shooter extends SubsystemBase
         DataLogManager.log(String.format("%s: Shooter mode is invalid: %s", getSubsystem( ), mode));
       case STOP :
         m_targetRPM = 0.0;
+        m_kicker.setVoltage(0.0);
         break;
       case PASS :
         m_targetRPM = kFlywheelPassRPM;

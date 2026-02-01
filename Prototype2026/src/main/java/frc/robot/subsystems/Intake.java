@@ -147,9 +147,11 @@ public class Intake extends SubsystemBase
             DataLogManager.log(String.format("%s: Claw mode is invalid: %s", getSubsystem( ), mode));
           case STOP :
             m_rollerRequestVolts = (m_fuelDetected) ? kFuelSpeedHold : kUpperRollerStop;
+            
             break;
           case FUELACQUIRE :
             m_rollerRequestVolts = kFuelSpeedAcquire;
+            
             break;
           case FUELEXPEL :
             m_rollerRequestVolts = kFuelSpeedExpel;
