@@ -130,7 +130,7 @@ public class Shooter extends SubsystemBase
     TalonSRXConfiguration kickerConfig = new TalonSRXConfiguration( );
     kickerConfig.continuousCurrentLimit = (30);
     m_kickerMotor.configAllSettings(kickerConfig);
-    m_kickerMotor.setInverted(true);
+    m_kickerMotor.setInverted(false);
 
     // m_kickerValid =
     //     PhoenixUtil6.getInstance( ).talonSRXInitialize6(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs6.shooterFXConfig( ));
@@ -283,7 +283,7 @@ public class Shooter extends SubsystemBase
       }
       else if (m_targetRPM > 100.0){
         setShooterVelocity(rotPerSecond);
-        m_kickerMotor.setVoltage(1.0);
+        m_kickerMotor.setVoltage(3);
       }
       else{
         setShooterStopped( );
@@ -306,7 +306,7 @@ public class Shooter extends SubsystemBase
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
-    m_kickerMotor.setVoltage(0.5);
+    m_kickerMotor.setVoltage(3);
   }
 
   /****************************************************************************
