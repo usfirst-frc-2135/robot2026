@@ -83,7 +83,7 @@ public class Shooter extends SubsystemBase
   // CTRE Status signals for sensors
   private final StatusSignal<AngularVelocity> m_leftVelocity; // Default 4Hz (250ms)
   //private final StatusSignal<AngularVelocity> m_kickerVelocity;
-  private final double m_kickerVelocity;
+  //private final double m_kickerVelocity;
 
   // Declare module variables
   private boolean                             m_leftValid;
@@ -109,12 +109,7 @@ public class Shooter extends SubsystemBase
    * Constructor
    */
 
-  TalonSRXConfiguration kickerSRXConfig( )
-  {
-    // Create a new config object with factory default settings
-    TalonSRXConfiguration kickerConfig = new TalonSRXConfiguration( );
-    return kickerConfig;
-  }
+  
   public Shooter( )
   {
     setName("Shooter");
@@ -129,7 +124,13 @@ public class Shooter extends SubsystemBase
     m_rightAlert.set(!m_rightValid);
     m_rightMotor.setControl(new Follower(m_leftMotor.getDeviceID( ), MotorAlignmentValue.Opposed));
 
-    m_kickerMotor.configAllSettings(kickerSRXConfig( ));
+    //m_kickerMotor.configAllSettings(kickerSRXConfig( ));
+
+    m_kickerMotor.configFactoryDefault( );
+    TalonSRXConfiguration kickerConfig = new TalonSRXConfiguration( );
+    kickerConfig.continuousCurrentLimit = (30);
+    m_kickerMotor.configAllSettings(kickerConfig);
+    m_kickerMotor.setInverted(true);
 
     // m_kickerValid =
     //     PhoenixUtil6.getInstance( ).talonSRXInitialize6(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs6.shooterFXConfig( ));
@@ -138,8 +139,7 @@ public class Shooter extends SubsystemBase
 
     // Initialize status signal objects
     m_leftVelocity = m_leftMotor.getRotorVelocity( );
-    m_kickerVelocity = m_kickerMotor.getSelectedSensorVelocity(0);
-    double rpm = (m_kickerVelocity * 600) / 4096;
+
 
     initDashboard( );
     initialize( );
@@ -259,13 +259,14 @@ public class Shooter extends SubsystemBase
         DataLogManager.log(String.format("%s: Shooter mode is invalid: %s", getSubsystem( ), mode));
       case STOP :
         m_targetRPM = 0.0;
-        m_kicker.setVoltage(0.0);
+        
         break;
       case PASS :
         m_targetRPM = kFlywheelPassRPM;
         break;
       case SCORE :
         m_targetRPM = m_scoreRPMEntry.get(0.0);
+        
         break;
       case REVERSE :
         m_targetRPM = -(m_scoreRPMEntry.get(0.0));
@@ -280,10 +281,14 @@ public class Shooter extends SubsystemBase
       {
         setShooterVelocity(rotPerSecond);
       }
-      else if (m_targetRPM > 100.0)
+      else if (m_targetRPM > 100.0){
         setShooterVelocity(rotPerSecond);
-      else
+        m_kickerMotor.setVoltage(1.0);
+      }
+      else{
         setShooterStopped( );
+        m_kickerMotor.setVoltage(0.0);
+      }
     }
 
     m_targetRPMPub.set(m_targetRPM);
@@ -311,6 +316,7 @@ public class Shooter extends SubsystemBase
   private void setShooterStopped( )
   {
     m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
+    m_kickerMotor.setVoltage(0.0);
   }
 
   ////////////////////////////////////////////////////////////////////////////
