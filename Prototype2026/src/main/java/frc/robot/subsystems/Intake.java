@@ -1,31 +1,25 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANrange;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.INConsts.RollerMode;
-import frc.robot.lib.phoenix.CTREConfigs6;
-import frc.robot.lib.phoenix.PhoenixUtil6;
 
-public class Intake extends SubsystemBase
-{
+public class Intake extends SubsystemBase {
   private static final String       kSubsystemName       = "Intake";
   // private static final boolean      kRollerMotorInvert   = false;
 
-  private final TalonFX             m_upperrollerMotor   = new TalonFX(0);
+  private final WPI_TalonSRX             m_upperrollerMotor   = new WPI_TalonSRX(15);
   // private final TalonFX             m_lowerrollerMotor   = new TalonFX(1);
 
   private static final DutyCycleOut kUpperRollerStop     = new DutyCycleOut(0.0).withIgnoreHardwareLimits(true);
@@ -33,7 +27,7 @@ public class Intake extends SubsystemBase
   private static final DutyCycleOut kFuelSpeedExpel      = new DutyCycleOut(-0.27).withIgnoreHardwareLimits(true);
   private static final DutyCycleOut kFuelSpeedHold       = new DutyCycleOut(0.2).withIgnoreHardwareLimits(true);
 
-  private DutyCycleOut              m_rollerRequestVolts = kUpperRollerStop;
+  private Double              m_rollerRequestVolts = 0.0;
 
   // private static final double       kRollerSpeedToShooter = -1.0;
   // private static final double       kRollerSpeedToFeeder  = -0.4;
@@ -53,7 +47,7 @@ public class Intake extends SubsystemBase
   private boolean                   m_fuelDetected;       // Detection state of note in rollers
 
   private final CANrange            m_fuelDetector       = new CANrange(5);
-  private final TalonFXSimState               m_UpperRollerSim          = new TalonFXSimState(m_upperrollerMotor);
+  // private final TalonFXSimState               m_UpperRollerSim          = new TalonFXSimState(m_upperrollerMotor);
 
   private final Alert               m_upperRollerAlert   =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
@@ -70,10 +64,12 @@ public class Intake extends SubsystemBase
     setName(kSubsystemName);
     setSubsystem(kSubsystemName);
 
-    m_upperrollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_upperrollerMotor, kSubsystemName + "Claw",
-        CTREConfigs6.upperRollerFXConfig(m_fuelDetector.getDeviceID( )));
+    // m_upperrollerValid = PhoenixUtil6.getInstance( ).talonSRXInitialize5(m_upperrollerMotor, kSubsystemName + "Claw",
+    //     CTREConfigs6.upperRollerFXConfig(m_fuelDetector.getDeviceID( )));
 
-    m_upperRollerAlert.set(!m_upperrollerValid);
+    m_upperrollerMotor.configFactoryDefault();
+
+    // m_upperRollerAlert.set(!m_upperrollerValid);
 
     initDashboard( );
     initialize( );
@@ -118,12 +114,12 @@ public class Intake extends SubsystemBase
     // This method will be called once per scheduler run during simulation
 
     // Set input flywheel voltage from the motor setting
-    m_UpperRollerSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    // m_UpperRollerSim.setSupplyVoltage(RobotController.getInputVoltage( ));
   }
 
   private void setRollerMode(RollerMode mode)
   {
-    m_rollerRequestVolts = kUpperRollerStop;
+    m_rollerRequestVolts = 0.0;
     if (mode == RollerMode.FUELHOLD)
     {
       DataLogManager
@@ -146,16 +142,17 @@ public class Intake extends SubsystemBase
           default :
             DataLogManager.log(String.format("%s: Claw mode is invalid: %s", getSubsystem( ), mode));
           case STOP :
-            m_rollerRequestVolts = (m_fuelDetected) ? kFuelSpeedHold : kUpperRollerStop;
+            m_rollerRequestVolts = 0.0;
             break;
           case FUELACQUIRE :
-            m_rollerRequestVolts = kFuelSpeedAcquire;
+            m_rollerRequestVolts = 6.0;
             break;
           case FUELEXPEL :
-            m_rollerRequestVolts = kFuelSpeedExpel;
+            m_rollerRequestVolts = -6.0;
             break;
         }
-        m_upperrollerMotor.setControl(m_rollerRequestVolts);
+        // m_upperrollerMotor.setControl(m_rollerRequestVolts);
+        m_upperrollerMotor.setVoltage(m_rollerRequestVolts);
       }
     }
   }
