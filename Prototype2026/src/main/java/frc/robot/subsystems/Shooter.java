@@ -57,17 +57,12 @@ public class Shooter extends SubsystemBase
     REVERSE, SCORE       // Shooter speed for shooting
   }
 
-  private enum KickerMode
-  {
-    STOPKICKER,
-    REVERSEKICKER,
-    RUNKICKER
-  }
+  
 
   // Devices objects
-  private final TalonFX                       m_leftMotor             = new TalonFX(13);
-  private final TalonFX                       m_rightMotor            = new TalonFX(14);
-  private final WPI_TalonSRX                  m_kickerMotor           = new WPI_TalonSRX(15);
+  private final TalonFX                       m_leftMotor             = new TalonFX(14);
+  private final TalonFX                       m_rightMotor            = new TalonFX(15);
+  private final WPI_TalonSRX                  m_kickerMotor           = new WPI_TalonSRX(16);
 
   // Alerts
   private final Alert                         m_leftAlert             =
@@ -77,9 +72,7 @@ public class Shooter extends SubsystemBase
   private final Alert                         m_kickerAlert             =
       new Alert(String.format("%s: Kicker motor init failed!", getSubsystem( )), AlertType.kError);
 
-  private static final DutyCycleOut kFuelSpeedAcquire    = new DutyCycleOut(0.5).withIgnoreHardwareLimits(true);
-  private static final DutyCycleOut kFuelSpeedExpel      = new DutyCycleOut(-0.27).withIgnoreHardwareLimits(true);
-  private static final DutyCycleOut kFuelSpeedHold       = new DutyCycleOut(0.2).withIgnoreHardwareLimits(true);
+  
 
   // Simulation objects
   private final TalonFXSimState               m_leftMotorSim          = new TalonFXSimState(m_leftMotor);
@@ -179,22 +172,7 @@ public class Shooter extends SubsystemBase
       }
     }
 
-    if (m_kickerValid)
-    {
-      // Calculate flywheel RPM and update network tables publishers
-      //BaseStatusSignal.refreshAll(m_kickerVelocity);
-      //m_leftRPM = m_leftFlywheelFilter.calculate((m_kickerVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
-      m_leftRPMPub.set(m_leftRPM);
-
-      m_isAtTargetRPM = ((m_leftRPM > kToleranceRPM) && MathUtil.isNear(m_targetRPM, m_leftRPM, kToleranceRPM));
-      m_isAtTargetRPMPub.set(m_isAtTargetRPM);
-
-      if (m_isAtTargetRPM != m_isAtTargetRPMPrevious)
-      {
-        DataLogManager.log(String.format("%s: At desired RPM: %.1f", getSubsystem( ), m_targetRPM));
-        m_isAtTargetRPMPrevious = m_isAtTargetRPM;
-      }
-    }
+    
   }
 
   /****************************************************************************
@@ -322,6 +300,7 @@ public class Shooter extends SubsystemBase
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
+    m_kickerMotor.setVoltage(0.5);
   }
 
   /****************************************************************************
@@ -393,57 +372,6 @@ public class Shooter extends SubsystemBase
 
   
 
-  private void setKickerMode(KickerMode mode1)
-  {
-    DataLogManager.log(String.format("%s: Set kicker mode to %s", getSubsystem( ), mode1));
-
-    // Select the shooter RPM for the requested mode - NEVER NEGATIVE when running!
-    switch (mode1)
-    {
-      default :
-        DataLogManager.log(String.format("%s: Kicker mode is invalid: %s", getSubsystem( ), mode1));
-      case STOPKICKER :
-        m_targetRPM = 0.0;
-        break;
-      case RUNKICKER :
-        m_targetRPM = m_scoreRPMEntry.get(0.0);
-        break;
-      case REVERSEKICKER :
-        m_targetRPM = -(m_scoreRPMEntry.get(0.0));
-        break;
-    }
-  }
-  private Command getKickerCommand(KickerMode mode1)
-  {
-    return new InstantCommand(        // Command that runs exactly once
-        ( ) -> setKickerMode(mode1),  // Method to call
-        this                          // Subsystem requirement
-    );
-  }
-
-  private void setKickerVelocity(double rps)
-  {
-    m_kickerMotor.set((Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
-  }
-
-  public Command getKickerRunCommand( )
-  {
-    return getKickerCommand(KickerMode.RUNKICKER).withName("KickerRun");
-  }
-
-  public Command getKickerReverseCommand( )
-  {
-    return getKickerCommand(KickerMode.REVERSEKICKER).withName("KickererReverse");
-  }
-  /****************************************************************************
-   * 
-   * Create shooter mode command to stop motors
-   * 
-   * @return instant command that stops shooter motors
-   */
-  public Command getKickerStopCommand( )
-  {
-    return getKickerCommand(KickerMode.STOPKICKER).withName("KickerStop");
-  }
-
+  
+  
 }
