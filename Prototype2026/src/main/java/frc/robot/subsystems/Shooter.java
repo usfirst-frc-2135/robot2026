@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -10,7 +12,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -36,8 +37,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.math.Conversions;
 import frc.robot.lib.phoenix.CTREConfigs6;
 import frc.robot.lib.phoenix.PhoenixUtil6;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Shooter extends SubsystemBase
 {
@@ -57,8 +56,6 @@ public class Shooter extends SubsystemBase
     REVERSE, SCORE       // Shooter speed for shooting
   }
 
-  
-
   // Devices objects
   private final TalonFX                       m_leftMotor             = new TalonFX(14);
   private final TalonFX                       m_rightMotor            = new TalonFX(15);
@@ -67,12 +64,10 @@ public class Shooter extends SubsystemBase
   // Alerts
   private final Alert                         m_leftAlert             =
       new Alert(String.format("%s: Left motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert                         m_rightAlert             =
+  private final Alert                         m_rightAlert            =
       new Alert(String.format("%s: Right motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert                         m_kickerAlert             =
+  private final Alert                         m_kickerAlert           =
       new Alert(String.format("%s: Kicker motor init failed!", getSubsystem( )), AlertType.kError);
-
-  
 
   // Simulation objects
   private final TalonFXSimState               m_leftMotorSim          = new TalonFXSimState(m_leftMotor);
@@ -109,7 +104,6 @@ public class Shooter extends SubsystemBase
    * Constructor
    */
 
-  
   public Shooter( )
   {
     setName("Shooter");
@@ -135,11 +129,9 @@ public class Shooter extends SubsystemBase
     // m_kickerValid =
     //     PhoenixUtil6.getInstance( ).talonSRXInitialize6(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs6.shooterFXConfig( ));
     // m_kickerAlert.set(!m_kickerValid);
-    
 
     // Initialize status signal objects
     m_leftVelocity = m_leftMotor.getRotorVelocity( );
-
 
     initDashboard( );
     initialize( );
@@ -172,7 +164,6 @@ public class Shooter extends SubsystemBase
       }
     }
 
-    
   }
 
   /****************************************************************************
@@ -259,14 +250,14 @@ public class Shooter extends SubsystemBase
         DataLogManager.log(String.format("%s: Shooter mode is invalid: %s", getSubsystem( ), mode));
       case STOP :
         m_targetRPM = 0.0;
-        
+
         break;
       case PASS :
         m_targetRPM = kFlywheelPassRPM;
         break;
       case SCORE :
         m_targetRPM = m_scoreRPMEntry.get(0.0);
-        
+
         break;
       case REVERSE :
         m_targetRPM = -(m_scoreRPMEntry.get(0.0));
@@ -281,11 +272,13 @@ public class Shooter extends SubsystemBase
       {
         setShooterVelocity(rotPerSecond);
       }
-      else if (m_targetRPM > 100.0){
+      else if (m_targetRPM > 100.0)
+      {
         setShooterVelocity(rotPerSecond);
         m_kickerMotor.setVoltage(3);
       }
-      else{
+      else
+      {
         setShooterStopped( );
         m_kickerMotor.setVoltage(0.0);
       }
@@ -375,10 +368,4 @@ public class Shooter extends SubsystemBase
     return getShooterCommand(ShooterMode.STOP).withName("ShooterStop");
   }
 
-  
-
-  
-
-  
-  
 }

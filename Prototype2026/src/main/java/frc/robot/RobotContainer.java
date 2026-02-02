@@ -23,8 +23,7 @@ public class RobotContainer
     kStopped, kFixedSpeed, kJoystickControl, kClosedLoop
   }
 
-  // In a real robot, the servo actuator would be declared within a subsystem and
-  // not here
+  // In a real robot, the servo actuator would be declared within a subsystem and not here
   private final Servo m_actuator = new Servo(0);
 
   private void AddDashboardWidgets( )
