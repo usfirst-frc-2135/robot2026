@@ -26,8 +26,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot
 {
-  private static final boolean m_isComp          = detectRobot( );         // Detect which robot is in use
-  private final RobotContainer m_robotContainer  = new RobotContainer(this);    // Create that robot
+  private static final boolean m_isComp          = detectRobot( ); // Detect which robot is in use
+  private final RobotContainer m_robotContainer  = new RobotContainer(this); // Create that robot
   private Command              m_autonomousCommand;
   private boolean              m_faultsCleared   = false;
   private static double        m_timeMark        = Timer.getFPGATimestamp( );
@@ -61,7 +61,8 @@ public class Robot extends TimedRobot
       PortForwarder.add(port, Constants.kLLRightName + ".local", port);
     }
 
-    CommandScheduler.getInstance( ).schedule(FollowPathCommand.warmupCommand( ).withName("PathPlanner - warmupCommand")); // Recommended by PathPlanner docs
+    // Recommended by PathPlanner docs
+    CommandScheduler.getInstance( ).schedule(FollowPathCommand.warmupCommand( ).withName("PathPlanner - warmupCommand"));
 
     Robot.timeMarker("Robot: after warmup");
   }
@@ -124,7 +125,7 @@ public class Robot extends TimedRobot
     if (m_loadAutoCommand)
     {
       m_autonomousCommand = m_robotContainer.getAutonomousCommand( );
-      m_loadAutoCommand = false;  // Load only once per request
+      m_loadAutoCommand = false; // Load only once per request
     }
 
     // If RoboRIO User button is pressed, dump all CAN faults
