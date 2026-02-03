@@ -99,6 +99,7 @@ public class Shooter extends SubsystemBase
 
   // Network tables publisher objects
   private DoublePublisher                     m_leftRPMPub;
+  private DoublePublisher                     m_kickerRPMPub;
 
   private DoublePublisher                     m_targetRPMPub;
   private BooleanPublisher                    m_isAtTargetRPMPub;
@@ -171,6 +172,10 @@ public class Shooter extends SubsystemBase
         m_isAtTargetRPMPrevious = m_isAtTargetRPM;
       }
     }
+    if (m_kickerValid){
+      m_kickerRPMPub.setVoltage();
+      
+    }
 
     
   }
@@ -211,6 +216,7 @@ public class Shooter extends SubsystemBase
 
     // Initialize network tables publishers
     m_leftRPMPub = table.getDoubleTopic("lowerSpeed").publish( );
+    m_kickerRPMPub = table.getDoubleTopic("kickerSpeed").publish( );
 
     // m_upperSpeedPub = table.getDoubleTopic("upperSpeed").publish( );
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );

@@ -93,6 +93,7 @@ public class Intake extends SubsystemBase
   private void initDashboard( )
   {
     // Get the default instance of NetworkTables that was created automatically when the robot program starts
+    m_rollSpeedPub = table.getDoubleTopic("intakeSpeed").publish( );
 
     SmartDashboard.putData("IntakeRun", IntakeOn( ));
     SmartDashboard.putData("IntakeStop", IntakeStop( ));

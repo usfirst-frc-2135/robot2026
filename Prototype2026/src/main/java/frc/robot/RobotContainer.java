@@ -47,8 +47,8 @@ public class RobotContainer
 
   private void configureButtonBindings( )
   {
-    // m_driverPad.a( ).onTrue(m_shooter.getShooterScoreCommand( ));
-    // m_driverPad.b( ).onTrue(m_shooter.getShooterStopCommand( ));
+    m_driverPad.a( ).onTrue(m_shooter.getShooterScoreCommand( ));
+    m_driverPad.b( ).onTrue(m_shooter.getShooterStopCommand( ));
 
     ///////////////////////////////////////////////////////
     //
