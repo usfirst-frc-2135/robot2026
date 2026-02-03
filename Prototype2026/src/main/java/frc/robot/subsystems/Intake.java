@@ -3,10 +3,13 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -20,7 +23,7 @@ public class Intake extends SubsystemBase
   private static final String       kSubsystemName       = "Intake";
   // private static final boolean      kRollerMotorInvert   = false;
 
-  private final TalonFX             m_upperrollerMotor   = new TalonFX(0);
+  private final TalonFX             m_upperrollerMotor   = new TalonFX(17);
   // private final TalonFX             m_lowerrollerMotor   = new TalonFX(1);
 
   private static final DutyCycleOut kUpperRollerStop     = new DutyCycleOut(0.0).withIgnoreHardwareLimits(true);
@@ -41,13 +44,14 @@ public class Intake extends SubsystemBase
   // private boolean                   m_lowerrollerValid;
   // private final DigitalInput        m_fuelInIntake        = new DigitalInput(0);
 
-  // private DoublePublisher           m_rollSpeedPub;
+  private DoublePublisher           m_rollSpeedPub;
   // private DoublePublisher           m_rollSupCurPub;
 
   // private Debouncer                 m_fuelDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
   private boolean                   m_fuelDetected;       // Detection state of note in rollers
 
   private final CANrange            m_fuelDetector       = new CANrange(5);
+  private final TalonFXSimState     m_UpperRollerSim     = new TalonFXSimState(m_upperrollerMotor);
 
   private final Alert               m_upperRollerAlert   =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
@@ -81,7 +85,7 @@ public class Intake extends SubsystemBase
   {
     // This method will be called once per scheduler run
 
-    // m_rollSpeedPub.set(m_upperrollerMotor.get( ));
+    //m_rollSpeedPub.set(m_upperrollerMotor.get( ));
   }
 
   private void initDashboard( )
@@ -105,6 +109,14 @@ public class Intake extends SubsystemBase
     // setRotaryStopped( );
     //SmartDashboard.putData("ShRunScore", ( ));
     //SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
+  }
+
+  public void simulationPeriodic( )
+  {
+    // This method will be called once per scheduler run during simulation
+
+    // Set input flywheel voltage from the motor setting
+    m_UpperRollerSim.setSupplyVoltage(RobotController.getInputVoltage( ));
   }
 
   private void setRollerMode(RollerMode mode)
@@ -133,9 +145,11 @@ public class Intake extends SubsystemBase
             DataLogManager.log(String.format("%s: Claw mode is invalid: %s", getSubsystem( ), mode));
           case STOP :
             m_rollerRequestVolts = (m_fuelDetected) ? kFuelSpeedHold : kUpperRollerStop;
+
             break;
           case FUELACQUIRE :
             m_rollerRequestVolts = kFuelSpeedAcquire;
+
             break;
           case FUELEXPEL :
             m_rollerRequestVolts = kFuelSpeedExpel;
