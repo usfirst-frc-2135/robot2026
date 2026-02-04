@@ -43,7 +43,7 @@ public class Shooter extends SubsystemBase
 {
   private static final String kSubsystemName     = "Shooter";
   private static final double kMOI               = 0.001; // Simulation - Moment of Inertia
-  private static final double kFlywheelScoreRPM  = 3300.0; // RPM to score
+  private static final double kFlywheelScoreRPM  = 3500.0; // RPM to score
   private static final double kFlywheelPassRPM   = 3000.0; // RPM to pass
   private static final double kToleranceRPM      = 150.0; // Tolerance band around target RPM
   private static final double kFlywheelGearRatio = (18.0 / 18.0);
@@ -309,10 +309,10 @@ public class Shooter extends SubsystemBase
    *          rotations per second
    */
   private double getKickerVolts(){
-    double v = m_kickerRPMEntry.get(6.0);
+    double v = m_kickerRPMEntry.get(3.0);
     return MathUtil.clamp(6.0, 0.0, 12.0);
   }
-  
+
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
