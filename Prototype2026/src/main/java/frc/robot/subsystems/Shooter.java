@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -55,24 +57,33 @@ public class Shooter extends SubsystemBase
   }
 
   // Devices objects
-  private final TalonFX                       m_leftMotor             = new TalonFX(13);
-  private final TalonFX                       m_rightMotor            = new TalonFX(14);
+  private final TalonFX                       m_leftMotor             = new TalonFX(14);
+  private final TalonFX                       m_rightMotor            = new TalonFX(15);
+  private final WPI_TalonSRX                  m_kickerMotor           = new WPI_TalonSRX(16);
 
   // Alerts
   private final Alert                         m_leftAlert             =
-      new Alert(String.format("%s: Lower motor init failed!", getSubsystem( )), AlertType.kError);
+      new Alert(String.format("%s: Left motor init failed!", getSubsystem( )), AlertType.kError);
+  private final Alert                         m_rightAlert            =
+      new Alert(String.format("%s: Right motor init failed!", getSubsystem( )), AlertType.kError);
+  private final Alert                         m_kickerAlert           =
+      new Alert(String.format("%s: Kicker motor init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
   private final TalonFXSimState               m_leftMotorSim          = new TalonFXSimState(m_leftMotor);
+  //private final TalonSRXSimState               m_kickerMotorSim          = new TalonSRXSimState(m_kickerMotor);
   private final FlywheelSim                   m_leftFlywheelSim       = new FlywheelSim(
       LinearSystemId.createFlywheelSystem(DCMotor.getFalcon500(1), kMOI, kFlywheelGearRatio), DCMotor.getFalcon500(1), 0.0);
 
   // CTRE Status signals for sensors
   private final StatusSignal<AngularVelocity> m_leftVelocity; // Default 4Hz (250ms)
+  //private final StatusSignal<AngularVelocity> m_kickerVelocity;
+  //private final double m_kickerVelocity;
 
   // Declare module variables
   private boolean                             m_leftValid;
   private boolean                             m_rightValid;
+  private boolean                             m_kickerValid;
   private double                              m_leftRPM;                       // Current lower RPM
   private double                              m_targetRPM             = 0;      // Requested target flywheel RPM
   private boolean                             m_isAtTargetRPM         = false;  // Indicates flywheel RPM is close to target
@@ -92,19 +103,32 @@ public class Shooter extends SubsystemBase
    * 
    * Constructor
    */
+
   public Shooter( )
   {
     setName("Shooter");
     setSubsystem("Shooter");
 
     m_leftValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Lower", CTREConfigs6.shooterFXConfig( ));
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left", CTREConfigs6.shooterFXConfig( ));
     m_leftAlert.set(!m_leftValid);
 
     m_rightValid =
         PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.shooterFXConfig( ));
-    m_leftAlert.set(!m_rightValid);
+    m_rightAlert.set(!m_rightValid);
     m_rightMotor.setControl(new Follower(m_leftMotor.getDeviceID( ), MotorAlignmentValue.Opposed));
+
+    //m_kickerMotor.configAllSettings(kickerSRXConfig( ));
+
+    m_kickerMotor.configFactoryDefault( );
+    TalonSRXConfiguration kickerConfig = new TalonSRXConfiguration( );
+    kickerConfig.continuousCurrentLimit = (30);
+    m_kickerMotor.configAllSettings(kickerConfig);
+    m_kickerMotor.setInverted(false);
+
+    // m_kickerValid =
+    //     PhoenixUtil6.getInstance( ).talonSRXInitialize6(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs6.shooterFXConfig( ));
+    // m_kickerAlert.set(!m_kickerValid);
 
     // Initialize status signal objects
     m_leftVelocity = m_leftMotor.getRotorVelocity( );
@@ -139,6 +163,7 @@ public class Shooter extends SubsystemBase
         m_isAtTargetRPMPrevious = m_isAtTargetRPM;
       }
     }
+
   }
 
   /****************************************************************************
@@ -159,6 +184,7 @@ public class Shooter extends SubsystemBase
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
     m_leftMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocity( ));
+    //m_kickerMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocity( ));
 
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_leftFlywheelSim.getCurrentDrawAmps( )));
@@ -224,12 +250,14 @@ public class Shooter extends SubsystemBase
         DataLogManager.log(String.format("%s: Shooter mode is invalid: %s", getSubsystem( ), mode));
       case STOP :
         m_targetRPM = 0.0;
+
         break;
       case PASS :
         m_targetRPM = kFlywheelPassRPM;
         break;
       case SCORE :
         m_targetRPM = m_scoreRPMEntry.get(0.0);
+
         break;
       case REVERSE :
         m_targetRPM = -(m_scoreRPMEntry.get(0.0));
@@ -245,9 +273,15 @@ public class Shooter extends SubsystemBase
         setShooterVelocity(rotPerSecond);
       }
       else if (m_targetRPM > 100.0)
+      {
         setShooterVelocity(rotPerSecond);
+        m_kickerMotor.setVoltage(3);
+      }
       else
+      {
         setShooterStopped( );
+        m_kickerMotor.setVoltage(0.0);
+      }
     }
 
     m_targetRPMPub.set(m_targetRPM);
@@ -265,6 +299,7 @@ public class Shooter extends SubsystemBase
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
+    m_kickerMotor.setVoltage(3);
   }
 
   /****************************************************************************
@@ -274,6 +309,7 @@ public class Shooter extends SubsystemBase
   private void setShooterStopped( )
   {
     m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
+    m_kickerMotor.setVoltage(0.0);
   }
 
   ////////////////////////////////////////////////////////////////////////////
