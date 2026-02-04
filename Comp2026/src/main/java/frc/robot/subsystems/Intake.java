@@ -104,7 +104,7 @@ public class Intake extends SubsystemBase
   private static final double       kRotaryAngleMax       = kRotaryAngleDeployed + 3.0;
 
   // Device objects
-  private final TalonFX        m_rollerMotor         = new TalonFX(Ports.kCANID_IntakeRoller);  //Previously SRX (TODO: needs to be updated)
+  private final TalonFX             m_rollerMotor         = new TalonFX(Ports.kCANID_IntakeRoller);
   private final TalonFX             m_rotaryMotor         = new TalonFX(Ports.kCANID_IntakeRotary);
   private final CANcoder            m_CANcoder            = new CANcoder(Ports.kCANID_IntakeCANcoder);
   private final DigitalInput        m_noteInIntake        = new DigitalInput(Ports.kDIO0_NoteInIntake);
@@ -587,7 +587,6 @@ public class Intake extends SubsystemBase
   {
     return kRotaryAngleDeployed;
   }
-
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// COMMAND FACTORIES ////////////////////////////////
