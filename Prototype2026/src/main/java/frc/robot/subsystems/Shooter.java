@@ -101,9 +101,11 @@ public class Shooter extends SubsystemBase
   private DoublePublisher                     m_leftRPMPub;
   private DoublePublisher                     m_kickerRPMPub;
 
+
   private DoublePublisher                     m_targetRPMPub;
   private BooleanPublisher                    m_isAtTargetRPMPub;
   private DoubleEntry                         m_scoreRPMEntry;
+  private DoubleEntry                         m_kickerRPMEntry;
 
   /****************************************************************************
    * 
@@ -172,10 +174,7 @@ public class Shooter extends SubsystemBase
         m_isAtTargetRPMPrevious = m_isAtTargetRPM;
       }
     }
-    if (m_kickerValid){
-      m_kickerRPMPub.setVoltage();
-      
-    }
+    
 
     
   }
@@ -309,10 +308,15 @@ public class Shooter extends SubsystemBase
    * @param rps
    *          rotations per second
    */
+  private double getKickerVolts(){
+    double v = m_kickerRPMEntry.get(6.0);
+    return MathUtil.clamp(6.0, 0.0, 12.0);
+  }
+  
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
-    m_kickerMotor.setVoltage(3);
+    m_kickerMotor.setVoltage(getKickerVolts());
   }
 
   /****************************************************************************

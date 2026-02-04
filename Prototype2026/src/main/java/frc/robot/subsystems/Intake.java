@@ -4,8 +4,11 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.CANrange;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -92,6 +95,8 @@ public class Intake extends SubsystemBase
 
   private void initDashboard( )
   {
+    NetworkTableInstance inst = NetworkTableInstance.getDefault( );
+    NetworkTable table = inst.getTable("intake");
     // Get the default instance of NetworkTables that was created automatically when the robot program starts
     m_rollSpeedPub = table.getDoubleTopic("intakeSpeed").publish( );
 
