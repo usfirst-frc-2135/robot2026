@@ -102,15 +102,15 @@ public final class Constants
     public static final int kCANID_Pigeon2 = 13; // Pigeon2 IMU
 
     // RoboRIO CAN IDs
-    public static final int kCANID_ShooterLower = 15; // Kraken X60 //TODO: Needs to be updated with correct CAN ID
-    public static final int kCANID_ShooterUpper = 16; // Kraken X60 //TODO: Needs to be updated with correct CAN ID
+    public static final int kCANID_ShooterLower = 15; // Kraken X60 (Shooter) //TODO: Needs to be updated with correct CAN ID
+    public static final int kCANID_ShooterUpper = 16; // Kraken X60 (Shooter) //TODO: Needs to be updated with correct CAN ID
 
-    public static final int kCANID_WristRotary = 18; // Kraken X60 (Manipulator)
-    public static final int kCANID_WristCANcoder = 19; // CANcoder (Manipulator)
+    public static final int kCANID_IntakeRoller = 18; // Kraken X60 (Intake) //TODO: Needs to be updated with correct CAN ID
+    public static final int kCANID_IntakeRotary = 19; // CANcoder (intake) //TODO: Needs to be updated with correct CAN ID
 
-    public static final int kCANID_ClawRoller = 21; // Kraken X60 (Manipulator)
-    public static final int kCANID_CoralDetector = 22; // CANrange (Manipulator)
-    public static final int kCANID_AlgaeDetector = 23; // CANrange (Manipulator)
+    public static final int kCANID_IntakeCANcoder = 21; // Kraken X60 (Intake) //TODO: Needs to be updated with correct CAN ID
+    public static final int kDIO0_NoteInIntake = 22; // CANrange (Intake). //TODO: Needs to be updated with correct CAN ID
+    public static final int kCANID_AlgaeDetector = 23; // CANrange (Manipulator) //TODO: Needs to be updated with correct CAN ID
 
     public static final int kCANID_CANdle = 0;
 
@@ -123,40 +123,28 @@ public final class Constants
     public static final int kDriverControllerPort = 0;
   }
 
-  /****************************************************************************
-   * Elevator subsystem constants
+   /****************************************************************************
+   * Intake subsystem constants
    ****************************************************************************/
-  public static final class ELConsts {
-    public static final String kReefLevelString = "ReefLevel";
-
-    public enum ReefLevel {
-      ONE, // Coral Level One (Trough)
-      TWO, // Coral Level Two
-      THREE, // Coral Level Three
-      FOUR, // Coral Level Four
+  public static final class INConsts
+  {
+    /** Intake roller modes */
+    public enum INRollerMode
+    {
+      STOP,    // Stop all rotation
+      ACQUIRE, // Speed for acquiring a game piece
+      EXPEL,   // Speed for expelling a game piece
+      SHOOT,   // Speed for putting game piece into shooter 
+      HANDOFF, // Speed for putting game piece into feeder 
+      HOLD     // Maintain existing speed setting
     }
   }
 
-  /****************************************************************************
-   * Manipulator subsystem constants
+ /****************************************************************************
+   * Shooter subsystem constants
    ****************************************************************************/
-  public static final class CRConsts // Claw roller
+  public static final class SHConsts
   {
-    /** Manipulator claw roller modes */
-    public enum ClawMode {
-      STOP, // Stop all rotation
-
-      ALGAEACQUIRE, // Speed for acquiring algae
-      ALGAEHOLD, // Speed for holding algae in claw
-      ALGAEEXPEL, // Speed for expelling algae
-      ALGAESHOOT, // Speed for shooting algae
-      ALGAEPROCESSOR, // Speed for putting algae into processor
-      ALGAEMAINTAIN, // Maintain existing speed setting
-
-      CORALACQUIRE, // Speed for acquiring coral
-      CORALEXPEL, // Speed for expelling coral
-      CORALMAINTAIN // Maintain existing speed setting
-    }
   }
 
   /****************************************************************************
