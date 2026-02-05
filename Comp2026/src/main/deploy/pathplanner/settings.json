@@ -6,7 +6,8 @@
     "FromStart"
   ],
   "autoFolders": [
-    "1-AutoLeave"
+    "1-AutoLeave",
+    "2-AutoScore"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
