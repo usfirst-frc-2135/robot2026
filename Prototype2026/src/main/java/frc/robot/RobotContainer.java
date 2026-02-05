@@ -25,15 +25,15 @@ public class RobotContainer
 
   // In a real robot, the servo actuator would be declared within a subsystem and
   // not here
-  private final Servo m_actuator = new Servo(0);
+  //private final Servo m_actuator = new Servo(0);
 
   private void AddDashboardWidgets( )
   {
-    SmartDashboard.putData("Actuator_IN_Open", Commands.runOnce(( ) -> m_actuator.setSpeed(1.0)));
-    SmartDashboard.putData("Actuator_OUT_Close", Commands.runOnce(( ) -> m_actuator.setSpeed(-1.0)));
+    // SmartDashboard.putData("Actuator_IN_Open", Commands.runOnce(( ) -> m_actuator.setSpeed(1.0)));
+    // SmartDashboard.putData("Actuator_OUT_Close", Commands.runOnce(( ) -> m_actuator.setSpeed(-1.0)));
   }
 
-  public RobotContainer( )
+  public RobotContainer()
   {
 
     AddDashboardWidgets( ); // Add dashboard widgets for commands

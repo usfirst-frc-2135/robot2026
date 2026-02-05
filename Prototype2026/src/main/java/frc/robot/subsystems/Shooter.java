@@ -308,15 +308,15 @@ public class Shooter extends SubsystemBase
    * @param rps
    *          rotations per second
    */
-  private double getKickerVolts(){
-    double v = m_kickerRPMEntry.get(3.0);
-    return MathUtil.clamp(6.0, 0.0, 12.0);
-  }
+  // private double getKickerVolts(){
+  //   double v = m_kickerRPMEntry.get(3.0);
+  //   return MathUtil.clamp(6.0, 0.0, 12.0);
+  // }
 
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
-    m_kickerMotor.setVoltage(getKickerVolts());
+    //m_kickerMotor.setVoltage(getKickerVolts());
   }
 
   /****************************************************************************
