@@ -52,9 +52,7 @@ import frc.robot.Constants.INConsts.INRollerMode;
 import frc.robot.Constants.Ports;
 import frc.robot.Robot;
 import frc.robot.lib.math.Conversions;
-import frc.robot.lib.phoenix.CTREConfigs5;
 import frc.robot.lib.phoenix.CTREConfigs6;
-import frc.robot.lib.phoenix.PhoenixUtil5;
 import frc.robot.lib.phoenix.PhoenixUtil6;
 
 /****************************************************************************
@@ -67,7 +65,7 @@ public class Intake extends SubsystemBase
   private static final String  kSubsystemName        = "Intake";
   private static final boolean kRollerMotorInvert    = false;     // Motor direction for positive input
 
-  private static final double  kRollerSpeedAcquire   = 0.5;
+  private static final double  kRollerSpeedAcquire   = 0.5;     // Motor direction for positive input
   private static final double  kRollerSpeedExpel     = -0.4;
   private static final double  kRollerSpeedToShooter = -1.0;
   private static final double  kRollerSpeedHold      = 0.1;
@@ -75,32 +73,32 @@ public class Intake extends SubsystemBase
   private static final double  kRotaryGearRatio      = 30.83;
   private static final double  kRotaryLengthMeters   = 0.3;       // Simulation
   private static final double  kRotaryWeightKg       = 4.0;       // Simulation
-  private static final Voltage kRotaryManualVolts    = Volts.of(3.5);       // Motor voltage during manual operation (joystick)
-
-  /** Rotary manual move parameters */
+  private static final Voltage kRotaryManualVolts    = Volt;       // SimulationMotor voltage during manual operation (joystick)
+       // Simulation
+  /** Rotary manual move parameters */       // Motor voltage during manual operation (joystick)
   private enum RotaryMode
   {
     INIT,    // Initialize rotary
     INBOARD, // Rotary moving into the robot
-    STOPPED, // Rotary stop and hold position
-    OUTBOARD // Rotary moving out of the robot
-  }
-
+    STOP,    // Initialize rotaryold position
+    OUTBOARD // Rotary moving into the robotot
+  } // Rotary stop and hold position
+ // Rotary moving out of the robot
   private static final double       kToleranceDegrees     = 3.0;      // PID tolerance in degrees
   private static final double       kMMDebounceTime       = 0.060;    // Seconds to debounce a final position check
-  private static final double       kMMMoveTimeout        = 1.0;      // Seconds allowed for a Motion Magic movement
-  private static final double       kNoteDebounceTime     = 0.045;    // Seconds to debounce detected note sensor
-
-  // Rotary angles - Motion Magic move parameters
+  private static final double       kMMMoveTimeout        = 1.0;      // PID tolerance in degreestion Magic movement
+  private static final double       kNoteDebounceTime     = 0.045;    // Seconds to debounce a final position check
+      // Seconds allowed for a Motion Magic movement
+  // Rotary angles - Motion Magic move parameters    // Seconds to debounce detected note sensor
   //    Measured hardstops and pre-defined positions:
   //               hstop  retracted   handoff   deployed  hstop
   //      Comp     -177.3  -176.3     -124.7    24.9      25.8
   //      Practice -177.8  -176.8     -124.7    27.3      27.4
   private static final double       kRotaryAngleRetracted = Robot.isComp( ) ? -176.3 : -176.8;  // One degree from hardstops
   private static final double       kRotaryAngleHandoff   = Robot.isComp( ) ? -124.7 : -124.7;  //
-  private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 24.9 : 27.3;      //
-
-  private static final double       kRotaryAngleMin       = kRotaryAngleRetracted - 3.0;
+  private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 24.9 : 27.3;      // One degree from hardstops
+  //
+  private static final double       kRotaryAngleMin       = kRotaryAngleRetracted - 3.0;      //
   private static final double       kRotaryAngleMax       = kRotaryAngleDeployed + 3.0;
 
   // Device objects
@@ -131,32 +129,31 @@ public class Intake extends SubsystemBase
   // Status signals
   private final StatusSignal<Angle> m_rotaryPosition;  // Default 50Hz (20ms)
   private final StatusSignal<Angle> m_ccPosition;      // Default 100Hz (10ms)
-
-  // Declare module variables
+  // Default 50Hz (20ms)
+  // Declare module variables      // Default 100Hz (10ms)
 
   // Roller variables
   private boolean                   m_rollerValid;        // Health indicator for motor 
   private Debouncer                 m_noteDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
-  private boolean                   m_noteDetected;       // Detection state of note in rollers
 
-  // Rotary variables
+  // Rotary variables       // Detection state of note in rollers
   private boolean                   m_rotaryValid;                // Health indicator for motor 
   private boolean                   m_canCoderValid;              // Health indicator for CANcoder 
-  private double                    m_currentDegrees      = 0.0;  // Current angle in degrees
-  private double                    m_targetDegrees       = 0.0;  // Target angle in degrees
-  private double                    m_ccDegrees           = 0.0;  // CANcoder angle in degrees
-
-  // Manual mode config parameters
+  private double                    m_currentDegre                // Health indicator for motor 
+  private double                    m_targetDegrees               // Health indicator for CANcoder 
+  private double                    m_ccDegrees           = 0.0;  // Current angle in degreess
+  // Target angle in degrees
+  // Manual mode config parameters  // CANcoder angle in degrees
   private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0));
   private RotaryMode                m_rotaryMode          = RotaryMode.INIT;    // Manual movement mode with joysticks
 
-  // Motion Magic config parameters
+  // Motion Magic config parameters    // Manual movement mode with joysticks
   private MotionMagicVoltage        m_mmRequestVolts      = new MotionMagicVoltage(0).withSlot(0);
   private Debouncer                 m_mmWithinTolerance   = new Debouncer(kMMDebounceTime, DebounceType.kRising);
   private Timer                     m_mmMoveTimer         = new Timer( );       // Movement timer
   private boolean                   m_mmMoveIsFinished;           // Movement has completed (within tolerance)
-
-  // Network tables publisher objects
+       // Movement timer
+  // Network tables publisher objects           // Movement has completed (within tolerance)
   private DoublePublisher           m_rollSpeedPub;
   private DoublePublisher           m_rollSupCurPub;
   private DoublePublisher           m_rotDegreesPub;
@@ -174,10 +171,10 @@ public class Intake extends SubsystemBase
     setSubsystem(kSubsystemName);
 
     // Roller motor init
-    m_rollerValid = PhoenixUtil5.getInstance( ).talonSRXInitialize(m_rollerMotor, kSubsystemName + "Roller",
-        CTREConfigs5.intakeRollerConfig( ));
+    m_rollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize(m_rollerMotor, kSubsystemName + "Roller",
+        CTREConfigs6.intakeRollerConfig( ));
     m_rollerMotor.setInverted(kRollerMotorInvert);
-    PhoenixUtil5.getInstance( ).talonSRXCheckError(m_rollerMotor, "setInverted");
+    PhoenixUtil6.getInstance( ).talonFXCheckError(m_rollerMotor, "setInverted");
 
     // Initialize rotary motor and CANcoder objects
     m_rotaryValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rotaryMotor, kSubsystemName + "Rotary",
@@ -210,8 +207,8 @@ public class Intake extends SubsystemBase
 
     StatusSignal<Current> m_rotarySupplyCur = m_rotaryMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rotaryStatorCur = m_rotaryMotor.getStatorCurrent( ); // Default 4Hz (250ms)
-    BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur, m_rotaryStatorCur);
-
+    BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur, m_rotarySta // Default 4Hz (250ms)
+ // Default 4Hz (250ms)
     DataLogManager.log(
         String.format("%s: Update (Hz) rotaryPosition: %.1f rotarySupplyCur: %.1f rotaryStatorCur: %.1f canCoderPosition: %.1f",
             getSubsystem( ), m_rotaryPosition.getAppliedUpdateFrequency( ), m_rotarySupplyCur.getAppliedUpdateFrequency( ),
@@ -328,7 +325,7 @@ public class Intake extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil5.getInstance( ).talonSRXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
     PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rotaryMotor, kSubsystemName + "Rotary");
     PhoenixUtil6.getInstance( ).canCoderPrintFaults(m_CANcoder, kSubsystemName + "CANcoder");
 
@@ -411,7 +408,7 @@ public class Intake extends SubsystemBase
         m_mmMoveIsFinished = false;
         m_mmWithinTolerance.calculate(false); // Reset the debounce filter
 
-        double targetRotations = Units.degreesToRotations(m_targetDegrees);
+        double targetRotations = Units.degree // Reset the debounce filter;
         m_rotaryMotor.setControl(m_mmRequestVolts.withPosition(targetRotations));
         DataLogManager.log(String.format("%s: MM Position move: %.1f -> %.1f degrees (%.3f -> %.3f rot)", getSubsystem( ),
             m_currentDegrees, m_targetDegrees, Units.degreesToRotations(m_currentDegrees), targetRotations));
@@ -604,10 +601,10 @@ public class Intake extends SubsystemBase
   {
     return new RunCommand(                    // Command that runs continuously
         ( ) -> moveRotaryWithJoystick(axis),  // Lambda method to call
-        this                                  // Subsystem required
-    )                                         //
-        .withName(kSubsystemName + "MoveWithJoystick");
-  }
+        this                                  // Command that runs continuously
+    )                                         // Lambda method to call
+        .wit                                  // Subsystem required
+  }                                         //
 
   /****************************************************************************
    * 
@@ -625,12 +622,12 @@ public class Intake extends SubsystemBase
   {
     return new FunctionalCommand(                                               // Command with all phases declared
         ( ) -> moveToPositionInit(mode, position.getAsDouble( ), holdPosition), // Init method
-        ( ) -> moveToPositionExecute( ),                                        // Execute method
-        interrupted -> moveToPositionEnd( ),                                    // End method
-        ( ) -> moveToPositionIsFinished(holdPosition),                          // IsFinished method
-        this                                                                    // Subsytem required
-    );
-  }
+        ( ) -> moveToPositionExec                                               // Command with all phases declared
+        interrupted -> moveToPositionEnd( ),                                    // Init method
+        ( ) -> moveToPositionIsFinished(                                        // Execute methodhod
+        this                                                                    // End methodequired
+    );                          // IsFinished method
+  }                                                                    // Subsytem required
 
   /****************************************************************************
    * 
