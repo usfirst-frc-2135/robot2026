@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.Follower;
@@ -10,7 +11,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -34,10 +34,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.math.Conversions;
+import frc.robot.lib.phoenix.CTREConfigs5;
 import frc.robot.lib.phoenix.CTREConfigs6;
+import frc.robot.lib.phoenix.PhoenixUtil5;
 import frc.robot.lib.phoenix.PhoenixUtil6;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Shooter extends SubsystemBase
 {
@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase
   private static final double kFlywheelPassRPM   = 3000.0; // RPM to pass
   private static final double kToleranceRPM      = 150.0; // Tolerance band around target RPM
   private static final double kFlywheelGearRatio = (18.0 / 18.0);
-  public static final boolean m_leftMotorInvert  = false;
+  private static final double kKickerVoltageOut  = 12.0;
 
   /** Shooter (speed) modes */
   private enum ShooterMode
@@ -57,8 +57,6 @@ public class Shooter extends SubsystemBase
     REVERSE, SCORE       // Shooter speed for shooting
   }
 
-  
-
   // Devices objects
   private final TalonFX                       m_leftMotor             = new TalonFX(14);
   private final TalonFX                       m_rightMotor            = new TalonFX(15);
@@ -67,12 +65,10 @@ public class Shooter extends SubsystemBase
   // Alerts
   private final Alert                         m_leftAlert             =
       new Alert(String.format("%s: Left motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert                         m_rightAlert             =
+  private final Alert                         m_rightAlert            =
       new Alert(String.format("%s: Right motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert                         m_kickerAlert             =
+  private final Alert                         m_kickerAlert           =
       new Alert(String.format("%s: Kicker motor init failed!", getSubsystem( )), AlertType.kError);
-
-  
 
   // Simulation objects
   private final TalonFXSimState               m_leftMotorSim          = new TalonFXSimState(m_leftMotor);
@@ -82,14 +78,12 @@ public class Shooter extends SubsystemBase
 
   // CTRE Status signals for sensors
   private final StatusSignal<AngularVelocity> m_leftVelocity; // Default 4Hz (250ms)
-  //private final StatusSignal<AngularVelocity> m_kickerVelocity;
-  //private final double m_kickerVelocity;
 
   // Declare module variables
   private boolean                             m_leftValid;
   private boolean                             m_rightValid;
   private boolean                             m_kickerValid;
-  private double                              m_leftRPM;                       // Current lower RPM
+  private double                              m_leftRPM;                        // Current lower RPM
   private double                              m_targetRPM             = 0;      // Requested target flywheel RPM
   private boolean                             m_isAtTargetRPM         = false;  // Indicates flywheel RPM is close to target
   private boolean                             m_isAtTargetRPMPrevious = false;
@@ -99,20 +93,15 @@ public class Shooter extends SubsystemBase
 
   // Network tables publisher objects
   private DoublePublisher                     m_leftRPMPub;
-  private DoublePublisher                     m_kickerRPMPub;
-
 
   private DoublePublisher                     m_targetRPMPub;
   private BooleanPublisher                    m_isAtTargetRPMPub;
   private DoubleEntry                         m_scoreRPMEntry;
-  private DoubleEntry                         m_kickerRPMEntry;
 
   /****************************************************************************
    * 
    * Constructor
    */
-
-  
   public Shooter( )
   {
     setName("Shooter");
@@ -127,22 +116,13 @@ public class Shooter extends SubsystemBase
     m_rightAlert.set(!m_rightValid);
     m_rightMotor.setControl(new Follower(m_leftMotor.getDeviceID( ), MotorAlignmentValue.Opposed));
 
-    //m_kickerMotor.configAllSettings(kickerSRXConfig( ));
-
-    m_kickerMotor.configFactoryDefault( );
-    TalonSRXConfiguration kickerConfig = new TalonSRXConfiguration( );
-    kickerConfig.continuousCurrentLimit = (30);
-    m_kickerMotor.configAllSettings(kickerConfig);
+    m_kickerValid =
+        PhoenixUtil5.getInstance( ).talonSRXInitialize(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs5.kickerSRXConfig( ));
+    m_kickerAlert.set(!m_kickerValid);
     m_kickerMotor.setInverted(false);
-
-    // m_kickerValid =
-    //     PhoenixUtil6.getInstance( ).talonSRXInitialize6(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs6.shooterFXConfig( ));
-    // m_kickerAlert.set(!m_kickerValid);
-    
 
     // Initialize status signal objects
     m_leftVelocity = m_leftMotor.getRotorVelocity( );
-
 
     initDashboard( );
     initialize( );
@@ -174,9 +154,7 @@ public class Shooter extends SubsystemBase
         m_isAtTargetRPMPrevious = m_isAtTargetRPM;
       }
     }
-    
 
-    
   }
 
   /****************************************************************************
@@ -215,7 +193,6 @@ public class Shooter extends SubsystemBase
 
     // Initialize network tables publishers
     m_leftRPMPub = table.getDoubleTopic("lowerSpeed").publish( );
-    m_kickerRPMPub = table.getDoubleTopic("kickerSpeed").publish( );
 
     // m_upperSpeedPub = table.getDoubleTopic("upperSpeed").publish( );
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );
@@ -264,18 +241,15 @@ public class Shooter extends SubsystemBase
         DataLogManager.log(String.format("%s: Shooter mode is invalid: %s", getSubsystem( ), mode));
       case STOP :
         m_targetRPM = 0.0;
-        
         break;
       case PASS :
         m_targetRPM = kFlywheelPassRPM;
         break;
       case SCORE :
         m_targetRPM = m_scoreRPMEntry.get(0.0);
-        
         break;
       case REVERSE :
         m_targetRPM = -(m_scoreRPMEntry.get(0.0));
-
         break;
     }
 
@@ -286,13 +260,13 @@ public class Shooter extends SubsystemBase
       {
         setShooterVelocity(rotPerSecond);
       }
-      else if (m_targetRPM > 100.0){
+      else if (m_targetRPM > 100.0)
+      {
         setShooterVelocity(rotPerSecond);
-        m_kickerMotor.setVoltage(3);
       }
-      else{
+      else
+      {
         setShooterStopped( );
-        m_kickerMotor.setVoltage(0.0);
       }
     }
 
@@ -308,15 +282,10 @@ public class Shooter extends SubsystemBase
    * @param rps
    *          rotations per second
    */
-  // private double getKickerVolts(){
-  //   double v = m_kickerRPMEntry.get(3.0);
-  //   return MathUtil.clamp(6.0, 0.0, 12.0);
-  // }
-
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
-    //m_kickerMotor.setVoltage(getKickerVolts());
+    m_kickerMotor.setVoltage(kKickerVoltageOut);
   }
 
   /****************************************************************************
@@ -385,10 +354,4 @@ public class Shooter extends SubsystemBase
     return getShooterCommand(ShooterMode.STOP).withName("ShooterStop");
   }
 
-  
-
-  
-
-  
-  
 }
