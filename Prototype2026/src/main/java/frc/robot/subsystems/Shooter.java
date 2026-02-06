@@ -54,7 +54,6 @@ public class Shooter extends SubsystemBase
   {
     STOP,       // Shooter is stopped
     PASS,       // Shooter speed for passing fuel
-    REVERSE,    // 
     SCORE       // Shooter speed for shooting
   }
 
@@ -204,7 +203,6 @@ public class Shooter extends SubsystemBase
     // Add commands
     SmartDashboard.putData("ShRunScore", getShooterScoreCommand( ));
     SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
-    SmartDashboard.putData("ShRunReverse", getShooterReverseCommand( ));
   }
 
   // Put methods for controlling this subsystem below here. Call these from Commands.
@@ -247,9 +245,6 @@ public class Shooter extends SubsystemBase
         break;
       case SCORE :
         m_targetRPM = m_scoreRPMEntry.get(0.0);
-        break;
-      case REVERSE :
-        m_targetRPM = -(m_scoreRPMEntry.get(0.0));
         break;
     }
 
@@ -336,11 +331,6 @@ public class Shooter extends SubsystemBase
   public Command getShooterScoreCommand( )
   {
     return getShooterCommand(ShooterMode.SCORE).withName("ShooterScore");
-  }
-
-  public Command getShooterReverseCommand( )
-  {
-    return getShooterCommand(ShooterMode.REVERSE).withName("ShooterReverse");
   }
 
   /****************************************************************************

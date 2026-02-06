@@ -16,8 +16,9 @@ import frc.robot.ExampleSmartMotorController.PIDMode;
 
 public class Robot extends TimedRobot
 {
-  private static final boolean m_isComp    = detectRobot( );
-  private static final double  kEncoderCPR = 4096;
+  private static final boolean m_isComp     = detectRobot( );
+  private static final double  kEncoderCPR  = 4096;
+  public boolean               kElevatorSim = false;
 
   private static enum ControlMode
   {
@@ -131,79 +132,83 @@ public class Robot extends TimedRobot
   {
     // Detect mode changes
 
-    if (m_controller.getAButtonPressed( ) || m_controller.getBButtonPressed( ))
+    if (kElevatorSim)
     {
-      m_controlMode = ControlMode.kFixedSpeed;
-      Boolean aButton = m_controller.getAButton( );
-      m_fixedSpeed = SmartDashboard.getNumber("FixedSpeed", m_fixedSpeed);
-      DataLogManager.log(String.format("%s button pressed - percent output: %.2f", (aButton) ? "A" : "B", m_fixedSpeed));
-      m_percentOutput = (aButton) ? m_fixedSpeed : -m_fixedSpeed;
-    }
-    else if (m_controller.getRightBumperButtonPressed( ))
-    {
-      m_controlMode = ControlMode.kStopped;
-      DataLogManager.log(String.format("Left bumper pressed - STOP!"));
-      m_percentOutput = 0.0;
-      m_motor1.resetEncoder( );
-      m_motor2.resetEncoder( );
-      m_elevSim.reset( );
-    }
-    else if (m_controller.getLeftBumperButtonPressed( ))
-    {
-      m_controlMode = ControlMode.kJoystickControl;
-      DataLogManager.log(String.format("Right bumper pressed - joystick control"));
-    }
-    else if (m_controller.getXButtonPressed( ) || m_controller.getYButtonPressed( ))
-    {
-      m_controlMode = ControlMode.kClosedLoop;
-      Boolean xButton = m_controller.getXButton( );
-      DataLogManager.log(String.format("%s button pressed", (xButton ? "X" : "Y")));
-      m_timer.restart( );
-      m_setpoint = new TrapezoidProfile.State( );
-      m_goal = new TrapezoidProfile.State(((xButton) ? m_goal1 : m_goal2), 0);
-      DataLogManager.log(String.format("Start: goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position,
-          m_motor1.getEncoderPosition( )));
-    }
-
-    // Run the correct mode each loop
-
-    switch (m_controlMode)
-    {
-      case kJoystickControl :
-        m_percentOutput = MathUtil.applyDeadband(m_controller.getLeftY( ), 0.15);
-      default :
-      case kStopped :
-      case kFixedSpeed :
-        m_motor1.set(m_percentOutput);
-        m_motor2.set(-m_percentOutput);
-        break;
-
-      case kClosedLoop :
+      if (m_controller.getAButtonPressed( ) || m_controller.getBButtonPressed( ))
       {
-        double position = m_motor1.getEncoderPosition( );
-        DataLogManager.log(
-            String.format("Loop:  goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position, position));
-        if (m_timer.hasElapsed(4.0) || Math.abs(position - m_goal.position) < 0.05)
+        m_controlMode = ControlMode.kFixedSpeed;
+        Boolean aButton = m_controller.getAButton( );
+        m_fixedSpeed = SmartDashboard.getNumber("FixedSpeed", m_fixedSpeed);
+        DataLogManager.log(String.format("%s button pressed - percent output: %.2f", (aButton) ? "A" : "B", m_fixedSpeed));
+        m_percentOutput = (aButton) ? m_fixedSpeed : -m_fixedSpeed;
+      }
+      else if (m_controller.getRightBumperButtonPressed( ))
+      {
+        m_controlMode = ControlMode.kStopped;
+        DataLogManager.log(String.format("Left bumper pressed - STOP!"));
+        m_percentOutput = 0.0;
+        m_motor1.resetEncoder( );
+        m_motor2.resetEncoder( );
+        m_elevSim.reset( );
+      }
+      else if (m_controller.getLeftBumperButtonPressed( ))
+      {
+        m_controlMode = ControlMode.kJoystickControl;
+        DataLogManager.log(String.format("Right bumper pressed - joystick control"));
+      }
+      else if (m_controller.getXButtonPressed( ) || m_controller.getYButtonPressed( ))
+      {
+        m_controlMode = ControlMode.kClosedLoop;
+        Boolean xButton = m_controller.getXButton( );
+        DataLogManager.log(String.format("%s button pressed", (xButton ? "X" : "Y")));
+        m_timer.restart( );
+        m_setpoint = new TrapezoidProfile.State( );
+        m_goal = new TrapezoidProfile.State(((xButton) ? m_goal1 : m_goal2), 0);
+        DataLogManager.log(String.format("Start: goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position,
+            m_motor1.getEncoderPosition( )));
+      }
+
+      // Run the correct mode each loop
+
+      switch (m_controlMode)
+      {
+        case kJoystickControl :
+          m_percentOutput = MathUtil.applyDeadband(m_controller.getLeftY( ), 0.15);
+        default :
+        case kStopped :
+        case kFixedSpeed :
+          m_motor1.set(m_percentOutput);
+          m_motor2.set(-m_percentOutput);
+          break;
+
+        case kClosedLoop :
         {
-          DataLogManager.log(String.format("Return to open loop - %s", (m_timer.hasElapsed(4.0) ? "timed out" : "at goal")));
-          m_controlMode = ControlMode.kStopped;
-          m_percentOutput = 0.0;
-        }
-        else
-        {
+          double position = m_motor1.getEncoderPosition( );
           DataLogManager.log(
               String.format("Loop:  goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position, position));
-          m_setpoint = m_profile.calculate(m_timer.get( ), m_setpoint, m_goal);
-          m_motor1.setSetpoint(PIDMode.kPosition, m_setpoint.position, 0.0);
-          m_motor2.set(0.0);
+          if (m_timer.hasElapsed(4.0) || Math.abs(position - m_goal.position) < 0.05)
+          {
+            DataLogManager.log(String.format("Return to open loop - %s", (m_timer.hasElapsed(4.0) ? "timed out" : "at goal")));
+            m_controlMode = ControlMode.kStopped;
+            m_percentOutput = 0.0;
+          }
+          else
+          {
+            DataLogManager.log(
+                String.format("Loop:  goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position, position));
+            m_setpoint = m_profile.calculate(m_timer.get( ), m_setpoint, m_goal);
+            m_motor1.setSetpoint(PIDMode.kPosition, m_setpoint.position, 0.0);
+            m_motor2.set(0.0);
+          }
         }
+          break;
       }
-        break;
+
+      SmartDashboard.putNumber("LOOP-goal", m_goal.position);
+      SmartDashboard.putNumber("LOOP-m_motor1", m_motor1.get( ));
+      SmartDashboard.putNumber("LOOP-m_motor2", m_motor2.get( ));
     }
 
-    SmartDashboard.putNumber("LOOP-goal", m_goal.position);
-    SmartDashboard.putNumber("LOOP-m_motor1", m_motor1.get( ));
-    SmartDashboard.putNumber("LOOP-m_motor2", m_motor2.get( ));
   }
 
   /****************************************************************************
