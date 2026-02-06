@@ -5,7 +5,6 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
@@ -61,9 +60,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.commands.LogCommand;
-import frc.robot.commands.SwervePIDController;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.LimelightHelpers;
+import frc.robot.lib.Vision;
 
 // @formatter:off
 
@@ -72,7 +71,7 @@ import frc.robot.lib.LimelightHelpers;
  * Subsystem so it can easily be used in command-based projects.
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final boolean        m_useLimelight           = true;
+    private static final boolean        m_useLimelight       = true;
 
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
@@ -83,7 +82,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final FieldObject2d         kLLPoseRight         = kField.getObject("llPose-right"); 
 
     private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
-    private final StructSubscriber<Pose2d>  m_driveStatePose  = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
+    private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
 
     /* Robot set pose */
     private final NetworkTable          kSwerveTable         = kNTInst.getTable("swerve");
@@ -445,7 +444,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // Get the default instance of NetworkTables that was created automatically when the robot program starts
         SmartDashboard.putData("SetPose", getResetPoseCommand( ));
 
-        SmartDashboard.putData("AlignToReefPID", getAlignToReefPIDCommand( ));
+        // SmartDashboard.putData("AlignToReefPID", getAlignToReefPIDCommand( ));
         SmartDashboard.putData("AlignToReefFollow", new DeferredCommand(( ) -> getAlignToReefFollowCommand( ), Set.of(this)));
         SmartDashboard.putData("AlignToReefPPFind", new DeferredCommand(( ) -> getAlignToReefPPFindCommand( ), Set.of(this)));
     }
@@ -505,7 +504,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             LimelightHelpers.SetRobotOrientation(limelightName, getState( ).Pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
             LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
-            if (Math.abs(getPigeon2( ).getAngularVelocityZWorld( ).getValue( ).in(DegreesPerSecond)) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+            // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+            if (Math.abs(getPigeon2( ).getAngularVelocityZWorld( ).getValue( ).in(DegreesPerSecond)) > 720)
             {
                 doRejectUpdate = true;
             }
@@ -527,7 +527,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 fieldObject.setPose(mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ));
 
                 // Code used by some teams to scale std devs by distance (below) and used by several teams
-                setVisionMeasurementStdDevs(VecBuilder.fill(    //
+                setVisionMeasurementStdDevs(VecBuilder.fill( //
                         Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
                         Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
                         Double.POSITIVE_INFINITY));
@@ -570,7 +570,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         );
 
         setControl(new SwerveRequest.ApplyRobotSpeeds( ).withSpeeds(m_previousSetpoint.robotRelativeSpeeds( )));
-        // setModuleStates(m_previousSetpoint.moduleStates( )); // TODO:  Original setpoint generator sample code
+        // setModuleStates(m_previousSetpoint.moduleStates( )); // TODO: Original setpoint generator sample code
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -632,18 +632,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /****************************************************************************
      *
-     * Create reef align command for PID driving
-     * 
-     * @return reefAlignCommand
-     *         command to align to a reef scoring position
-     */
-    public Command getAlignToReefPIDCommand( )
-    {
-        return SwervePIDController.generateCommand(this, Seconds.of(2.5)).withName("AlignToReefPID");
-    }
-
-    /****************************************************************************
-     *
      * Create reef align command for path following
      * 
      * 1) Get the current pose
@@ -666,9 +654,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 new PathPlannerPath(waypoints, kPathFindConstraints, null, new GoalEndState(0.0, goalPose.getRotation( )));
         path.preventFlipping = true;
 
-        return new SequentialCommandGroup(                                                                                     //
-                new LogCommand("AlignReefFollow", String.format("current %s goal %s", currentPose, goalPose)),   //
-                AutoBuilder.followPath(path)                                                                                   //
+        return new SequentialCommandGroup( //
+                new LogCommand("AlignReefFollow", String.format("current %s goal %s", currentPose, goalPose)), //
+                AutoBuilder.followPath(path) //
         ).withName("AlignToReefFollow");
     }
 
@@ -688,9 +676,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         Pose2d currentPose = m_driveStatePose.get( );
         Pose2d goalPose = Vision.findGoalPose(currentPose);
 
-        return new SequentialCommandGroup(                                                                                      //
-                new LogCommand("AlignReefPPFind", String.format("current %s goal %s", currentPose, goalPose)),    //
-                AutoBuilder.pathfindToPose(goalPose, kPathFindConstraints, 0.0)                                 //
+        return new SequentialCommandGroup( //
+                new LogCommand("AlignReefPPFind", String.format("current %s goal %s", currentPose, goalPose)), //
+                AutoBuilder.pathfindToPose(goalPose, kPathFindConstraints, 0.0) //
         ).withName("AlignToReefPPFind");
     }
 }

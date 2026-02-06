@@ -24,34 +24,33 @@ public class Robot extends TimedRobot
     kStopped, kFixedSpeed, kJoystickControl, kClosedLoop
   }
 
-  private final static RobotContainer               m_container       = new RobotContainer( );
-  private final static XboxController               m_controller      = new XboxController(0);
-  private final static ExampleSmartMotorController  m_motor1          = new ExampleSmartMotorController(5, kEncoderCPR);
-  private final static ExampleSmartMotorController  m_motor2          = new ExampleSmartMotorController(6, kEncoderCPR);
+  private final static RobotContainer               m_container     = new RobotContainer( );
+  private final static XboxController               m_controller    = new XboxController(0);
+  private final static ExampleSmartMotorController  m_motor1        = new ExampleSmartMotorController(5, kEncoderCPR);
+  private final static ExampleSmartMotorController  m_motor2        = new ExampleSmartMotorController(6, kEncoderCPR);
 
-  private final static TalonSRXSimCollection        m_motor1Sim       = m_motor1.getMotorSimulation( );
-  private final static ElevSim                      m_elevSim         = new ElevSim(m_motor1Sim, kEncoderCPR);
+  private final static TalonSRXSimCollection        m_motor1Sim     = m_motor1.getMotorSimulation( );
+  private final static ElevSim                      m_elevSim       = new ElevSim(m_motor1Sim, kEncoderCPR);
 
-  private final static double                       kv                = 1.0; // Max velocity - RPS
-  private final static double                       ka                = 2.0; // Max acceleration - RPS^2
+  private final static double                       kv              = 1.0; // Max velocity - RPS
+  private final static double                       ka              = 2.0; // Max acceleration - RPS^2
 
-  private final static TrapezoidProfile.Constraints m_constraints     = new TrapezoidProfile.Constraints(kv, ka);
+  private final static TrapezoidProfile.Constraints m_constraints   = new TrapezoidProfile.Constraints(kv, ka);
 
   private Command                                   m_autonomousCommand;
-  private static double                             m_timeMark        = Timer.getFPGATimestamp( );
-  private static boolean                            m_loadAutoCommand = true;
+  private static double                             m_timeMark      = Timer.getFPGATimestamp( );
 
-  private final static double                       m_goal1           = 0.5; // Goal 1 position
-  private final static double                       m_goal2           = -1.0; // Goal 2 position
+  private final static double                       m_goal1         = 0.5; // Goal 1 position
+  private final static double                       m_goal2         = -1.0; // Goal 2 position
 
-  private ControlMode                               m_controlMode     = ControlMode.kStopped;
-  private double                                    m_fixedSpeed      = 0.3;
-  private double                                    m_percentOutput   = 0.0;
+  private ControlMode                               m_controlMode   = ControlMode.kStopped;
+  private double                                    m_fixedSpeed    = 0.3;
+  private double                                    m_percentOutput = 0.0;
 
-  private Timer                                     m_timer           = new Timer( );
-  private TrapezoidProfile                          m_profile         = new TrapezoidProfile(m_constraints);
-  private TrapezoidProfile.State                    m_goal            = new TrapezoidProfile.State( );
-  private TrapezoidProfile.State                    m_setpoint        = new TrapezoidProfile.State( );
+  private Timer                                     m_timer         = new Timer( );
+  private TrapezoidProfile                          m_profile       = new TrapezoidProfile(m_constraints);
+  private TrapezoidProfile.State                    m_goal          = new TrapezoidProfile.State( );
+  private TrapezoidProfile.State                    m_setpoint      = new TrapezoidProfile.State( );
 
   /**
    * robotInit - called ONCE when the robot class starts up
@@ -65,8 +64,7 @@ public class Robot extends TimedRobot
   }
 
   /**
-   * robotPeriodic - periodic processing for this motor/controller called every 20
-   * msec
+   * robotPeriodic - periodic processing for this motor/controller called every 20 msec
    */
   @Override
   public void robotPeriodic( )
@@ -85,6 +83,8 @@ public class Robot extends TimedRobot
   @Override
   public void disabledInit( )
   {
+    datalogMatchBanner("disabledInit");
+
     m_controlMode = ControlMode.kStopped;
     m_goal.position = 0.0;
     m_goal.velocity = 0.0;
@@ -95,6 +95,25 @@ public class Robot extends TimedRobot
     m_motor1.resetEncoder( );
     m_motor2.resetEncoder( );
     m_elevSim.reset( );
+  }
+
+  /**
+   * autonomousInit - called ONCE whenever autonomous started
+   */
+  @Override
+  public void autonomousInit( )
+  {
+    datalogMatchBanner("autonomousInit");
+  }
+
+  /**
+   * teleopInit - called ONCE whenever the teleop is started
+   */
+  @Override
+  public void teleopInit( )
+  {
+    datalogMatchBanner("teleopInit");
+    cancelOldAutonomousCommand( );
   }
 
   /**
@@ -268,7 +287,6 @@ public class Robot extends TimedRobot
   public static void reloadAutomousCommand(String optionName)
   {
     DataLogManager.log(String.format("Auto change! - %s", optionName));
-    m_loadAutoCommand = true;
   }
 
 }

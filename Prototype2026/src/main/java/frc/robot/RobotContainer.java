@@ -11,29 +11,22 @@ import frc.robot.subsystems.Shooter;
 
 public class RobotContainer
 {
-  private static final CommandXboxController m_driverPad   = new CommandXboxController(0);
-  private static final CommandXboxController m_operatorPad = new CommandXboxController(1);
-  private static final double                kEncoderCPR   = 4096;
-  private static double                      m_timeMark    = Timer.getFPGATimestamp( );
-  private final Intake                       m_intake      = new Intake( );
-  private final Shooter                      m_shooter     = new Shooter( );
+  private static final CommandXboxController m_driverPad = new CommandXboxController(0);
+  // private static final CommandXboxController m_operatorPad = new CommandXboxController(1);
+  private static double                      m_timeMark  = Timer.getFPGATimestamp( );
+  private final Intake                       m_intake    = new Intake( );
+  private final Shooter                      m_shooter   = new Shooter( );
 
-  private static enum ControlMode
-  {
-    kStopped, kFixedSpeed, kJoystickControl, kClosedLoop
-  }
-
-  // In a real robot, the servo actuator would be declared within a subsystem and
-  // not here
-  //private final Servo m_actuator = new Servo(0);
+  // In a real robot, the servo actuator would be declared within a subsystem and not here
+  private final Servo                        m_actuator  = new Servo(0);
 
   private void AddDashboardWidgets( )
   {
-    // SmartDashboard.putData("Actuator_IN_Open", Commands.runOnce(( ) -> m_actuator.setSpeed(1.0)));
-    // SmartDashboard.putData("Actuator_OUT_Close", Commands.runOnce(( ) -> m_actuator.setSpeed(-1.0)));
+    SmartDashboard.putData("Actuator_IN_Open", Commands.runOnce(( ) -> m_actuator.setSpeed(1.0)));
+    SmartDashboard.putData("Actuator_OUT_Close", Commands.runOnce(( ) -> m_actuator.setSpeed(-1.0)));
   }
 
-  public RobotContainer()
+  public RobotContainer( )
   {
 
     AddDashboardWidgets( ); // Add dashboard widgets for commands
@@ -49,6 +42,9 @@ public class RobotContainer
   {
     m_driverPad.a( ).onTrue(m_shooter.getShooterScoreCommand( ));
     m_driverPad.b( ).onTrue(m_shooter.getShooterStopCommand( ));
+
+    m_driverPad.x( ).onTrue(m_intake.getIntakeOnCommand( ));
+    m_driverPad.y( ).onTrue(m_intake.getIntakeOffCommand( ));
 
     ///////////////////////////////////////////////////////
     //
@@ -122,13 +118,11 @@ public class RobotContainer
 
   private void initDefaultCommands( )
   {
-
     // Default command - Motion Magic hold
     // m_intake.setDefaultCommand(m_intake.getHoldPositionCommand(INRollerMode.HOLD, m_intake::getCurrentPosition));
 
     // Default command - manual mode
     // m_intake.setDefaultCommand(m_intake.getJoystickCommand(( ) -> getIntakeAxis()));
-    // m_feeder.s
   }
 
   public static void timeMarker(String msg)

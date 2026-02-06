@@ -54,7 +54,8 @@ public class Shooter extends SubsystemBase
   {
     STOP,       // Shooter is stopped
     PASS,       // Shooter speed for passing fuel
-    REVERSE, SCORE       // Shooter speed for shooting
+    REVERSE,    // 
+    SCORE       // Shooter speed for shooting
   }
 
   // Devices objects
@@ -194,7 +195,6 @@ public class Shooter extends SubsystemBase
     // Initialize network tables publishers
     m_leftRPMPub = table.getDoubleTopic("lowerSpeed").publish( );
 
-    // m_upperSpeedPub = table.getDoubleTopic("upperSpeed").publish( );
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );
     m_isAtTargetRPMPub = table.getBooleanTopic("atTargetRPM").publish( );
 

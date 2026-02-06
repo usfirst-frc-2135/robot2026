@@ -6,7 +6,6 @@ package frc.robot.lib.phoenix;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.ReverseLimitSourceValue;
 
 /****************************************************************************
  * 
@@ -52,7 +51,7 @@ public final class CTREConfigs6
     shooterConfig.Slot0.kG = 0.0;                                   // Feedforward: Voltage or duty cylce to overcome gravity (arbitrary feedforward)
     shooterConfig.Slot0.kV = 0.1140;                                // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
-    shooterConfig.Slot0.kP = 0.180;                                  // Voltage or duty cycle per velocity unit (velocity modes)
+    shooterConfig.Slot0.kP = 0.30;                                  // Voltage or duty cycle per velocity unit (velocity modes)
     shooterConfig.Slot0.kI = 0.0;                                   // Voltage or duty cycle per accumulated unit
     shooterConfig.Slot0.kD = 0.0;                                   // Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
@@ -61,7 +60,7 @@ public final class CTREConfigs6
     return shooterConfig;
   }
 
-  public static TalonFXConfiguration upperRollerFXConfig(int canRangeID)
+  public static TalonFXConfiguration upperRollerFXConfig( )
   {
     TalonFXConfiguration upperRollerConfig = new TalonFXConfiguration( );
 
@@ -82,9 +81,9 @@ public final class CTREConfigs6
     // clawRollerConfig.Feedback.*
 
     // Hardware limit switches - CANrange
-    upperRollerConfig.HardwareLimitSwitch.ReverseLimitRemoteSensorID = canRangeID; // Stop coral on CANrange detection
-    upperRollerConfig.HardwareLimitSwitch.ReverseLimitSource = ReverseLimitSourceValue.RemoteCANrange;
-    upperRollerConfig.HardwareLimitSwitch.ReverseLimitEnable = true;
+    // upperRollerConfig.HardwareLimitSwitch.ReverseLimitRemoteSensorID = canRangeID; // Stop coral on CANrange detection
+    // upperRollerConfig.HardwareLimitSwitch.ReverseLimitSource = ReverseLimitSourceValue.RemoteCANrange;
+    // upperRollerConfig.HardwareLimitSwitch.ReverseLimitEnable = true;
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
     // clawRollerConfig.MotionMagic.*
