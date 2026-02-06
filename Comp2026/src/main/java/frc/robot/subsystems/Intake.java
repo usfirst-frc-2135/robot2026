@@ -4,6 +4,7 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volt;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.DoubleSupplier;
@@ -207,7 +208,7 @@ public class Intake extends SubsystemBase
 
     StatusSignal<Current> m_rotarySupplyCur = m_rotaryMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rotaryStatorCur = m_rotaryMotor.getStatorCurrent( ); // Default 4Hz (250ms)
-    BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur, m_rotarySta // Default 4Hz (250ms)
+    BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur, m_rotarySta );// Default 4Hz (250ms)
  // Default 4Hz (250ms)
     DataLogManager.log(
         String.format("%s: Update (Hz) rotaryPosition: %.1f rotarySupplyCur: %.1f rotaryStatorCur: %.1f canCoderPosition: %.1f",
@@ -230,11 +231,10 @@ public class Intake extends SubsystemBase
     BaseStatusSignal.refreshAll(m_rotaryPosition, m_ccPosition);
     m_currentDegrees = Units.rotationsToDegrees((m_rotaryValid) ? m_rotaryPosition.getValue( ).in(Rotations) : 0.0);
     m_ccDegrees = Units.rotationsToDegrees((m_canCoderValid) ? m_ccPosition.getValue( ).in(Rotations) : 0.0);
-    m_noteDetected = m_noteDebouncer.calculate(m_noteInIntake.get( ));
-
+    
     // Update network table publishers
     m_rollSpeedPub.set(m_rollerMotor.get( ));
-    m_rollSupCurPub.set(m_rollerMotor.getSupplyCurrent( ));
+    m_rollSupCurPub.set(m_rollerMotor.get( ));
 
     m_ccDegreesPub.set(m_ccDegrees);
     m_rotDegreesPub.set(m_currentDegrees);
@@ -622,11 +622,11 @@ public class Intake extends SubsystemBase
   {
     return new FunctionalCommand(                                               // Command with all phases declared
         ( ) -> moveToPositionInit(mode, position.getAsDouble( ), holdPosition), // Init method
-        ( ) -> moveToPositionExec                                               // Command with all phases declared
+        ( ) -> moveToPositionExecute(),                                               // Command with all phases declared
         interrupted -> moveToPositionEnd( ),                                    // Init method
         ( ) -> moveToPositionIsFinished(                                        // Execute methodhod
         this                                                                    // End methodequired
-    );                          // IsFinished method
+    ));                          // IsFinished method
   }                                                                    // Subsytem required
 
   /****************************************************************************
