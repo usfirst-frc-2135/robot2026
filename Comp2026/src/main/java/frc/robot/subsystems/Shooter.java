@@ -65,26 +65,26 @@ public class Shooter extends SubsystemBase
   }
 
   // Devices  objects
-  private final TalonFX                       m_lowerMotor            = new TalonFX(Ports.kCANID_ShooterLower);
-  private final TalonFX                       m_upperMotor            = new TalonFX(Ports.kCANID_ShooterUpper);
+  private final TalonFX                       m_leftMotor             = new TalonFX(Ports.kCANID_ShooterLeft);
+  private final TalonFX                       m_rightMotor            = new TalonFX(Ports.kCANID_ShooterRight);
 
   // Alerts
-  private final Alert                         m_lowerAlert            =
+  private final Alert                         m_leftAlert             =
       new Alert(String.format("%s: Lower motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert                         m_upperAlert            =
+  private final Alert                         m_rightAlert            =
       new Alert(String.format("%s: Upper motor init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
-  private final TalonFXSimState               m_lowerMotorSim         = new TalonFXSimState(m_lowerMotor);
-  private final TalonFXSimState               m_upperMotorSim         = new TalonFXSimState(m_upperMotor);
-  private final FlywheelSim                   m_lowerFlywheelSim      = new FlywheelSim(
+  private final TalonFXSimState               m_leftMotorSim          = new TalonFXSimState(m_leftMotor);
+  private final TalonFXSimState               m_rightMotorSim         = new TalonFXSimState(m_rightMotor);
+  private final FlywheelSim                   m_leftFlywheelSim       = new FlywheelSim(
       LinearSystemId.createFlywheelSystem(DCMotor.getFalcon500(1), kMOI, kFlywheelGearRatio), DCMotor.getFalcon500(1), 0.0);
-  private final FlywheelSim                   m_upperFlywheelSim      = new FlywheelSim(
+  private final FlywheelSim                   m_rightFlywheelSim      = new FlywheelSim(
       LinearSystemId.createFlywheelSystem(DCMotor.getFalcon500(1), kMOI, kFlywheelGearRatio), DCMotor.getFalcon500(1), 0.0);
 
   // CTRE Status signals for sensors
-  private final StatusSignal<AngularVelocity> m_lowerVelocity;   // Default 4Hz (250ms)
-  private final StatusSignal<AngularVelocity> m_upperVelocity;   // Default 4Hz (250ms)
+  private final StatusSignal<AngularVelocity> m_leftVelocity;   // Default 4Hz (250ms)
+  private final StatusSignal<AngularVelocity> m_rightVelocity;   // Default 4Hz (250ms)
 
   // Declare module variables
   private boolean                             m_shooterValid;
@@ -92,17 +92,17 @@ public class Shooter extends SubsystemBase
   private boolean                             m_isAttargetRPMPrevious = false;
 
   private double                              m_targetRPM;            // Requested target flywheel RPM
-  private double                              m_lowerRPM;             // Current lower RPM
-  private double                              m_upperRPM;             // Current upper RPM
+  private double                              m_leftRPM;             // Current left RPM
+  private double                              m_rightRPM;             // Current right RPM
 
   private VelocityVoltage                     m_requestVelocity       = new VelocityVoltage(0.0);
   private VoltageOut                          m_requestVolts          = new VoltageOut(0.0);
-  private LinearFilter                        m_lowerFlywheelFilter   = LinearFilter.singlePoleIIR(0.060, 0.020);
-  private LinearFilter                        m_upperFlywheelFilter   = LinearFilter.singlePoleIIR(0.060, 0.020);
+  private LinearFilter                        m_leftFlywheelFilter    = LinearFilter.singlePoleIIR(0.060, 0.020);
+  private LinearFilter                        m_rightFlywheelFilter   = LinearFilter.singlePoleIIR(0.060, 0.020);
 
   // Network tables publisher objects
-  private DoublePublisher                     m_lowerSpeedPub;
-  private DoublePublisher                     m_upperSpeedPub;
+  private DoublePublisher                     m_leftSpeedPub;
+  private DoublePublisher                     m_rightSpeedPub;
 
   private BooleanPublisher                    m_atDesiredRPMPub;
   private DoublePublisher                     m_targetRPMPub;
@@ -117,31 +117,31 @@ public class Shooter extends SubsystemBase
     setName("Shooter");
     setSubsystem("Shooter");
 
-    boolean lowerValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_lowerMotor, kSubsystemName + "Lower", CTREConfigs6.shooterFXConfig( ));
-    boolean upperValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_upperMotor, kSubsystemName + "Upper", CTREConfigs6.shooterFXConfig( ));
-    m_shooterValid = lowerValid && upperValid;
+    boolean leftValid =
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Lower", CTREConfigs6.shooterFXConfig( ));
+    boolean rightValid =
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Upper", CTREConfigs6.shooterFXConfig( ));
+    m_shooterValid = leftValid && rightValid;
 
-    m_lowerAlert.set(!lowerValid);
-    m_upperAlert.set(!upperValid);
+    m_leftAlert.set(!leftValid);
+    m_rightAlert.set(!rightValid);
 
     // Initialize status signal objects
-    m_lowerVelocity = m_lowerMotor.getRotorVelocity( );
-    m_upperVelocity = m_upperMotor.getRotorVelocity( );
+    m_leftVelocity = m_leftMotor.getRotorVelocity( );
+    m_rightVelocity = m_rightMotor.getRotorVelocity( );
 
-    BaseStatusSignal.setUpdateFrequencyForAll(50, m_lowerVelocity, m_upperVelocity);
+    BaseStatusSignal.setUpdateFrequencyForAll(50, m_leftVelocity, m_rightVelocity);
 
-    StatusSignal<Current> m_lowerSupplyCur = m_lowerMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
-    StatusSignal<Current> m_lowerStatorCur = m_lowerMotor.getStatorCurrent( ); // Default 4Hz (250ms)
-    StatusSignal<Current> m_upperSupplyCur = m_upperMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
-    StatusSignal<Current> m_upperStatorCur = m_upperMotor.getStatorCurrent( ); // Default 4Hz (250ms)
+    StatusSignal<Current> m_leftSupplyCur = m_leftMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
+    StatusSignal<Current> m_leftStatorCur = m_leftMotor.getStatorCurrent( ); // Default 4Hz (250ms)
+    StatusSignal<Current> m_rightSupplyCur = m_rightMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
+    StatusSignal<Current> m_rightStatorCur = m_rightMotor.getStatorCurrent( ); // Default 4Hz (250ms)
 
     DataLogManager.log(String.format(
-        "%s: Update (Hz) lowerVelocity: %.1f upperVelocity: %.1f lowerSupplyCur: %.1f lowerStatorCur: %.1f upperSupplyCur: %.1f upperStatorCur: %.1f",
-        getSubsystem( ), m_lowerVelocity.getAppliedUpdateFrequency( ), m_upperVelocity.getAppliedUpdateFrequency( ),
-        m_lowerSupplyCur.getAppliedUpdateFrequency( ), m_lowerStatorCur.getAppliedUpdateFrequency( ),
-        m_upperSupplyCur.getAppliedUpdateFrequency( ), m_upperStatorCur.getAppliedUpdateFrequency( )));
+        "%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f leftStatorCur: %.1f rightSupplyCur: %.1f rightStatorCur: %.1f",
+        getSubsystem( ), m_leftVelocity.getAppliedUpdateFrequency( ), m_rightVelocity.getAppliedUpdateFrequency( ),
+        m_leftSupplyCur.getAppliedUpdateFrequency( ), m_leftStatorCur.getAppliedUpdateFrequency( ),
+        m_rightSupplyCur.getAppliedUpdateFrequency( ), m_rightStatorCur.getAppliedUpdateFrequency( )));
 
     initDashboard( );
     initialize( );
@@ -160,14 +160,14 @@ public class Shooter extends SubsystemBase
     if (m_shooterValid)
     {
       // Calculate flywheel RPM and update network tables publishers
-      BaseStatusSignal.refreshAll(m_lowerVelocity, m_upperVelocity);
-      m_lowerRPM = m_lowerFlywheelFilter.calculate((m_lowerVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
-      m_upperRPM = m_upperFlywheelFilter.calculate((m_upperVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
-      m_lowerSpeedPub.set(m_lowerRPM);
-      m_upperSpeedPub.set(m_upperRPM);
+      BaseStatusSignal.refreshAll(m_leftVelocity, m_rightVelocity);
+      m_leftRPM = m_leftFlywheelFilter.calculate((m_leftVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
+      m_rightRPM = m_rightFlywheelFilter.calculate((m_rightVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
+      m_leftSpeedPub.set(m_leftRPM);
+      m_rightSpeedPub.set(m_rightRPM);
 
-      m_isAttargetRPM = ((m_lowerRPM > kToleranceRPM) && MathUtil.isNear(m_targetRPM, m_lowerRPM, kToleranceRPM))
-          && ((m_upperRPM > kToleranceRPM) && MathUtil.isNear(m_targetRPM, m_upperRPM, kToleranceRPM));
+      m_isAttargetRPM = ((m_leftRPM > kToleranceRPM) && MathUtil.isNear(m_targetRPM, m_leftRPM, kToleranceRPM))
+          && ((m_rightRPM > kToleranceRPM) && MathUtil.isNear(m_targetRPM, m_rightRPM, kToleranceRPM));
       m_atDesiredRPMPub.set(m_isAttargetRPM);
 
       if (m_isAttargetRPM != m_isAttargetRPMPrevious)
@@ -190,22 +190,22 @@ public class Shooter extends SubsystemBase
     // This method will be called once per scheduler run during simulation
 
     // Set input flywheel voltage from the motor setting
-    m_lowerMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
-    m_upperMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
-    m_lowerFlywheelSim.setInput(m_lowerMotorSim.getMotorVoltage( ));
-    m_upperFlywheelSim.setInput(m_upperMotorSim.getMotorVoltage( ));
+    m_leftMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    m_rightMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    m_leftFlywheelSim.setInput(m_leftMotorSim.getMotorVoltage( ));
+    m_rightFlywheelSim.setInput(m_rightMotorSim.getMotorVoltage( ));
 
     // update for 20 msec loop
-    m_lowerFlywheelSim.update(0.020);
-    m_upperFlywheelSim.update(0.020);
+    m_leftFlywheelSim.update(0.020);
+    m_rightFlywheelSim.update(0.020);
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_lowerMotorSim.setRotorVelocity(m_lowerFlywheelSim.getAngularVelocityRPM( ) / 60.0);
-    m_upperMotorSim.setRotorVelocity(m_upperFlywheelSim.getAngularVelocityRPM( ) / 60.0);
+    m_leftMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocityRPM( ) / 60.0);
+    m_rightMotorSim.setRotorVelocity(m_rightFlywheelSim.getAngularVelocityRPM( ) / 60.0);
 
     // SimBattery estimates loaded battery voltages
-    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_lowerFlywheelSim.getCurrentDrawAmps( )));
-    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_upperFlywheelSim.getCurrentDrawAmps( )));
+    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_leftFlywheelSim.getCurrentDrawAmps( )));
+    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_rightFlywheelSim.getCurrentDrawAmps( )));
   }
 
   /****************************************************************************
@@ -219,8 +219,8 @@ public class Shooter extends SubsystemBase
     NetworkTable table = inst.getTable("shooter");
 
     // Initialize network tables publishers
-    m_lowerSpeedPub = table.getDoubleTopic("lowerSpeed").publish( );
-    m_upperSpeedPub = table.getDoubleTopic("upperSpeed").publish( );
+    m_leftSpeedPub = table.getDoubleTopic("leftSpeed").publish( );
+    m_rightSpeedPub = table.getDoubleTopic("rightSpeed").publish( );
 
     m_atDesiredRPMPub = table.getBooleanTopic("atDesiredRPM").publish( );
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );
@@ -251,10 +251,10 @@ public class Shooter extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_lowerMotor, "ShooterLower");
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_upperMotor, "ShooterUpper");
-    m_lowerMotor.clearStickyFaults( );
-    m_upperMotor.clearStickyFaults( );
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotor, "ShooterLower");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rightMotor, "ShooterUpper");
+    m_leftMotor.clearStickyFaults( );
+    m_rightMotor.clearStickyFaults( );
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -308,8 +308,8 @@ public class Shooter extends SubsystemBase
    */
   private void setShooterVelocity(double rps)
   {
-    m_lowerMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
-    m_upperMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
+    m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
+    m_rightMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
   }
 
   /****************************************************************************
@@ -318,8 +318,8 @@ public class Shooter extends SubsystemBase
    */
   private void setShooterStopped( )
   {
-    m_lowerMotor.setControl(m_requestVolts);
-    m_upperMotor.setControl(m_requestVolts);
+    m_leftMotor.setControl(m_requestVolts);
+    m_rightMotor.setControl(m_requestVolts);
   }
 
   ////////////////////////////////////////////////////////////////////////////

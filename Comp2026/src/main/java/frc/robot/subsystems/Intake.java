@@ -4,7 +4,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Volt;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.DoubleSupplier;
@@ -33,7 +32,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -63,50 +61,47 @@ import frc.robot.lib.phoenix.PhoenixUtil6;
 public class Intake extends SubsystemBase
 {
   // Constants
-  private static final String  kSubsystemName        = "Intake";
-  private static final boolean kRollerMotorInvert    = false;     // Motor direction for positive input
+  private static final String  kSubsystemName      = "Intake";
 
-  private static final double  kRollerSpeedAcquire   = 0.5;     // Motor direction for positive input
-  private static final double  kRollerSpeedExpel     = -0.4;
-  private static final double  kRollerSpeedToShooter = -1.0;
-  private static final double  kRollerSpeedHold      = 0.1;
+  private static final double  kRollerSpeedAcquire = 0.5;     // Motor direction for positive input
+  private static final double  kRollerSpeedExpel   = -0.4;
 
-  private static final double  kRotaryGearRatio      = 30.83;
-  private static final double  kRotaryLengthMeters   = 0.3;       // Simulation
-  private static final double  kRotaryWeightKg       = 4.0;       // Simulation
-  private static final Voltage kRotaryManualVolts    = Volt;       // SimulationMotor voltage during manual operation (joystick)
-       // Simulation
-  /** Rotary manual move parameters */       // Motor voltage during manual operation (joystick)
+  private static final double  kRotaryGearRatio    = 30.83;     // Simulation
+  private static final double  kRotaryLengthMeters = 0.3;       // Simulation
+  private static final double  kRotaryWeightKg     = 4.0;       // Simulation
+  private static final Voltage kRotaryManualVolts  = Volts.of(3.5);       // Motor voltage during manual operation (joystick)
+
+  /** Rotary manual move parameters */
+
   private enum RotaryMode
   {
     INIT,    // Initialize rotary
     INBOARD, // Rotary moving into the robot
-    STOP,    // Initialize rotaryold position
-    OUTBOARD // Rotary moving into the robotot
-  } // Rotary stop and hold position
- // Rotary moving out of the robot
+    STOPPED, // Rotary stop and hold position
+    OUTBOARD // Rotary moving into the robot
+  }
+
+  /** Rotary Motion Magic movement parameters */
+
   private static final double       kToleranceDegrees     = 3.0;      // PID tolerance in degrees
   private static final double       kMMDebounceTime       = 0.060;    // Seconds to debounce a final position check
-  private static final double       kMMMoveTimeout        = 1.0;      // PID tolerance in degreestion Magic movement
-  private static final double       kNoteDebounceTime     = 0.045;    // Seconds to debounce a final position check
-      // Seconds allowed for a Motion Magic movement
-  // Rotary angles - Motion Magic move parameters    // Seconds to debounce detected note sensor
+  private static final double       kMMMoveTimeout        = 1.0;      // Seconds allowed for a Motion Magic movement
+
+  // Rotary angles - Motion Magic move parameters    
   //    Measured hardstops and pre-defined positions:
   //               hstop  retracted   handoff   deployed  hstop
-  //      Comp     -177.3  -176.3     -124.7    24.9      25.8
-  //      Practice -177.8  -176.8     -124.7    27.3      27.4
+  //      Comp     -177.3  -176.3     -124.7    24.9      25.8    TODO (fix for 2026)
+  //      Practice -177.8  -176.8     -124.7    27.3      27.4    TODO (fix for 2026)
   private static final double       kRotaryAngleRetracted = Robot.isComp( ) ? -176.3 : -176.8;  // One degree from hardstops
-  private static final double       kRotaryAngleHandoff   = Robot.isComp( ) ? -124.7 : -124.7;  //
   private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 24.9 : 27.3;      // One degree from hardstops
-  //
-  private static final double       kRotaryAngleMin       = kRotaryAngleRetracted - 3.0;      //
+
+  private static final double       kRotaryAngleMin       = kRotaryAngleRetracted - 3.0;
   private static final double       kRotaryAngleMax       = kRotaryAngleDeployed + 3.0;
 
-  // Device objects
+  // Declare device objects
   private final TalonFX             m_rollerMotor         = new TalonFX(Ports.kCANID_IntakeRoller);
   private final TalonFX             m_rotaryMotor         = new TalonFX(Ports.kCANID_IntakeRotary);
   private final CANcoder            m_CANcoder            = new CANcoder(Ports.kCANID_IntakeCANcoder);
-  private final DigitalInput        m_noteInIntake        = new DigitalInput(Ports.kDIO0_NoteInIntake);
 
   // Alerts
   private final Alert               m_rollerAlert         =
@@ -130,21 +125,20 @@ public class Intake extends SubsystemBase
   // Status signals
   private final StatusSignal<Angle> m_rotaryPosition;  // Default 50Hz (20ms)
   private final StatusSignal<Angle> m_ccPosition;      // Default 100Hz (10ms)
-  // Default 50Hz (20ms)
-  // Declare module variables      // Default 100Hz (10ms)
+
+  // Declare module variables
 
   // Roller variables
   private boolean                   m_rollerValid;        // Health indicator for motor 
-  private Debouncer                 m_noteDebouncer       = new Debouncer(kNoteDebounceTime, DebounceType.kBoth);
 
-  // Rotary variables       // Detection state of note in rollers
+  // Rotary variables
   private boolean                   m_rotaryValid;                // Health indicator for motor 
   private boolean                   m_canCoderValid;              // Health indicator for CANcoder 
-  private double                    m_currentDegre                // Health indicator for motor 
-  private double                    m_targetDegrees               // Health indicator for CANcoder 
-  private double                    m_ccDegrees           = 0.0;  // Current angle in degreess
-  // Target angle in degrees
-  // Manual mode config parameters  // CANcoder angle in degrees
+  private double                    m_currentDegrees      = 0.0;  // Current angle in degrees
+  private double                    m_targetDegrees       = 0.0;  // Target angle in degrees
+  private double                    m_ccDegrees           = 0.0;  // CANcoder angle in degrees
+
+  // Manual mode config parameters
   private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0));
   private RotaryMode                m_rotaryMode          = RotaryMode.INIT;    // Manual movement mode with joysticks
 
@@ -152,9 +146,9 @@ public class Intake extends SubsystemBase
   private MotionMagicVoltage        m_mmRequestVolts      = new MotionMagicVoltage(0).withSlot(0);
   private Debouncer                 m_mmWithinTolerance   = new Debouncer(kMMDebounceTime, DebounceType.kRising);
   private Timer                     m_mmMoveTimer         = new Timer( );       // Movement timer
-  private boolean                   m_mmMoveIsFinished;           // Movement has completed (within tolerance)
-       // Movement timer
-  // Network tables publisher objects           // Movement has completed (within tolerance)
+  private boolean                   m_mmMoveIsFinished;                         // Movement has completed (within tolerance)
+
+  // Network tables publisher objects
   private DoublePublisher           m_rollSpeedPub;
   private DoublePublisher           m_rollSupCurPub;
   private DoublePublisher           m_rotDegreesPub;
@@ -172,10 +166,8 @@ public class Intake extends SubsystemBase
     setSubsystem(kSubsystemName);
 
     // Roller motor init
-    m_rollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize(m_rollerMotor, kSubsystemName + "Roller",
+    m_rollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotor, kSubsystemName + "Roller",
         CTREConfigs6.intakeRollerConfig( ));
-    m_rollerMotor.setInverted(kRollerMotorInvert);
-    PhoenixUtil6.getInstance( ).talonFXCheckError(m_rollerMotor, "setInverted");
 
     // Initialize rotary motor and CANcoder objects
     m_rotaryValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rotaryMotor, kSubsystemName + "Rotary",
@@ -208,8 +200,8 @@ public class Intake extends SubsystemBase
 
     StatusSignal<Current> m_rotarySupplyCur = m_rotaryMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rotaryStatorCur = m_rotaryMotor.getStatorCurrent( ); // Default 4Hz (250ms)
-    BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur, m_rotarySta );// Default 4Hz (250ms)
- // Default 4Hz (250ms)
+    BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur, m_rotaryStatorCur);
+    // Default 4Hz (250ms)
     DataLogManager.log(
         String.format("%s: Update (Hz) rotaryPosition: %.1f rotarySupplyCur: %.1f rotaryStatorCur: %.1f canCoderPosition: %.1f",
             getSubsystem( ), m_rotaryPosition.getAppliedUpdateFrequency( ), m_rotarySupplyCur.getAppliedUpdateFrequency( ),
@@ -231,7 +223,7 @@ public class Intake extends SubsystemBase
     BaseStatusSignal.refreshAll(m_rotaryPosition, m_ccPosition);
     m_currentDegrees = Units.rotationsToDegrees((m_rotaryValid) ? m_rotaryPosition.getValue( ).in(Rotations) : 0.0);
     m_ccDegrees = Units.rotationsToDegrees((m_canCoderValid) ? m_ccPosition.getValue( ).in(Rotations) : 0.0);
-    
+
     // Update network table publishers
     m_rollSpeedPub.set(m_rollerMotor.get( ));
     m_rollSupCurPub.set(m_rollerMotor.get( ));
@@ -295,13 +287,10 @@ public class Intake extends SubsystemBase
     SmartDashboard.putData("InRollStop", getMoveToPositionCommand(INRollerMode.STOP, this::getCurrentPosition));
     SmartDashboard.putData("InRollAcquire", getMoveToPositionCommand(INRollerMode.ACQUIRE, this::getCurrentPosition));
     SmartDashboard.putData("InRollExpel", getMoveToPositionCommand(INRollerMode.EXPEL, this::getCurrentPosition));
-    SmartDashboard.putData("InRollShoot", getMoveToPositionCommand(INRollerMode.SHOOT, this::getCurrentPosition));
-    SmartDashboard.putData("InRollHandoff", getMoveToPositionCommand(INRollerMode.HANDOFF, this::getCurrentPosition));
     SmartDashboard.putData("InRollHold", getMoveToPositionCommand(INRollerMode.HOLD, this::getCurrentPosition));
 
     SmartDashboard.putData("InRotDeploy", getMoveToPositionCommand(INRollerMode.HOLD, this::getIntakeDeployed));
     SmartDashboard.putData("InRotRetract", getMoveToPositionCommand(INRollerMode.HOLD, this::getIntakeRetracted));
-    SmartDashboard.putData("InRotHandoff", getMoveToPositionCommand(INRollerMode.HOLD, this::getIntakeHandoff));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -408,7 +397,7 @@ public class Intake extends SubsystemBase
         m_mmMoveIsFinished = false;
         m_mmWithinTolerance.calculate(false); // Reset the debounce filter
 
-        double targetRotations = Units.degree // Reset the debounce filter;
+        double targetRotations = Units.degreesToRotations(m_targetDegrees);
         m_rotaryMotor.setControl(m_mmRequestVolts.withPosition(targetRotations));
         DataLogManager.log(String.format("%s: MM Position move: %.1f -> %.1f degrees (%.3f -> %.3f rot)", getSubsystem( ),
             m_currentDegrees, m_targetDegrees, Units.degreesToRotations(m_currentDegrees), targetRotations));
@@ -505,9 +494,6 @@ public class Intake extends SubsystemBase
         case EXPEL :
           output = kRollerSpeedExpel;
           break;
-        case SHOOT :
-          output = kRollerSpeedToShooter;
-          break;
       }
       DataLogManager.log(String.format("%s: Roller mode is now - %s", getSubsystem( ), mode));
       m_rollerMotor.set(output);
@@ -565,17 +551,6 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Return intake angle for handoff state
-   * 
-   * @return handoff state angle
-   */
-  public double getIntakeHandoff( )
-  {
-    return kRotaryAngleHandoff;
-  }
-
-  /****************************************************************************
-   * 
    * Return intake angle for deployed state
    * 
    * @return deployed state angle
@@ -603,7 +578,7 @@ public class Intake extends SubsystemBase
         ( ) -> moveRotaryWithJoystick(axis),  // Lambda method to call
         this                                  // Command that runs continuously
     )                                         // Lambda method to call
-        .wit                                  // Subsystem required
+        .withName(kSubsystemName + "MoveWithJoystick");
   }                                         //
 
   /****************************************************************************
@@ -622,11 +597,11 @@ public class Intake extends SubsystemBase
   {
     return new FunctionalCommand(                                               // Command with all phases declared
         ( ) -> moveToPositionInit(mode, position.getAsDouble( ), holdPosition), // Init method
-        ( ) -> moveToPositionExecute(),                                               // Command with all phases declared
+        ( ) -> moveToPositionExecute( ),                                               // Command with all phases declared
         interrupted -> moveToPositionEnd( ),                                    // Init method
-        ( ) -> moveToPositionIsFinished(                                        // Execute methodhod
+        ( ) -> moveToPositionIsFinished(holdPosition),                          // IsFinished method
         this                                                                    // End methodequired
-    ));                          // IsFinished method
+    );
   }                                                                    // Subsytem required
 
   /****************************************************************************
