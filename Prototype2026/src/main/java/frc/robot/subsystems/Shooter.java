@@ -38,6 +38,7 @@ import frc.robot.lib.phoenix.CTREConfigs5;
 import frc.robot.lib.phoenix.CTREConfigs6;
 import frc.robot.lib.phoenix.PhoenixUtil5;
 import frc.robot.lib.phoenix.PhoenixUtil6;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter extends SubsystemBase
 {
@@ -54,7 +55,8 @@ public class Shooter extends SubsystemBase
   {
     STOP,       // Shooter is stopped
     PASS,       // Shooter speed for passing fuel
-    SCORE       // Shooter speed for shooting
+    SCORE,       // Shooter speed for shooting
+    WAIT
   }
 
   // Devices objects
@@ -246,6 +248,8 @@ public class Shooter extends SubsystemBase
       case SCORE :
         m_targetRPM = m_scoreRPMEntry.get(0.0);
         break;
+      
+
     }
 
     double rotPerSecond = m_targetRPM / 60.0;
@@ -280,6 +284,7 @@ public class Shooter extends SubsystemBase
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
+    Timer.delay(0.1);
     m_kickerMotor.setVoltage(kKickerVoltageOut);
   }
 
