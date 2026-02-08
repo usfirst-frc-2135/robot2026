@@ -345,7 +345,7 @@ public class PhoenixUtil6
    * 
    * Print fault flags for a CANdle
    * 
-   * @param candles
+   * @param candle
    *          reference to a CANdle LED controller
    * @param name
    *          descriptive name of the CANdle
@@ -375,6 +375,9 @@ public class PhoenixUtil6
         candle.getStickyFault_Undervoltage( ).toString( )));
     DataLogManager.log(String.format("  UnlicensedFeatureInUse .. %5s %5s", candle.getFault_UnlicensedFeatureInUse( ).toString( ),
         candle.getStickyFault_UnlicensedFeatureInUse( ).toString( )));
+
+    faults.getValue( );
+    stickyFaults.getValue( );
   }
 
 }

@@ -6,8 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -22,93 +20,85 @@ import edu.wpi.first.math.util.Units;
 public final class Constants
 {
   // bot serial nums
-  public static final String      kCompSN               = "03260A3A";
-  public static final String      kPracticeSN           = "03238074";
+  public static final String  kCompSN               = "03260A3A";
+  public static final String  kPracticeSN           = "03238074";
 
   // Game controller definitions
-  public static final int         kDriverPadPort        = 0;
-  public static final int         kOperatorPadPort      = 1;
+  public static final int     kDriverPadPort        = 0;
+  public static final int     kOperatorPadPort      = 1;
 
-  public static final double      kStickDeadband        = 0.15;
-  public static final double      kTriggerThreshold     = 0.25;
+  public static final double  kStickDeadband        = 0.15;
+  public static final double  kTriggerThreshold     = 0.25;
 
-  public static final boolean     kRumbleOn             = true;
-  public static final boolean     kRumbleOff            = false;
-  public static final double      kRumbleIntensity      = 0.5;  // 0.0 is low, 1.0 is high
+  public static final boolean kRumbleOn             = true;
+  public static final boolean kRumbleOff            = false;
+  public static final double  kRumbleIntensity      = 0.5;    // 0.0 is low, 1.0 is high
 
   // Phoenix firmware versions expected
-  public static final int         kPhoenix6MajorVersion = 25;
+  public static final int     kPhoenix6MajorVersion = 26;
 
-  public static final String      kRobotString          = "RobotContainer";
+  public static final String  kRobotString          = "RobotContainer";
 
-  public static final String      kLLLeftName           = "limelight-left";
-  public static final String      kLLRightName          = "limelight-right";
+  public static final String  kLLLeftName           = "limelight-left";
+  public static final String  kLLRightName          = "limelight-right";
 
   // Robot physical dimensions
+  public static final double  kChassisLength        = 26.0;                                     // Length (and width) of chassis frame
+  public static final double  kFastenerAllowance    = 0.25;                                     // Gap from chassis frame to bumper backing
+  public static final double  kFramePerimeter       = kChassisLength + 2 * kFastenerAllowance;  // Official frame perimeter
+  public static final double  kBumperGap            = 0.25;                                     // Gap from chassis frame to bumper backing for fabric
+  public static final double  kBumperBacking        = 0.75;                                     // Thickness of bumper backing plywood
+  public static final double  kBumperPadding        = 2.5;                                      // Thickness of foam padding      
+  public static final double  kBumperTotal          = kBumperBacking + kBumperPadding;
+  public static final double  kRobotLength          = Units.inchesToMeters(kFramePerimeter + 2 * kBumperGap + 2 * kBumperTotal); // Our robot length
 
-  public static final double      kBranchSpacing        = Units.inchesToMeters(13.0);  // Distance between branches
-  public static final double      kL1Spacing            = Units.inchesToMeters(5.5);   // Distance to outside of branches
-  public static final double      kRobotLength          = Units.inchesToMeters(34.5);  // Our robot length
-  public static final double      kSetbackReefCoral     = kRobotLength / 2;                                       // Distance robot is set back from branch to score coral
-  public static final double      kSetbackReefAlgae     = kRobotLength / 2 + Units.inchesToMeters(8.0);   // Distance robot is set back from reef to grab algae
-  public static final double      kSetbackProcAlgae     = kRobotLength / 2 + Units.inchesToMeters(20.0);   // Distance robot is set back from reef to grab algae
-
-  // Scoring poses relative to an AprilTag (X - robot setback, Y - left, center, right)
-
-  public static final Transform2d kBranchCoralLeft      =
-      new Transform2d(kSetbackReefCoral, -kBranchSpacing / 2, Rotation2d.k180deg);
-  public static final Transform2d kBranchCoralCenter    = new Transform2d(kSetbackReefCoral, 0, Rotation2d.k180deg);
-  public static final Transform2d kBranchCoralRight     =
-      new Transform2d(kSetbackReefCoral, +kBranchSpacing / 2, Rotation2d.k180deg);
-  public static final Transform2d kBranchCoralLeftL1    =
-      new Transform2d(kSetbackReefCoral, (-kBranchSpacing / 2) - kL1Spacing, Rotation2d.k180deg);
-  public static final Transform2d kBranchCoralRightL1   =
-      new Transform2d(kSetbackReefCoral, (+kBranchSpacing / 2) + kL1Spacing, Rotation2d.k180deg);
-
-  public static final Transform2d kBranchAquireAlgae    = new Transform2d(kSetbackReefAlgae, 0, Rotation2d.k180deg);
+  // Alignment poses relative to an AprilTag (X - robot setback, Y - left, center, right) TODO
 
   /****************************************************************************
    * CAN IDs and PWM IDs
    ****************************************************************************/
   public static final class Ports
   {
-    public static final String kCANCarnivore        = "canivore1";
-    public static final String kCANRio              = "rio";
+    public static final String kCANCarnivore         = "canivore1";
+    public static final String kCANRio               = "rio";
 
     // CANivore CAN IDs - Swerve
-    public static final int    kCANID_DriveLF       = 1;    // Kraken X60
-    public static final int    kCANID_SteerLF       = 2;    // Kraken X60
-    public static final int    kCANID_CANcoderLF    = 3;    // CANcoder
+    public static final int    kCANID_DriveLF        = 1; // Kraken X60
+    public static final int    kCANID_SteerLF        = 2; // Kraken X60
+    public static final int    kCANID_CANcoderLF     = 3; // CANcoder
 
-    public static final int    kCANID_DriveRF       = 4;    // Kraken X60     
-    public static final int    kCANID_SteerRF       = 5;    // Kraken X60
-    public static final int    kCANID_CANcoderRF    = 6;    // CANcoder
+    public static final int    kCANID_DriveRF        = 4; // Kraken X60
+    public static final int    kCANID_SteerRF        = 5; // Kraken X60
+    public static final int    kCANID_CANcoderRF     = 6; // CANcoder
 
-    public static final int    kCANID_DriveLR       = 7;    // Kraken X60
-    public static final int    kCANID_SteerLR       = 8;    // Kraken X60
-    public static final int    kCANID_CANcoderLR    = 9;    // CANcoder
+    public static final int    kCANID_DriveLR        = 7; // Kraken X60
+    public static final int    kCANID_SteerLR        = 8; // Kraken X60
+    public static final int    kCANID_CANcoderLR     = 9; // CANcoder
 
-    public static final int    kCANID_DriveRR       = 10;   // Kraken X60
-    public static final int    kCANID_SteerRR       = 11;   // Kraken X60
-    public static final int    kCANID_CANcoderRR    = 12;   // CANcoder
+    public static final int    kCANID_DriveRR        = 10; // Kraken X60
+    public static final int    kCANID_SteerRR        = 11; // Kraken X60
+    public static final int    kCANID_CANcoderRR     = 12; // CANcoder
 
-    public static final int    kCANID_Pigeon2       = 13;   // Pigeon2 IMU
+    public static final int    kCANID_Pigeon2        = 13; // Pigeon2 IMU
 
     // RoboRIO CAN IDs
-    public static final int    kCANID_ElevatorLeft  = 15;   // Kraken X60
-    public static final int    kCANID_ElevatorRight = 16;   // Kraken X60
+    public static final int    kCANID_IntakeRoller   = 15; // Kraken X44 (Intake)
+    public static final int    kCANID_IntakeRotary   = 16; // Kraken X44 (Intake rotary)
+    public static final int    kCANID_IntakeCANcoder = 17; // CANcoder (intake)
 
-    public static final int    kCANID_WristRotary   = 18;   // Kraken X60 (Manipulator)
-    public static final int    kCANID_WristCANcoder = 19;   // CANcoder   (Manipulator)
+    public static final int    kCANID_HopperRoller   = 19; // Kraken X44 (Hopper) 
 
-    public static final int    kCANID_ClawRoller    = 21;   // Kraken X60 (Manipulator)
-    public static final int    kCANID_CoralDetector = 22;   // CANrange   (Manipulator)
-    public static final int    kCANID_AlgaeDetector = 23;   // CANrange   (Manipulator)
+    public static final int    kCANID_KickerRoller   = 20; // Kraken X44 (Kicker)
 
-    public static final int    kCANID_CANdle        = 0;
+    public static final int    kCANID_ShooterLeft    = 22; // Kraken X60 (Shooter)
+    public static final int    kCANID_ShooterRight   = 23; // Kraken X60 (Shooter)
 
-    // Digital I/Os
-    public static final int    kDIO0_ElevatorDown   = 0;    // REV Magnetic Limit Switch
+    public static final int    kCANID_ClimberLeft    = 25; // Kraken X60 (Climber telescope)
+    public static final int    kCANID_ClimberRight   = 26; // Kraken X60 (Climber telescope)
+
+    public static final int    kDIO0_FuelDetected    = 28; // CANrange (Hopper). // TODO: Do we have one?
+
+    public static final int    kCANID_CANdle         = 0;
   }
 
   public static class OperatorConstants
@@ -117,42 +107,55 @@ public final class Constants
   }
 
   /****************************************************************************
-   * Elevator subsystem constants
+   * Intake subsystem constants
    ****************************************************************************/
-  public static final class ELConsts
+  public static final class INConsts
   {
-    public static final String kReefLevelString = "ReefLevel";
-
-    public enum ReefLevel
+    /** Intake roller modes */
+    public enum INRollerMode
     {
-      ONE,        // Coral Level One (Trough)
-      TWO,        // Coral Level Two
-      THREE,      // Coral Level Three
-      FOUR,       // Coral Level Four
+      STOP,    // Stop all rotation
+      ACQUIRE, // Speed for acquiring a game piece
+      EXPEL,   // Speed for expelling a game piece
+      HOLD     // Maintain existing speed setting
     }
   }
 
   /****************************************************************************
-   * Manipulator subsystem constants
+   * Hopper subsystem constants
    ****************************************************************************/
-  public static final class CRConsts // Claw roller
+  public static final class HPConsts
   {
-    /** Manipulator claw roller modes */
-    public enum ClawMode
+    /** Hopper roller modes */
+    public enum HPRollerMode
     {
-      STOP,             // Stop all rotation
-
-      ALGAEACQUIRE,     // Speed for acquiring algae
-      ALGAEHOLD,        // Speed for holding algae in claw
-      ALGAEEXPEL,       // Speed for expelling algae
-      ALGAESHOOT,       // Speed for shooting algae
-      ALGAEPROCESSOR,   // Speed for putting algae into processor 
-      ALGAEMAINTAIN,    // Maintain existing speed setting
-
-      CORALACQUIRE,     // Speed for acquiring coral
-      CORALEXPEL,       // Speed for expelling coral
-      CORALMAINTAIN     // Maintain existing speed setting
+      STOP,     // Stop all rotation
+      ACQUIRE,  // Speed for moving a game piece toward shooter
+      EXPEL,    // Speed for moving a game piece toward intake (to expel)
+      HOLD      // Maintain existing speed setting
     }
+  }
+
+  /****************************************************************************
+   * Kicker subsystem constants
+   ****************************************************************************/
+  public static final class KKConsts
+  {
+    /** Kicker roller modes */
+    public enum KKRollerMode
+    {
+      STOP,     // Stop all rotation
+      ACQUIRE,  // Speed for moving a game piece toward shooter
+      EXPEL,    // Speed for moving a game piece toward intake (to expel)
+      HOLD      // Maintain existing speed setting
+    }
+  }
+
+  /****************************************************************************
+   * Shooter subsystem constants
+   ****************************************************************************/
+  public static final class SHConsts
+  {
   }
 
   /****************************************************************************
@@ -160,24 +163,8 @@ public final class Constants
    ****************************************************************************/
   public static final class VIConsts
   {
-    public static final AprilTagFields      kGameField        = AprilTagFields.k2025ReefscapeWelded;
-    public static final AprilTagFieldLayout kATField          = AprilTagFieldLayout.loadField(kGameField);
-
-    public static final String              kReefBranchString = "ReefBranch";
-
-    //** Reef branch used for alignment */
-    public enum ReefBranch
-    {
-      LEFT(0), ALGAE(1), RIGHT(2);
-
-      public final int value;
-
-      private ReefBranch(int value)
-      {
-        this.value = value;
-      }
-    }
-
+    public static final AprilTagFields      kGameField = AprilTagFields.k2026RebuiltWelded;
+    public static final AprilTagFieldLayout kATField   = AprilTagFieldLayout.loadField(kGameField);
   }
 
   /****************************************************************************
@@ -188,31 +175,31 @@ public final class Constants
     /** LED color to be used */
     public enum COLOR
     {
-      OFF,      // CANdle off
-      WHITE,    // CANdle white
-      RED,      // CANdle red
-      ORANGE,   // CANdle orange
-      YELLOW,   // CANdle yellow
-      GREEN,    // CANdle green
-      BLUE,     // CANdle blue
-      PURPLE,   // CANdle purple
+      OFF, // CANdle off
+      WHITE, // CANdle white
+      RED, // CANdle red
+      ORANGE, // CANdle orange
+      YELLOW, // CANdle yellow
+      GREEN, // CANdle green
+      BLUE, // CANdle blue
+      PURPLE, // CANdle purple
       DASHBOARD // CANdle color taken from dashboard
     }
 
     /** LED animation to be used */
     public enum ANIMATION
     {
-      SOLID,      // Clears animation for solid colors (including OFF)
-      COLORFLOW,  // Single color flow through string
-      FIRE,       // Fire pattern from one end of string
-      LARSON,     // Ping-pong pattern bouncing between string ends
-      RAINBOW,    // Fading rainbow colors
-      RGBFADE,    // Fading red, then green, then blue
+      SOLID, // Clears animation for solid colors (including OFF)
+      COLORFLOW, // Single color flow through string
+      FIRE, // Fire pattern from one end of string
+      LARSON, // Ping-pong pattern bouncing between string ends
+      RAINBOW, // Fading rainbow colors
+      RGBFADE, // Fading red, then green, then blue
       SINGLEFADE, // Fading with a single color
-      STROBE,     // Strobe flashing with a single color
-      TWINKLE,    // Twinkles leds on
+      STROBE, // Strobe flashing with a single color
+      TWINKLE, // Twinkles leds on
       TWINKLEOFF, // Twinkles leds off
-      DASHBOARD   // Animation taken from the dashboard
+      DASHBOARD // Animation taken from the dashboard
     }
   }
 }
