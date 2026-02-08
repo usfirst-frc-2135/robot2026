@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -35,25 +34,29 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.math.Conversions;
+import frc.robot.lib.phoenix.CTREConfigs5;
 import frc.robot.lib.phoenix.CTREConfigs6;
+import frc.robot.lib.phoenix.PhoenixUtil5;
 import frc.robot.lib.phoenix.PhoenixUtil6;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter extends SubsystemBase
 {
   private static final String kSubsystemName     = "Shooter";
   private static final double kMOI               = 0.001; // Simulation - Moment of Inertia
-  private static final double kFlywheelScoreRPM  = 3300.0; // RPM to score
+  private static final double kFlywheelScoreRPM  = 3500.0; // RPM to score
   private static final double kFlywheelPassRPM   = 3000.0; // RPM to pass
   private static final double kToleranceRPM      = 150.0; // Tolerance band around target RPM
   private static final double kFlywheelGearRatio = (18.0 / 18.0);
-  public static final boolean m_leftMotorInvert  = false;
+  private static final double kKickerVoltageOut  = 12.0;
 
   /** Shooter (speed) modes */
   private enum ShooterMode
   {
     STOP,       // Shooter is stopped
     PASS,       // Shooter speed for passing fuel
-    REVERSE, SCORE       // Shooter speed for shooting
+    SCORE,       // Shooter speed for shooting
+    WAIT
   }
 
   // Devices objects
@@ -77,14 +80,12 @@ public class Shooter extends SubsystemBase
 
   // CTRE Status signals for sensors
   private final StatusSignal<AngularVelocity> m_leftVelocity; // Default 4Hz (250ms)
-  //private final StatusSignal<AngularVelocity> m_kickerVelocity;
-  //private final double m_kickerVelocity;
 
   // Declare module variables
   private boolean                             m_leftValid;
   private boolean                             m_rightValid;
   private boolean                             m_kickerValid;
-  private double                              m_leftRPM;                       // Current lower RPM
+  private double                              m_leftRPM;                        // Current lower RPM
   private double                              m_targetRPM             = 0;      // Requested target flywheel RPM
   private boolean                             m_isAtTargetRPM         = false;  // Indicates flywheel RPM is close to target
   private boolean                             m_isAtTargetRPMPrevious = false;
@@ -103,7 +104,6 @@ public class Shooter extends SubsystemBase
    * 
    * Constructor
    */
-
   public Shooter( )
   {
     setName("Shooter");
@@ -118,17 +118,10 @@ public class Shooter extends SubsystemBase
     m_rightAlert.set(!m_rightValid);
     m_rightMotor.setControl(new Follower(m_leftMotor.getDeviceID( ), MotorAlignmentValue.Opposed));
 
-    //m_kickerMotor.configAllSettings(kickerSRXConfig( ));
-
-    m_kickerMotor.configFactoryDefault( );
-    TalonSRXConfiguration kickerConfig = new TalonSRXConfiguration( );
-    kickerConfig.continuousCurrentLimit = (30);
-    m_kickerMotor.configAllSettings(kickerConfig);
+    m_kickerValid =
+        PhoenixUtil5.getInstance( ).talonSRXInitialize(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs5.kickerSRXConfig( ));
+    m_kickerAlert.set(!m_kickerValid);
     m_kickerMotor.setInverted(false);
-
-    // m_kickerValid =
-    //     PhoenixUtil6.getInstance( ).talonSRXInitialize6(m_kickerMotor, kSubsystemName + "Kicker", CTREConfigs6.shooterFXConfig( ));
-    // m_kickerAlert.set(!m_kickerValid);
 
     // Initialize status signal objects
     m_leftVelocity = m_leftMotor.getRotorVelocity( );
@@ -203,7 +196,6 @@ public class Shooter extends SubsystemBase
     // Initialize network tables publishers
     m_leftRPMPub = table.getDoubleTopic("lowerSpeed").publish( );
 
-    // m_upperSpeedPub = table.getDoubleTopic("upperSpeed").publish( );
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );
     m_isAtTargetRPMPub = table.getBooleanTopic("atTargetRPM").publish( );
 
@@ -213,7 +205,6 @@ public class Shooter extends SubsystemBase
     // Add commands
     SmartDashboard.putData("ShRunScore", getShooterScoreCommand( ));
     SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
-    SmartDashboard.putData("ShRunReverse", getShooterReverseCommand( ));
   }
 
   // Put methods for controlling this subsystem below here. Call these from Commands.
@@ -250,19 +241,15 @@ public class Shooter extends SubsystemBase
         DataLogManager.log(String.format("%s: Shooter mode is invalid: %s", getSubsystem( ), mode));
       case STOP :
         m_targetRPM = 0.0;
-
         break;
       case PASS :
         m_targetRPM = kFlywheelPassRPM;
         break;
       case SCORE :
         m_targetRPM = m_scoreRPMEntry.get(0.0);
-
         break;
-      case REVERSE :
-        m_targetRPM = -(m_scoreRPMEntry.get(0.0));
+      
 
-        break;
     }
 
     double rotPerSecond = m_targetRPM / 60.0;
@@ -275,12 +262,10 @@ public class Shooter extends SubsystemBase
       else if (m_targetRPM > 100.0)
       {
         setShooterVelocity(rotPerSecond);
-        m_kickerMotor.setVoltage(3);
       }
       else
       {
         setShooterStopped( );
-        m_kickerMotor.setVoltage(0.0);
       }
     }
 
@@ -299,7 +284,8 @@ public class Shooter extends SubsystemBase
   private void setShooterVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
-    m_kickerMotor.setVoltage(3);
+    Timer.delay(0.1);
+    m_kickerMotor.setVoltage(kKickerVoltageOut);
   }
 
   /****************************************************************************
@@ -350,11 +336,6 @@ public class Shooter extends SubsystemBase
   public Command getShooterScoreCommand( )
   {
     return getShooterCommand(ShooterMode.SCORE).withName("ShooterScore");
-  }
-
-  public Command getShooterReverseCommand( )
-  {
-    return getShooterCommand(ShooterMode.REVERSE).withName("ShooterReverse");
   }
 
   /****************************************************************************

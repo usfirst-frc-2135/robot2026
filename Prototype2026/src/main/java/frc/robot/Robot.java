@@ -16,42 +16,42 @@ import frc.robot.ExampleSmartMotorController.PIDMode;
 
 public class Robot extends TimedRobot
 {
-  private static final boolean m_isComp    = detectRobot( );
-  private static final double  kEncoderCPR = 4096;
+  private static final boolean m_isComp     = detectRobot( );
+  private static final double  kEncoderCPR  = 4096;
+  public boolean               kElevatorSim = false;
 
   private static enum ControlMode
   {
     kStopped, kFixedSpeed, kJoystickControl, kClosedLoop
   }
 
-  private final static RobotContainer               m_container       = new RobotContainer( );
-  private final static XboxController               m_controller      = new XboxController(0);
-  private final static ExampleSmartMotorController  m_motor1          = new ExampleSmartMotorController(5, kEncoderCPR);
-  private final static ExampleSmartMotorController  m_motor2          = new ExampleSmartMotorController(6, kEncoderCPR);
+  private final static RobotContainer               m_container     = new RobotContainer( );
+  private final static XboxController               m_controller    = new XboxController(0);
+  private final static ExampleSmartMotorController  m_motor1        = new ExampleSmartMotorController(5, kEncoderCPR);
+  private final static ExampleSmartMotorController  m_motor2        = new ExampleSmartMotorController(6, kEncoderCPR);
 
-  private final static TalonSRXSimCollection        m_motor1Sim       = m_motor1.getMotorSimulation( );
-  private final static ElevSim                      m_elevSim         = new ElevSim(m_motor1Sim, kEncoderCPR);
+  private final static TalonSRXSimCollection        m_motor1Sim     = m_motor1.getMotorSimulation( );
+  private final static ElevSim                      m_elevSim       = new ElevSim(m_motor1Sim, kEncoderCPR);
 
-  private final static double                       kv                = 1.0; // Max velocity - RPS
-  private final static double                       ka                = 2.0; // Max acceleration - RPS^2
+  private final static double                       kv              = 1.0; // Max velocity - RPS
+  private final static double                       ka              = 2.0; // Max acceleration - RPS^2
 
-  private final static TrapezoidProfile.Constraints m_constraints     = new TrapezoidProfile.Constraints(kv, ka);
+  private final static TrapezoidProfile.Constraints m_constraints   = new TrapezoidProfile.Constraints(kv, ka);
 
   private Command                                   m_autonomousCommand;
-  private static double                             m_timeMark        = Timer.getFPGATimestamp( );
-  private static boolean                            m_loadAutoCommand = true;
+  private static double                             m_timeMark      = Timer.getFPGATimestamp( );
 
-  private final static double                       m_goal1           = 0.5; // Goal 1 position
-  private final static double                       m_goal2           = -1.0; // Goal 2 position
+  private final static double                       m_goal1         = 0.5; // Goal 1 position
+  private final static double                       m_goal2         = -1.0; // Goal 2 position
 
-  private ControlMode                               m_controlMode     = ControlMode.kStopped;
-  private double                                    m_fixedSpeed      = 0.3;
-  private double                                    m_percentOutput   = 0.0;
+  private ControlMode                               m_controlMode   = ControlMode.kStopped;
+  private double                                    m_fixedSpeed    = 0.3;
+  private double                                    m_percentOutput = 0.0;
 
-  private Timer                                     m_timer           = new Timer( );
-  private TrapezoidProfile                          m_profile         = new TrapezoidProfile(m_constraints);
-  private TrapezoidProfile.State                    m_goal            = new TrapezoidProfile.State( );
-  private TrapezoidProfile.State                    m_setpoint        = new TrapezoidProfile.State( );
+  private Timer                                     m_timer         = new Timer( );
+  private TrapezoidProfile                          m_profile       = new TrapezoidProfile(m_constraints);
+  private TrapezoidProfile.State                    m_goal          = new TrapezoidProfile.State( );
+  private TrapezoidProfile.State                    m_setpoint      = new TrapezoidProfile.State( );
 
   /**
    * robotInit - called ONCE when the robot class starts up
@@ -65,8 +65,7 @@ public class Robot extends TimedRobot
   }
 
   /**
-   * robotPeriodic - periodic processing for this motor/controller called every 20
-   * msec
+   * robotPeriodic - periodic processing for this motor/controller called every 20 msec
    */
   @Override
   public void robotPeriodic( )
@@ -85,6 +84,8 @@ public class Robot extends TimedRobot
   @Override
   public void disabledInit( )
   {
+    datalogMatchBanner("disabledInit");
+
     m_controlMode = ControlMode.kStopped;
     m_goal.position = 0.0;
     m_goal.velocity = 0.0;
@@ -95,6 +96,25 @@ public class Robot extends TimedRobot
     m_motor1.resetEncoder( );
     m_motor2.resetEncoder( );
     m_elevSim.reset( );
+  }
+
+  /**
+   * autonomousInit - called ONCE whenever autonomous started
+   */
+  @Override
+  public void autonomousInit( )
+  {
+    datalogMatchBanner("autonomousInit");
+  }
+
+  /**
+   * teleopInit - called ONCE whenever the teleop is started
+   */
+  @Override
+  public void teleopInit( )
+  {
+    datalogMatchBanner("teleopInit");
+    cancelOldAutonomousCommand( );
   }
 
   /**
@@ -112,79 +132,83 @@ public class Robot extends TimedRobot
   {
     // Detect mode changes
 
-    if (m_controller.getAButtonPressed( ) || m_controller.getBButtonPressed( ))
+    if (kElevatorSim)
     {
-      m_controlMode = ControlMode.kFixedSpeed;
-      Boolean aButton = m_controller.getAButton( );
-      m_fixedSpeed = SmartDashboard.getNumber("FixedSpeed", m_fixedSpeed);
-      DataLogManager.log(String.format("%s button pressed - percent output: %.2f", (aButton) ? "A" : "B", m_fixedSpeed));
-      m_percentOutput = (aButton) ? m_fixedSpeed : -m_fixedSpeed;
-    }
-    else if (m_controller.getRightBumperButtonPressed( ))
-    {
-      m_controlMode = ControlMode.kStopped;
-      DataLogManager.log(String.format("Left bumper pressed - STOP!"));
-      m_percentOutput = 0.0;
-      m_motor1.resetEncoder( );
-      m_motor2.resetEncoder( );
-      m_elevSim.reset( );
-    }
-    else if (m_controller.getLeftBumperButtonPressed( ))
-    {
-      m_controlMode = ControlMode.kJoystickControl;
-      DataLogManager.log(String.format("Right bumper pressed - joystick control"));
-    }
-    else if (m_controller.getXButtonPressed( ) || m_controller.getYButtonPressed( ))
-    {
-      m_controlMode = ControlMode.kClosedLoop;
-      Boolean xButton = m_controller.getXButton( );
-      DataLogManager.log(String.format("%s button pressed", (xButton ? "X" : "Y")));
-      m_timer.restart( );
-      m_setpoint = new TrapezoidProfile.State( );
-      m_goal = new TrapezoidProfile.State(((xButton) ? m_goal1 : m_goal2), 0);
-      DataLogManager.log(String.format("Start: goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position,
-          m_motor1.getEncoderPosition( )));
-    }
-
-    // Run the correct mode each loop
-
-    switch (m_controlMode)
-    {
-      case kJoystickControl :
-        m_percentOutput = MathUtil.applyDeadband(m_controller.getLeftY( ), 0.15);
-      default :
-      case kStopped :
-      case kFixedSpeed :
-        m_motor1.set(m_percentOutput);
-        m_motor2.set(-m_percentOutput);
-        break;
-
-      case kClosedLoop :
+      if (m_controller.getAButtonPressed( ) || m_controller.getBButtonPressed( ))
       {
-        double position = m_motor1.getEncoderPosition( );
-        DataLogManager.log(
-            String.format("Loop:  goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position, position));
-        if (m_timer.hasElapsed(4.0) || Math.abs(position - m_goal.position) < 0.05)
+        m_controlMode = ControlMode.kFixedSpeed;
+        Boolean aButton = m_controller.getAButton( );
+        m_fixedSpeed = SmartDashboard.getNumber("FixedSpeed", m_fixedSpeed);
+        DataLogManager.log(String.format("%s button pressed - percent output: %.2f", (aButton) ? "A" : "B", m_fixedSpeed));
+        m_percentOutput = (aButton) ? m_fixedSpeed : -m_fixedSpeed;
+      }
+      else if (m_controller.getRightBumperButtonPressed( ))
+      {
+        m_controlMode = ControlMode.kStopped;
+        DataLogManager.log(String.format("Left bumper pressed - STOP!"));
+        m_percentOutput = 0.0;
+        m_motor1.resetEncoder( );
+        m_motor2.resetEncoder( );
+        m_elevSim.reset( );
+      }
+      else if (m_controller.getLeftBumperButtonPressed( ))
+      {
+        m_controlMode = ControlMode.kJoystickControl;
+        DataLogManager.log(String.format("Right bumper pressed - joystick control"));
+      }
+      else if (m_controller.getXButtonPressed( ) || m_controller.getYButtonPressed( ))
+      {
+        m_controlMode = ControlMode.kClosedLoop;
+        Boolean xButton = m_controller.getXButton( );
+        DataLogManager.log(String.format("%s button pressed", (xButton ? "X" : "Y")));
+        m_timer.restart( );
+        m_setpoint = new TrapezoidProfile.State( );
+        m_goal = new TrapezoidProfile.State(((xButton) ? m_goal1 : m_goal2), 0);
+        DataLogManager.log(String.format("Start: goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position,
+            m_motor1.getEncoderPosition( )));
+      }
+
+      // Run the correct mode each loop
+
+      switch (m_controlMode)
+      {
+        case kJoystickControl :
+          m_percentOutput = MathUtil.applyDeadband(m_controller.getLeftY( ), 0.15);
+        default :
+        case kStopped :
+        case kFixedSpeed :
+          m_motor1.set(m_percentOutput);
+          m_motor2.set(-m_percentOutput);
+          break;
+
+        case kClosedLoop :
         {
-          DataLogManager.log(String.format("Return to open loop - %s", (m_timer.hasElapsed(4.0) ? "timed out" : "at goal")));
-          m_controlMode = ControlMode.kStopped;
-          m_percentOutput = 0.0;
-        }
-        else
-        {
+          double position = m_motor1.getEncoderPosition( );
           DataLogManager.log(
               String.format("Loop:  goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position, position));
-          m_setpoint = m_profile.calculate(m_timer.get( ), m_setpoint, m_goal);
-          m_motor1.setSetpoint(PIDMode.kPosition, m_setpoint.position, 0.0);
-          m_motor2.set(0.0);
+          if (m_timer.hasElapsed(4.0) || Math.abs(position - m_goal.position) < 0.05)
+          {
+            DataLogManager.log(String.format("Return to open loop - %s", (m_timer.hasElapsed(4.0) ? "timed out" : "at goal")));
+            m_controlMode = ControlMode.kStopped;
+            m_percentOutput = 0.0;
+          }
+          else
+          {
+            DataLogManager.log(
+                String.format("Loop:  goal: %.2f setpoint: %.2f Position: %.3f", m_goal.position, m_setpoint.position, position));
+            m_setpoint = m_profile.calculate(m_timer.get( ), m_setpoint, m_goal);
+            m_motor1.setSetpoint(PIDMode.kPosition, m_setpoint.position, 0.0);
+            m_motor2.set(0.0);
+          }
         }
+          break;
       }
-        break;
+
+      SmartDashboard.putNumber("LOOP-goal", m_goal.position);
+      SmartDashboard.putNumber("LOOP-m_motor1", m_motor1.get( ));
+      SmartDashboard.putNumber("LOOP-m_motor2", m_motor2.get( ));
     }
 
-    SmartDashboard.putNumber("LOOP-goal", m_goal.position);
-    SmartDashboard.putNumber("LOOP-m_motor1", m_motor1.get( ));
-    SmartDashboard.putNumber("LOOP-m_motor2", m_motor2.get( ));
   }
 
   /****************************************************************************
@@ -268,7 +292,6 @@ public class Robot extends TimedRobot
   public static void reloadAutomousCommand(String optionName)
   {
     DataLogManager.log(String.format("Auto change! - %s", optionName));
-    m_loadAutoCommand = true;
   }
 
 }
