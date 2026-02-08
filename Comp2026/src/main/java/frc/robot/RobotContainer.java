@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.autos.AutoLeave;
+import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.LogCommand;
 import frc.robot.generated.TunerConstants;
@@ -117,7 +118,8 @@ public class RobotContainer
   {
     AUTOSTOP,           // AutoStop - sit still, do nothing
     AUTOLEAVE,          // Leave starting line
-    AUTOTEST            // Run a selected test auto
+    AUTOTEST,           // Run a selected test auto
+    AUTOSCORE
   }
 
   /**
@@ -154,7 +156,12 @@ public class RobotContainer
 
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_Test1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_Test2"),
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_Test3")  //
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_Test3"),
+
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START1.toString( ), "Start1_Hub"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START2.toString( ), "Start2_Hub"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START3.toString( ), "Start3_Hub")
+  //
   ));
 
   /****************************************************************************
@@ -209,6 +216,7 @@ public class RobotContainer
     // Configure autonomous sendable chooser
     m_autoChooser.setDefaultOption("0 - AutoStop", AutoChooser.AUTOSTOP);
     m_autoChooser.addOption("1 - AutoLeave", AutoChooser.AUTOLEAVE);
+    m_autoChooser.addOption("2- AutoScore", AutoChooser.AUTOSCORE);
     m_autoChooser.addOption("9 - AutoTestPath", AutoChooser.AUTOTEST);
     m_autoChooser.onChange(this::updateAutoChooserCallback);
 
@@ -505,6 +513,9 @@ public class RobotContainer
         break;
       case AUTOTEST :
         m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
+        break;
+      case AUTOSCORE :
+        m_autoCommand = new AutoScore(m_ppPathList, m_drivetrain);
         break;
     }
 

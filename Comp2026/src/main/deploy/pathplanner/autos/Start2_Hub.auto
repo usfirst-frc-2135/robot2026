@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start1-N1"
+            "pathName": "Start2-DR"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "N1-S1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "S1-Hub"
+            "pathName": "DR-Hub"
           }
         }
       ]

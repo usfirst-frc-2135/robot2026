@@ -23,18 +23,39 @@
         "x": 7.801374045801527,
         "y": 7.348854961832062
       },
+      "nextControl": {
+        "x": 0.9786259541984719,
+        "y": 7.537145038167937
+      },
+      "isLocked": false,
+      "linkedName": "Start3"
+    },
+    {
+      "anchor": {
+        "x": 2.4456488549618327,
+        "y": 4.461784351145038
+      },
+      "prevControl": {
+        "x": 2.134737595419847,
+        "y": 5.610337786259541
+      },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Hub3"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +63,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -29.999999999999996
   },
   "reversed": false,
   "folder": "FromNeutralZone",
