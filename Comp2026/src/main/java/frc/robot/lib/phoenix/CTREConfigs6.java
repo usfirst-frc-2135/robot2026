@@ -36,7 +36,7 @@ public final class CTREConfigs6
    * @param gearRatio
    *          gear box ratio
    */
-  public static TalonFXConfiguration intakeRollerConfig( )
+  public static TalonFXConfiguration intakeRollerFXConfig( )
   {
     TalonFXConfiguration inRollerConfig = new TalonFXConfiguration( );
 
@@ -65,7 +65,7 @@ public final class CTREConfigs6
     // Motor output settings
     inRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
     inRollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    inRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    inRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     // Open Loop settings
     // inRollerConfig.OpenLoopRamps.*                               // Seconds to ramp
@@ -158,7 +158,7 @@ public final class CTREConfigs6
    * 
    * Intake rotary CANcoder
    */
-  public static CANcoderConfiguration intakeRotaryCancoderConfig( )
+  public static CANcoderConfiguration intakeRotaryCCConfig( )
   {
     CANcoderConfiguration config = new CANcoderConfiguration( );
     double kQuarterRotation = 0.25;
@@ -174,7 +174,101 @@ public final class CTREConfigs6
     return config;
   }
 
-  // Swerve module configs are built into swerve subsystem
+  /****************************************************************************
+   * 
+   * Hopper roller motor - Kraken X44
+   * 
+   */
+  public static TalonFXConfiguration hopperRollerFXConfig( )
+  {
+    TalonFXConfiguration hpRollerConfig = new TalonFXConfiguration( );
+
+    // Closed Loop settings
+    // hpRollerConfig.ClosedLoopGeneral.*
+    // hpRollerConfig.ClosedLoopRamps.*                           // Seconds to ramp
+
+    // Current limit settings
+    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
+    hpRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
+    hpRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    // Feedback settings
+    // hpRollerConfig.Feedback.*
+
+    // Hardware limit switches - CANrange
+    // hpRollerConfig.HardwareLimitSwitch.*
+
+    // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
+    // hpRollerConfig.MotionMagic.*
+
+    // Motor output settings
+    hpRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
+    hpRollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    hpRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+    // Open Loop settings
+    // hpRollerConfig.OpenLoopRamps.*                               // Seconds to ramp
+
+    // Slot settings - remote/fused CANcoder affects all feedback constants by the gearRatio
+    // hpRollerConfig.Slot0.*                                       // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+
+    // Software limit switches
+    // hpRollerConfig.SoftwareLimitSwitch.*
+
+    return hpRollerConfig;
+  }
+
+  /****************************************************************************
+   * 
+   * Kicker roller motor - Kraken X44
+   * 
+   */
+  public static TalonFXConfiguration kickerRollerFXConfig( )
+  {
+    TalonFXConfiguration kkRollerConfig = new TalonFXConfiguration( );
+
+    // Closed Loop settings
+    // kkRollerConfig.ClosedLoopGeneral.*
+    // kkRollerConfig.ClosedLoopRamps.*                           // Seconds to ramp
+
+    // Current limit settings
+    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
+    kkRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    kkRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
+    kkRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    // Feedback settings
+    // kkRollerConfig.Feedback.*
+
+    // Hardware limit switches - CANrange
+    // kkRollerConfig.HardwareLimitSwitch.*
+
+    // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
+    // kkRollerConfig.MotionMagic.*
+
+    // Motor output settings
+    kkRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
+    kkRollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    kkRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+    // Open Loop settings
+    // kkRollerConfig.OpenLoopRamps.*                               // Seconds to ramp
+
+    // Slot settings - remote/fused CANcoder affects all feedback constants by the gearRatio
+    // kkRollerConfig.Slot0.*                                       // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+
+    // Software limit switches
+    // kkRollerConfig.SoftwareLimitSwitch.*
+
+    return kkRollerConfig;
+  }
 
   /****************************************************************************
    * 
@@ -225,6 +319,71 @@ public final class CTREConfigs6
 
   /****************************************************************************
    * 
+   * Climber motors (2 - one for left and right) - Falcon 500
+   * 
+   * @param inverted
+   *          motor inversion request
+   * @param min
+   *          minimum deployment distance
+   * @param max
+   *          maximum deployement distance (must be greater than min)
+   */
+  public static TalonFXConfiguration climberFXConfig(boolean inverted, double min, double max)
+  {
+    TalonFXConfiguration climberConfig = new TalonFXConfiguration( );
+
+    // Closed Loop settings
+    // exConfig.ClosedLoopGeneral.*
+    // exConfig.ClosedLoopRamps.*
+
+    // Current limit settings
+    climberConfig.CurrentLimits.SupplyCurrentLimit = 80.0;        // Amps
+    climberConfig.CurrentLimits.SupplyCurrentLowerLimit = 80.0;   // Amps
+    climberConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;   // Seconds
+    climberConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+    climberConfig.CurrentLimits.StatorCurrentLimit = 800.0;        // Amps
+    climberConfig.CurrentLimits.StatorCurrentLimitEnable = false;
+
+    // Feedback settings
+    // climberConfig.Feedback.*
+
+    // Hardware limit switches - NONE
+    // climberConfig.HardwareLimitSwitch.*
+
+    // Motion Magic settings
+    climberConfig.MotionMagic.MotionMagicCruiseVelocity = 79.75;  // Rotations / second
+    climberConfig.MotionMagic.MotionMagicAcceleration = 159.5;    // Rotations / second ^ 2
+    climberConfig.MotionMagic.MotionMagicJerk = 3544;             // Rotations / second ^ 3
+
+    // Motor output settings
+    climberConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;   // Percentage
+    climberConfig.MotorOutput.Inverted = (inverted) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    climberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+    // Open Loop settings
+    // climberConfig.OpenLoopRamps.*                              // Seconds to ramp
+
+    // Slot settings
+    climberConfig.Slot0.kS = 0.0;                                 // Feedforward: Voltage or duty cylce to overcome static friction
+    climberConfig.Slot0.kG = 0.0;                                 // Feedforward: Voltage or duty cylce to overcome gravity (arbitrary feedforward)
+    climberConfig.Slot0.kV = 0.1129;                              // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
+
+    climberConfig.Slot0.kP = 9.60;                                // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    climberConfig.Slot0.kI = 0.0;                                 // Feedback: Voltage or duty cycle per accumulated unit
+    climberConfig.Slot0.kD = 0.0;                                 // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+
+    // Software limit switches
+    // climberConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;   // Rotations
+    // climberConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    // climberConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = max;   // Rotations
+    // climberConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+
+    return climberConfig;
+  }
+
+  /****************************************************************************
+   * 
    * XXX CANRange detector
    */
   public static CANrangeConfiguration xxxCANRangeConfig( )
@@ -236,5 +395,7 @@ public final class CTREConfigs6
 
     return crConfig;
   }
+
+  // Swerve module configs are built into swerve subsystem
 
 }

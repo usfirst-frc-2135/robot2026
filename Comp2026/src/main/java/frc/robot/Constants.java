@@ -86,9 +86,9 @@ public final class Constants
     public static final int    kCANID_IntakeRotary   = 16; // Kraken X44 (Intake rotary)
     public static final int    kCANID_IntakeCANcoder = 17; // CANcoder (intake)
 
-    public static final int    kCANID_HopperConveyor = 19; // Kraken X44 (Hopper) 
+    public static final int    kCANID_HopperRoller   = 19; // Kraken X44 (Hopper) 
 
-    public static final int    kCANID_KickerTunnel   = 20; // Kraken X44 (Kicker)
+    public static final int    kCANID_KickerRoller   = 20; // Kraken X44 (Kicker)
 
     public static final int    kCANID_ShooterLeft    = 22; // Kraken X60 (Shooter)
     public static final int    kCANID_ShooterRight   = 23; // Kraken X60 (Shooter)
@@ -118,6 +118,36 @@ public final class Constants
       ACQUIRE, // Speed for acquiring a game piece
       EXPEL,   // Speed for expelling a game piece
       HOLD     // Maintain existing speed setting
+    }
+  }
+
+  /****************************************************************************
+   * Hopper subsystem constants
+   ****************************************************************************/
+  public static final class HPConsts
+  {
+    /** Hopper roller modes */
+    public enum HPRollerMode
+    {
+      STOP,     // Stop all rotation
+      ACQUIRE,  // Speed for moving a game piece toward shooter
+      EXPEL,    // Speed for moving a game piece toward intake (to expel)
+      HOLD      // Maintain existing speed setting
+    }
+  }
+
+  /****************************************************************************
+   * Kicker subsystem constants
+   ****************************************************************************/
+  public static final class KKConsts
+  {
+    /** Kicker roller modes */
+    public enum KKRollerMode
+    {
+      STOP,     // Stop all rotation
+      ACQUIRE,  // Speed for moving a game piece toward shooter
+      EXPEL,    // Speed for moving a game piece toward intake (to expel)
+      HOLD      // Maintain existing speed setting
     }
   }
 
