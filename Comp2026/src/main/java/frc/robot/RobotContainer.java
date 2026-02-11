@@ -24,8 +24,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -66,9 +64,9 @@ public class RobotContainer
   private static final CommandXboxController          m_driverPad     = new CommandXboxController(Constants.kDriverPadPort);
   private static final CommandXboxController          m_operatorPad   = new CommandXboxController(Constants.kOperatorPadPort);
 
-  private static final LinearVelocity                 kMaxSpeed       = TunerConstants.kSpeedAt12Volts;     // Maximum top speed
+  private static final LinearVelocity                 kMaxSpeed       = TunerConstants.kSpeedAt12Volts;       // Maximum top speed
   private static final AngularVelocity                kMaxAngularRate = RotationsPerSecond.of(1.0); // Max 1.0 rot per second
-  private static final double                         kSlowSwerve     = 0.30;                               // Throttle max swerve speeds for finer control
+  private static final double                         kSlowSwerve     = 0.30;                                 // Throttle max swerve speeds for finer control
   private static final double                         kHeadingKp      = 6.0;
   private static final double                         kHeadingKi      = 0.0;
   private static final double                         kHeadingKd      = 0.0;
@@ -105,8 +103,6 @@ public class RobotContainer
   private final CommandSwerveDrivetrain               m_drivetrain    = TunerConstants.createDrivetrain( );
 
   // Selected autonomous command
-  private final NetworkTableInstance                  kNTInst         = NetworkTableInstance.getDefault( );
-  private final NetworkTable                          kRobotTable     = kNTInst.getTable(Constants.kRobotString);
   private Command                                     m_autoCommand;  // Selected autonomous command
   private List<PathPlannerPath>                       m_ppPathList;   // Path list for the selected auto
 
@@ -125,9 +121,9 @@ public class RobotContainer
    */
   private enum StartPose
   {
-    START1, // Starting pose 1 - leftmost aligned with a blue cage //TODO: Update
-    START2, // Starting pose 2 - middle aligned with reef //TODO: Update
-    START3  // Starting pose 3 - rightmost aligned with a red cage //TODO: Update
+    START1, // Starting pose 1 - leftmost aligned with a blue cage  // TODO: Update
+    START2, // Starting pose 2 - middle aligned with reef           // TODO: Update
+    START3  // Starting pose 3 - rightmost aligned with a red cage  // TODO: Update
   }
 
   /** Dashboard chooser for auto option selection */
@@ -548,19 +544,19 @@ public class RobotContainer
    * 
    * Gamepad joystick axis interfaces
    */
-  private double getElevatorAxis( )
-  {
-    return -m_operatorPad.getLeftY( );
-  }
+  // private double getElevatorAxis( )
+  // {
+  //   return -m_operatorPad.getLeftY( );
+  // }
 
   /****************************************************************************
    * 
    * Gamepad joystick axis interfaces
    */
-  private double getWristAxis( )
-  {
-    return m_operatorPad.getRightX( );
-  }
+  // private double getWristAxis( )
+  // {
+  //   return m_operatorPad.getRightX( );
+  // }
 
   /****************************************************************************
    * 
