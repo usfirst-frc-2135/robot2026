@@ -6,12 +6,12 @@ import frc.robot.Constants.INConsts;
 import frc.robot.subsystems.Intake;
 
 /**
- * Command to acquire a note from floor
+ * Command to acquire a fuel from floor
  */
 public class AcquireFuel extends SequentialCommandGroup
 {
   /**
-   * Group command to use the intake to acquire a note from the floor
+   * Group command to use the intake to acquire a fuel from the floor
    * 
    * @param intake
    *          intake subsystem
