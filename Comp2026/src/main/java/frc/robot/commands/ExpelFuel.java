@@ -3,7 +3,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.HPConsts;
 import frc.robot.Constants.INConsts;
+import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 
 /**
@@ -16,8 +18,10 @@ public class ExpelFuel extends SequentialCommandGroup
      * 
      * @param intake
      *            intake subsystem
+     * @param hopper
+     *            hopper subsystem
      */
-    public ExpelFuel(Intake intake)
+    public ExpelFuel(Intake intake, Hopper hopper)
     {
         setName("ExpelFuel");
 
@@ -36,7 +40,10 @@ public class ExpelFuel extends SequentialCommandGroup
         new WaitCommand(0.5),
 
         new LogCommand(getName(), "Stop rollers & Hold intake rotary in same position"),
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getCurrentAngle)
+        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getCurrentAngle),
+
+        new LogCommand(getName(), "Run Hopper Rollers"), 
+        hopper.getRollerModeCommand(HPConsts.HPRollerMode.ACQUIRE)
         
         // @formatter:on
         );
