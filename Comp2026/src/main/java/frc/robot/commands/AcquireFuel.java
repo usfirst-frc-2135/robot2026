@@ -17,7 +17,7 @@ public class AcquireFuel extends SequentialCommandGroup
    * 
    * @param intake
    *          intake subsystem
-   *          * @param hopper
+   * @param hopper
    *          hopper subsystem
    */
   public AcquireFuel(Intake intake, Hopper hopper)
