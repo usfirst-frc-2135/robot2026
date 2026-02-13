@@ -32,7 +32,7 @@ public class RampShooter extends SequentialCommandGroup
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
       
         new LogCommand(getName(), "Start up Shooter rollers "),
-        shooter.getShooterCommand(SHConsts.ShooterMode.SCORE)
+        shooter.getShooterScoreCommand(SHConsts.ShooterMode.SCORE)
     
 
         // @formatter:on
