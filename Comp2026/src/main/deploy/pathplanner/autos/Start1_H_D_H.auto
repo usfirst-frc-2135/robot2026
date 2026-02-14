@@ -15,11 +15,29 @@
           "data": {
             "pathName": "N1-Hub1"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Hub1-DR"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DR-DL"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DL-Hub3"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "2-AutoScore",
+  "folder": "3-AutoScore2",
   "choreoAuto": false
 }
