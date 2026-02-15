@@ -29,18 +29,18 @@ public class ShootFuel extends SequentialCommandGroup
         setName("ShootFuel");
 
         addCommands(
-                // Add Commands here:
+                // Add Commands here: 
 
                 // @formatter:off
 
-         new LogCommand(getName(), "Start Kicker Rollers"), 
+        new LogCommand(getName(), "Start Kicker Rollers"), 
         hopper.getRollerModeCommand(HPConsts.HPRollerMode.ACQUIRE),
 
         new LogCommand(getName(), "Start Kicker Rollers"), 
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.ACQUIRE),
       
         new LogCommand(getName(), "Start up Shooter rollers "),
-        shooter.getShooterCommand(SHConsts.ShooterMode.SCORE)
+        shooter.getShooterScoreCommand()
     
 
         // @formatter:on

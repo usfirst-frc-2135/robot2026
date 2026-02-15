@@ -156,13 +156,7 @@ public final class Constants
    ****************************************************************************/
   public static final class SHConsts
   {
-    public enum ShooterMode
-  {
-    REVERSE,    // Shooter runs in reverse direction to handle jams
-    STOP,       // Shooter is stopped
-    SCORE,      // Shooter ramped to an initial speed before shooting
-    PASS        // Shooter slowed to passing speed
-  }
+
   }
 
   /****************************************************************************
