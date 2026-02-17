@@ -10,7 +10,7 @@
         "Name": "CANCoder FL (ID 3)",
         "Model": "CANCoder",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": null
       },
       "SteerMotor": {
@@ -18,7 +18,7 @@
         "Name": "Steer FL (ID 2)",
         "Model": "Talon FX vers. F",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": {
           "Name": "WCP Kraken x44",
           "FreeSpeedRps": 125.5,
@@ -31,7 +31,7 @@
         "Name": "Drive FL (ID 1)",
         "Model": "Talon FX vers. C",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
           "FreeSpeedRps": 96.7,
@@ -59,7 +59,7 @@
         "Name": "CANCoder FR (ID 6)",
         "Model": "CANCoder",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": null
       },
       "SteerMotor": {
@@ -67,7 +67,7 @@
         "Name": "Steer FR (ID 5)",
         "Model": "Talon FX vers. F",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": {
           "Name": "WCP Kraken x44",
           "FreeSpeedRps": 125.5,
@@ -80,7 +80,7 @@
         "Name": "Drive FR (ID 4)",
         "Model": "Talon FX vers. C",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
           "FreeSpeedRps": 96.7,
@@ -108,7 +108,7 @@
         "Name": "CANCoder BL (ID 9)",
         "Model": "CANCoder",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": null
       },
       "SteerMotor": {
@@ -116,7 +116,7 @@
         "Name": "Steer BL (ID 8)",
         "Model": "Talon FX vers. F",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": {
           "Name": "WCP Kraken x44",
           "FreeSpeedRps": 125.5,
@@ -129,7 +129,7 @@
         "Name": "Drive BL (ID 7)",
         "Model": "Talon FX vers. C",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
           "FreeSpeedRps": 96.7,
@@ -157,7 +157,7 @@
         "Name": "CANCoder BR (ID 12)",
         "Model": "CANCoder",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": null
       },
       "SteerMotor": {
@@ -165,7 +165,7 @@
         "Name": "Steer BR (ID 11)",
         "Model": "Talon FX vers. F",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": {
           "Name": "WCP Kraken x44",
           "FreeSpeedRps": 125.5,
@@ -178,7 +178,7 @@
         "Name": "Drive BR (ID 10)",
         "Model": "Talon FX vers. C",
         "CANbus": "133C030C463847532020204B43320DFF",
-        "CANbusFriendly": "Default Name",
+        "CANbusFriendly": "canivore1",
         "SelectedMotorType": {
           "Name": "WCP Kraken x60",
           "FreeSpeedRps": 96.7,
@@ -205,7 +205,7 @@
       "Name": "Pigeon 2 vers. S (Device ID 13)",
       "Model": "Pigeon 2 vers. S",
       "CANbus": "133C030C463847532020204B43320DFF",
-      "CANbusFriendly": "Default Name",
+      "CANbusFriendly": "canivore1",
       "SelectedMotorType": null
     },
     "IsValidGyroCANbus": true,
