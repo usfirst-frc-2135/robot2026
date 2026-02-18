@@ -23,7 +23,6 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -123,9 +122,9 @@ public class RobotContainer
    */
   private enum StartPose
   {
-    START1, // Starting pose 1 - leftmost aligned with trench   // TODO: Update
-    START2, // Starting pose 2 - middle aligned with hub        // TODO: Update
-    START3  // Starting pose 3 - rightmost aligned with trench  // TODO: Update
+    START1, // Starting pose 1 - leftmost aligned with trench 
+    START2, // Starting pose 2 - middle aligned with hub       
+    START3  // Starting pose 3 - rightmost aligned with trench
   }
 
   /** Dashboard chooser for auto option selection */

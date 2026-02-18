@@ -82,8 +82,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /* Robot pose for field positioning */
     private final Field2d               kField               = new Field2d();
-    private final FieldObject2d         kLLPoseLeft          = kField.getObject("llPose-left"); 
-    private final FieldObject2d         kLLPoseRight         = kField.getObject("llPose-right"); 
+    private final FieldObject2d         kLLPoseFront         = kField.getObject("llPose-front"); 
+    private final FieldObject2d         kLLPoseBack          = kField.getObject("llPose-backj"); 
 
     private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
     private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
@@ -375,10 +375,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         if (m_useLimelight) {
-            double left = (visionUpdate(Constants.kLLFrontName, kLLPoseLeft)) ? 1.0 : 0.0;
+            double left = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
             m_leftUpdate.set(m_leftFilter.calculate(left) > 0.5);
 
-            double right = (visionUpdate(Constants.kLLBackName, kLLPoseRight)) ? 1.0 : 0.0;
+            double right = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
             m_rightUpdate.set(m_rightFilter.calculate(right) > 0.5);
         }
     }
