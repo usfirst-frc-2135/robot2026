@@ -57,8 +57,8 @@ public class Robot extends TimedRobot
     // Forward packets from RoboRIO USB connections to ethernet
     for (int port = 5800; port <= 5809; port++)
     {
-      PortForwarder.add(port, Constants.kLLLeftName + ".local", port);
-      PortForwarder.add(port, Constants.kLLRightName + ".local", port);
+      PortForwarder.add(port, Constants.kLLFrontName + ".local", port);
+      PortForwarder.add(port, Constants.kLLBackName + ".local", port);
     }
 
     // Recommended by PathPlanner docs
@@ -108,39 +108,9 @@ public class Robot extends TimedRobot
   @Override
   public void disabledPeriodic( )
   {
-    double autoDelay = SmartDashboard.getNumber("AutoDelay", 0.0);
-    if (autoDelay != m_autoDelay)
-    {
-      m_loadAutoCommand = true;
-      m_autoDelay = autoDelay;
-    }
+    detectAutoDashboardChange( );
 
-    Optional<Alliance> alliance = DriverStation.getAlliance( );
-    if (m_alliance != alliance)
-    {
-      m_loadAutoCommand = true;
-      m_alliance = alliance;
-    }
-
-    if (m_loadAutoCommand)
-    {
-      m_autonomousCommand = m_robotContainer.getAutonomousCommand( );
-      m_loadAutoCommand = false; // Load only once per request
-    }
-
-    // If RoboRIO User button is pressed, dump all CAN faults
-    if (RobotController.getUserButton( ))
-    {
-      if (!m_faultsCleared)
-      {
-        m_faultsCleared = true;
-        m_robotContainer.printAllFaults( );
-      }
-    }
-    else
-    {
-      m_faultsCleared = false;
-    }
+    detectUserButtonPressed( );
   }
 
   /****************************************************************************
@@ -239,7 +209,7 @@ public class Robot extends TimedRobot
   private static boolean detectRobot( )
   {
     // Detect which robot/RoboRIO
-    String serialNum = System.getenv("serialnum");
+    String serialNum = RobotController.getSerialNumber( );
     String robotName = "UNKNOWN";
     boolean isComp = false;
 
@@ -286,6 +256,54 @@ public class Robot extends TimedRobot
     DataLogManager.log(String.format("%s: Match %s %s, %s Alliance", msg, DriverStation.getMatchType( ).toString( ),
         DriverStation.getMatchNumber( ), DriverStation.getAlliance( ).toString( )));
     DataLogManager.log(String.format("========================================================================"));
+  }
+
+  /****************************************************************************
+   * 
+   * Detect dashboard settings changes for autonomous mode
+   */
+  private void detectAutoDashboardChange( )
+  {
+    double autoDelay = SmartDashboard.getNumber("AutoDelay", 0.0);
+    if (autoDelay != m_autoDelay)
+    {
+      m_loadAutoCommand = true;
+      m_autoDelay = autoDelay;
+    }
+
+    Optional<Alliance> alliance = DriverStation.getAlliance( );
+    if (m_alliance != alliance)
+    {
+      m_loadAutoCommand = true;
+      m_alliance = alliance;
+    }
+
+    if (m_loadAutoCommand)
+    {
+      m_autonomousCommand = m_robotContainer.getAutonomousCommand( );
+      m_loadAutoCommand = false; // Load only once per request
+    }
+  }
+
+  /****************************************************************************
+   * 
+   * Detect roboRIO user button pressed and clear all CAN device faults
+   */
+  private void detectUserButtonPressed( )
+  {
+    // If RoboRIO User button is pressed, dump all CAN faults
+    if (RobotController.getUserButton( ))
+    {
+      if (!m_faultsCleared)
+      {
+        m_faultsCleared = true;
+        m_robotContainer.printAllFaults( );
+      }
+    }
+    else
+    {
+      m_faultsCleared = false;
+    }
   }
 
   /****************************************************************************

@@ -108,10 +108,10 @@ public class Vision
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getName( )));
 
-    LimelightHelpers.setLEDMode_ForceOff(Constants.kLLLeftName);          // These work on LL3 and lower (not LL4)
-    LimelightHelpers.setLEDMode_ForceOff(Constants.kLLRightName);         // These work on LL3 and lower (not LL4)
-    LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLLeftName);   // These work on LL3 and lower (not LL4)
-    LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLRightName);  // These work on LL3 and lower (not LL4)
+    LimelightHelpers.setLEDMode_ForceOff(Constants.kLLFrontName);         // These work on LL3 and lower (not LL4)
+    LimelightHelpers.setLEDMode_ForceOff(Constants.kLLBackName);          // These work on LL3 and lower (not LL4)
+    LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLFrontName);  // These work on LL3 and lower (not LL4)
+    LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLBackName);   // These work on LL3 and lower (not LL4)
 
     SetCPUThrottleLevel(true);
     SetIMUModeExternalSeed( );
@@ -139,7 +139,7 @@ public class Vision
    */
   public AngularVelocity aimProportional(AngularVelocity maxAngularRate)
   {
-    double proportionalFactor = -LimelightHelpers.getTX(Constants.kLLLeftName) * kAimingKp;
+    double proportionalFactor = -LimelightHelpers.getTX(Constants.kLLFrontName) * kAimingKp;
 
     return maxAngularRate.times(proportionalFactor);
   }
@@ -154,7 +154,7 @@ public class Vision
    */
   public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
   {
-    double proportionalFactor = LimelightHelpers.getTY(Constants.kLLLeftName) * kDrivingKp;
+    double proportionalFactor = LimelightHelpers.getTY(Constants.kLLFrontName) * kDrivingKp;
 
     return maxSpeed.times(proportionalFactor);
   }
@@ -170,8 +170,8 @@ public class Vision
   public void SetCPUThrottleLevel(boolean throttle)
   {
     DataLogManager.log(String.format("%s: Set Throttle level to %s", getName( ), throttle));
-    LimelightHelpers.SetThrottle(Constants.kLLLeftName, throttle ? 100 : 0);
-    LimelightHelpers.SetThrottle(Constants.kLLRightName, throttle ? 100 : 0);
+    LimelightHelpers.SetThrottle(Constants.kLLFrontName, throttle ? 100 : 0);
+    LimelightHelpers.SetThrottle(Constants.kLLBackName, throttle ? 100 : 0);
   }
 
   /****************************************************************************
@@ -183,8 +183,8 @@ public class Vision
   {
     final imuMode mode = imuMode.EXTERNAL_SEED;
     DataLogManager.log(String.format("%s: Set IMU Mode to %d (%s)", getName( ), mode.value, mode));
-    // LimelightHelpers.SetIMUMode(Constants.kLLLeftName, mode.value);
-    // LimelightHelpers.SetIMUMode(Constants.kLLRightName, mode.value);
+    // LimelightHelpers.SetIMUMode(Constants.kLLFrontName, mode.value);
+    // LimelightHelpers.SetIMUMode(Constants.kLLBackName, mode.value);
   }
 
   /****************************************************************************
@@ -196,8 +196,8 @@ public class Vision
   {
     final imuMode mode = imuMode.INTERNAL;
     DataLogManager.log(String.format("%s: Set IMU Mode to %d (%s)", getName( ), mode.value, mode));
-    // LimelightHelpers.SetIMUMode(Constants.kLLLeftName, mode.value);
-    // LimelightHelpers.SetIMUMode(Constants.kLLRightName, mode.value);
+    // LimelightHelpers.SetIMUMode(Constants.kLLFrontName, mode.value);
+    // LimelightHelpers.SetIMUMode(Constants.kLLBackName, mode.value);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -216,7 +216,7 @@ public class Vision
 
     // DataLogManager.log(String.format("-----"));
 
-    // for (int i = 1; i <= 22; i++)
+    // for (int i = 1; i <= 32; i++)
     // {
     //   DataLogManager.log(String.format("Field: ID %2d %s", i, VIConsts.kATField.getTagPose(i)));
     // }
@@ -225,72 +225,11 @@ public class Vision
   }
 
   /****************************************************************************
-   *
-   * Initialize the arrays with the reef AprilTags
-   */
-  // private static final int[ ] blueReefTags =
-  // {
-  //     17, 18, 19, 20, 21, 22  // Must be in numerical order
-  // };
-
-  // private static final int[ ] redReefTags  =
-  // {
-  //     8, 7, 6, 11, 10, 9      // Rotationally ordered the same as blue tags above
-  // };
-
-  /****************************************************************************
-   *
-   * Find the closest AprilTag ID to the robot and return it (always returns blue side tags only)
    * 
-   * @return closestBlueTag
-   *         AprilTag closest to current pose
-   */
-  // private static int findClosestReefTag(Pose2d currentPose)
-  // {
-  //   if (DriverStation.getAlliance( ).orElse(Alliance.Blue) == Alliance.Red)
-  //   {
-  //     currentPose = FlippingUtil.flipFieldPose(currentPose);
-  //   }
-
-  //   int closestBlueTag = 0;                                                 // Variable for saving the tag with the shortest distance (0 means none found)
-  //   double shortestDistance = Units.feetToMeters(57.0);                // field length in meters - Variable for keeping track of lowest distance (57.0 means none found)
-
-  //   // Just one calculation for either tag set
-  //   for (int i = 0; i < 6; i++)                                             // Iterate through the array of selected reef tags
-  //   {
-  //     Pose2d atPose = VIConsts.kATField.getTagPose(blueReefTags[i]).get( ).toPose2d( );         // Get the AT tag in Pose2d form
-  //     double distance = currentPose.getTranslation( ).getDistance((atPose.getTranslation( )));  // Calculate the distance from the AT tag to the robotPose
-  //     DataLogManager.log(String.format("Vision: Possible tag: %d pose: %s distance: %f", blueReefTags[i], atPose, distance));
-  //     if (distance < shortestDistance)                                                          // If the distance is shorter than what was saved before
-  //     {
-  //       closestBlueTag = blueReefTags[i];                                                       // Saves cloest AT id (always in blue space)
-  //       shortestDistance = distance;                                                            // Update new shortest distance
-  //     }
-  //   }
-
-  //   DataLogManager.log(String.format("Vision: closest tag: %d current pose: %s - FOUND!", closestBlueTag, currentPose));
-  //   return closestBlueTag;
-  // }
-
-  /****************************************************************************
-   * 
-   * Calculate a scoring waypoint for a given tag ID and branch (left, center, right)
-   * TODO: use AprilTag ID until we have real poses
-   */
-  // private static Pose2d getScoringGoalPose(int tag)
-  // {
-  //   Pose2d atPose = VIConsts.kATField.getTagPose(tag).orElse(new Pose3d( )).toPose2d( );
-
-  //   DataLogManager.log(String.format("AT %2d Pose %-79s waypoint %-79s", tag, atPose));
-  //   return atPose;
-  // }
-
-  /****************************************************************************
-   * 
-   * * Find Goal Pose for a given current pose based on branch, level, and game piece detected
+   * * Find Goal Pose for a given current pose
    * TODO: use AprilTag ID until we have real poses
    * 
-   * 1) Get the closest reef AprilTag
+   * 1) Get the closest AprilTag
    * 5) Return the flipped goal pose based on red or blue alliance
    * 
    * @return goalPose

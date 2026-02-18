@@ -1,6 +1,6 @@
 
 //
-// HID subystem - HID feedback on robot
+// HID class - HID feedback on robot
 //
 package frc.robot.lib;
 
@@ -114,13 +114,6 @@ public class HID
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getName( )));
   }
-
-  /****************************************************************************
-   * 
-   * Write out hardware faults and reset sticky faults
-   */
-  public void printFaults( )
-  {}
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// PRIVATE HELPERS //////////////////////////////////

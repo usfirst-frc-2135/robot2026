@@ -375,10 +375,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         if (m_useLimelight) {
-            double left = (visionUpdate(Constants.kLLLeftName, kLLPoseLeft)) ? 1.0 : 0.0;
+            double left = (visionUpdate(Constants.kLLFrontName, kLLPoseLeft)) ? 1.0 : 0.0;
             m_leftUpdate.set(m_leftFilter.calculate(left) > 0.5);
 
-            double right = (visionUpdate(Constants.kLLRightName, kLLPoseRight)) ? 1.0 : 0.0;
+            double right = (visionUpdate(Constants.kLLBackName, kLLPoseRight)) ? 1.0 : 0.0;
             m_rightUpdate.set(m_rightFilter.calculate(right) > 0.5);
         }
     }
@@ -563,8 +563,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void resetPoseAndLimelight(Pose2d pose)
     {
         resetPose(pose);
-        LimelightHelpers.SetRobotOrientation(Constants.kLLLeftName, pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetRobotOrientation(Constants.kLLRightName, pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(Constants.kLLFrontName, pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(Constants.kLLBackName, pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
     }
 
     /****************************************************************************

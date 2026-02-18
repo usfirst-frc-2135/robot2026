@@ -44,6 +44,7 @@ import frc.robot.commands.LogCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.HID;
 import frc.robot.lib.LED;
+import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Power;
@@ -95,6 +96,7 @@ public class RobotContainer
   private final LED                                   m_led           = new LED( );
   private final HID                                   m_hid           = new HID(m_driverPad.getHID( ), m_operatorPad.getHID( ));
   private final Vision                                m_vision        = new Vision( );
+  private final MatchState                            m_matchState    = new MatchState( );
 
   // The robot's shared subsystems
   private final Power                                 m_power         = new Power( );
@@ -121,9 +123,9 @@ public class RobotContainer
    */
   private enum StartPose
   {
-    START1, // Starting pose 1 - leftmost aligned with a blue cage  // TODO: Update
-    START2, // Starting pose 2 - middle aligned with reef           // TODO: Update
-    START3  // Starting pose 3 - rightmost aligned with a red cage  // TODO: Update
+    START1, // Starting pose 1 - leftmost aligned with trench   // TODO: Update
+    START2, // Starting pose 2 - middle aligned with hub        // TODO: Update
+    START3  // Starting pose 3 - rightmost aligned with trench  // TODO: Update
   }
 
   /** Dashboard chooser for auto option selection */
@@ -171,6 +173,7 @@ public class RobotContainer
     // Add periodic calls for non-subsystem classes
     robot.addPeriodic(( ) -> m_hid.periodic( ), Seconds.of(0.020));
     robot.addPeriodic(( ) -> m_led.periodic( ), Seconds.of(0.020));
+    robot.addPeriodic(( ) -> m_matchState.periodic( ), Seconds.of(0.020));
 
     Robot.timeMarker("robotContainer: after default commands");
   }
@@ -255,7 +258,7 @@ public class RobotContainer
     // Driver - A, B, X, Y
     // 
     m_driverPad.a( ).onTrue(new LogCommand("driverPad", "A"));
-    m_driverPad.b( ).whileTrue(new LogCommand("driverPad", "B"));
+    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
@@ -263,7 +266,7 @@ public class RobotContainer
     // Driver - Bumpers, start, back
     //
     m_driverPad.leftBumper( ).onTrue(new LogCommand("driverPad", "Left Bumper"));
-    m_driverPad.rightBumper( ).whileTrue(new LogCommand("driverPad", "Right Bumper"));
+    m_driverPad.rightBumper( ).onTrue(new LogCommand("driverPad", "Right Bumper"));
     m_driverPad.rightBumper( ).onFalse(new LogCommand("driverPad", "Right Bumper"));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
@@ -272,38 +275,10 @@ public class RobotContainer
     //
     // Driver - POV buttons
     //
-    m_driverPad.pov(0).whileTrue(m_drivetrain.applyRequest(( ) -> facing    //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(0.0))));
-    m_driverPad.pov(45).whileTrue(m_drivetrain.applyRequest(( ) -> facing   //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(-60.0))));
-    m_driverPad.pov(90).whileTrue(m_drivetrain.applyRequest(( ) -> facing   //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(-90.0))));
-    m_driverPad.pov(135).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(-120.0))));
-    m_driverPad.pov(180).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(-180.0))));
-    m_driverPad.pov(225).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(120.0))));
-    m_driverPad.pov(270).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(90.0))));
-    m_driverPad.pov(315).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(60.0))));
+    m_driverPad.pov(0).onTrue(new LogCommand("driverPad", "POV 0"));
+    m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV 90"));
+    m_driverPad.pov(180).onTrue(new LogCommand("driverPad", "POV 180"));
+    m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
     //
     // Driver Left/Right Trigger
@@ -332,7 +307,7 @@ public class RobotContainer
     // Operator - Bumpers, start, back
     //
     m_operatorPad.leftBumper( ).onTrue(new LogCommand("operatorPad", "Left Bumper"));
-    m_operatorPad.rightBumper( ).whileTrue(new LogCommand("operatorPad", "Right Bumper"));
+    m_operatorPad.rightBumper( ).onTrue(new LogCommand("operatorPad", "Right Bumper"));
     m_operatorPad.rightBumper( ).onFalse(new LogCommand("operatorPad", "Right Bumper"));
 
     m_operatorPad.back( ).toggleOnTrue(new LogCommand("operatorPad", "view"));   // aka View button
@@ -353,15 +328,11 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("operatorPad", "Left Trigger"));
-    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new LogCommand("operatorPad", "Left Trigger"));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("operatorPad", "Right Trigger"));
 
     m_operatorPad.leftStick( ).toggleOnTrue(new LogCommand("operPad", "left stick"));
     m_operatorPad.rightStick( ).toggleOnTrue(new LogCommand("operPad", "right stick"));
   }
-
-  // private final Trigger m_elevatorTrigger = new Trigger(( ) -> (Math.abs(getElevatorAxis( )) > Constants.kStickDeadband));
-  // private final Trigger m_wristTrigger    = new Trigger(( ) -> (Math.abs(getWristAxis( )) > Constants.kStickDeadband));
 
   /****************************************************************************
    * 
@@ -390,17 +361,13 @@ public class RobotContainer
               .withName("CommandSwerveDrivetrain"));
     }
 
-    // Idle while the robot is disabled. This ensures the configured
-    // neutral mode is applied to the drive motors while disabled.
+    // Idle while the robot is disabled. This ensures the configured neutral mode is applied to the drive motors while disabled.
     final var idle = new SwerveRequest.Idle( );
     RobotModeTriggers.disabled( ).whileTrue(m_drivetrain.applyRequest(( ) -> idle).ignoringDisable(true));
 
     m_drivetrain.registerTelemetry(logger::telemeterize);
 
     // Note: Only one default command can be active per subsystem--use the manual modes during bring-up
-
-    // Default command - Motion Magic hold
-
   }
 
   /****************************************************************************
@@ -575,7 +542,6 @@ public class RobotContainer
   public void autoInit( )
   {
     m_vision.run( );
-
   }
 
   /****************************************************************************
@@ -585,7 +551,6 @@ public class RobotContainer
   public void teleopInit( )
   {
     m_vision.run( );
-
   }
 
   /****************************************************************************
@@ -596,6 +561,5 @@ public class RobotContainer
   {
     m_led.printFaults( );
     m_power.printFaults( );
-
   }
 }
