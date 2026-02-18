@@ -106,7 +106,7 @@ public class Launcher extends SubsystemBase
 
   private BooleanPublisher                    m_atDesiredRPMPub;
   private DoublePublisher                     m_targetRPMPub;
-  private DoubleEntry                         m_flywheelScoreEntry;
+  private DoubleEntry                         m_ScoreRPMEntry;
 
   /****************************************************************************
    * 
@@ -224,8 +224,8 @@ public class Launcher extends SubsystemBase
 
     m_atDesiredRPMPub = table.getBooleanTopic("atDesiredRPM").publish( );
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );
-    m_flywheelScoreEntry = table.getDoubleTopic("flywheelRPM").getEntry(0.0);
-    m_flywheelScoreEntry.set(kFlywheelScoreRPM);
+    m_ScoreRPMEntry = table.getDoubleTopic("scoreRPM").getEntry(0.0);
+    m_ScoreRPMEntry.set(kFlywheelScoreRPM);
 
     // Add commands
     SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
@@ -281,7 +281,7 @@ public class Launcher extends SubsystemBase
         m_targetRPM = 0.0;
         break;
       case SCORE :
-        m_targetRPM = m_flywheelScoreEntry.get(0.0);
+        m_targetRPM = m_ScoreRPMEntry.get(0.0);
         break;
       case PASS :
         m_targetRPM = kFlywheelPassRPM;
