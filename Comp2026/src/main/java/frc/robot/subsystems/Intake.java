@@ -297,13 +297,13 @@ public class Intake extends SubsystemBase
     SmartDashboard.putData("INRotaryMech", m_rotaryMech);
 
     // Add commands
-    SmartDashboard.putData("InRollStop", getMoveToAngleCommand(INRollerMode.STOP, this::getCurrentAngle));
-    SmartDashboard.putData("InRollAcquire", getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getCurrentAngle));
-    SmartDashboard.putData("InRollExpel", getMoveToAngleCommand(INRollerMode.EXPEL, this::getCurrentAngle));
-    SmartDashboard.putData("InRollHold", getMoveToAngleCommand(INRollerMode.HOLD, this::getCurrentAngle));
+    SmartDashboard.putData("IntakeStop", getMoveToAngleCommand(INRollerMode.STOP, this::getCurrentAngle));
+    SmartDashboard.putData("IntakeAcquire", getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getCurrentAngle));
+    SmartDashboard.putData("IntakeExpel", getMoveToAngleCommand(INRollerMode.EXPEL, this::getCurrentAngle));
+    SmartDashboard.putData("IntakeHold", getMoveToAngleCommand(INRollerMode.HOLD, this::getCurrentAngle));
 
-    SmartDashboard.putData("InRotDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getIntakeDeployed));
-    SmartDashboard.putData("InRotRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getIntakeRetracted));
+    SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getIntakeDeployed));
+    SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getIntakeRetracted));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.

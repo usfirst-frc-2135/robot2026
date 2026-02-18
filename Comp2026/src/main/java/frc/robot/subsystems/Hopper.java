@@ -125,9 +125,9 @@ public class Hopper extends SubsystemBase
     m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
 
     // Add commands
-    SmartDashboard.putData("InRollStop", getRollerModeCommand(HPRollerMode.STOP));
-    SmartDashboard.putData("InRollAcquire", getRollerModeCommand(HPRollerMode.ACQUIRE));
-    SmartDashboard.putData("InRollExpel", getRollerModeCommand(HPRollerMode.EXPEL));
+    SmartDashboard.putData("HopperStop", getRollerModeCommand(HPRollerMode.STOP));
+    SmartDashboard.putData("HopperAcquire", getRollerModeCommand(HPRollerMode.ACQUIRE));
+    SmartDashboard.putData("HopperExpel", getRollerModeCommand(HPRollerMode.EXPEL));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.

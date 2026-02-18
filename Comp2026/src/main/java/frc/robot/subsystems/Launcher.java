@@ -228,9 +228,9 @@ public class Launcher extends SubsystemBase
     m_flywheelScoreEntry.set(kFlywheelScoreRPM);
 
     // Add commands
-    SmartDashboard.putData("ShRunScore", getLauncherScoreCommand( ));
-    SmartDashboard.putData("ShRunPass", getLauncherPassCommand( ));
-    SmartDashboard.putData("ShRunStop", getLauncherStopCommand( ));
+    SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
+    SmartDashboard.putData("LauncherPass", getLauncherPassCommand( ));
+    SmartDashboard.putData("LauncherStop", getLauncherStopCommand( ));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
