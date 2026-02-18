@@ -251,8 +251,8 @@ public class Launcher extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotor, "LauncherLower");
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rightMotor, "LauncherUpper");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotor, "LauncherLeft");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rightMotor, "LauncherRight");
     m_leftMotor.clearStickyFaults( );
     m_rightMotor.clearStickyFaults( );
   }
