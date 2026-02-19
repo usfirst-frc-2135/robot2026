@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.39,
-        "y": 7.443
+        "x": 1.968654580152672,
+        "y": 7.733797709923666
       },
       "isLocked": false,
       "linkedName": "Start3"
     },
     {
       "anchor": {
-        "x": 5.304,
-        "y": 7.443
+        "x": 2.705,
+        "y": 4.972251908396947
       },
       "prevControl": {
-        "x": 4.304,
-        "y": 7.443
+        "x": 2.58,
+        "y": 5.188758259343056
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Hub3"
     }
   ],
   "rotationTargets": [],
@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": -29.999999999999996
   },
   "reversed": false,
   "folder": "FromStart",
