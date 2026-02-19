@@ -37,14 +37,16 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Constants.INConsts;
 import frc.robot.autos.AutoLeave;
 import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.ExpelFuel;
-import frc.robot.commands.ShootFuel;
 import frc.robot.commands.LogCommand;
+import frc.robot.commands.RetractIntake;
+import frc.robot.commands.ShootFuel;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.HID;
 import frc.robot.lib.LED;
@@ -313,8 +315,8 @@ public class RobotContainer
     // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("driverPad", "Left Trigger"));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new ExpelFuel(m_intake, m_hopper));
+    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new ExpelFuel(m_intake, m_hopper));
+    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
 
     m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
     m_driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
