@@ -1,5 +1,5 @@
 //
-// Shooter Subystem - scores Notes into the Speaker
+// Launcher Subystem - scores Notes into the Speaker
 //
 package frc.robot.subsystems;
 
@@ -41,53 +41,53 @@ import frc.robot.lib.phoenix.PhoenixUtil6;
 
 /****************************************************************************
  * 
- * Shooter subsystem to control the shooter flywheel mechanisms and provide command factories
+ * Launcher subsystem to control the launcher flywheel mechanisms and provide command factories
  */
-public class Shooter extends SubsystemBase
+public class Launcher extends SubsystemBase
 {
   // Constants
-  private static final String kSubsystemName     = "Shooter";
+  private static final String kSubsystemName     = "Launcher";
 
   private static final double kMOI               = 0.001;     // Simulation - Moment of Inertia
   private static final double kFlywheelScoreRPM  = 3300.0;    // RPM to score
   private static final double kFlywheelPassRPM   = 3000.0;    // RPM to pass
   private static final double kToleranceRPM      = 150.0;     // Tolerance band around target RPM
 
-  private static final double kFlywheelGearRatio = (18.0 / 18.0);
+  private static final double kFlywheelGearRatio = (18.0 / 24.0);
 
-  /** Shooter (speed) modes */
-  private enum ShooterMode
+  /** Launcher (speed) modes */
+  private enum LauncherMode
   {
-    REVERSE,    // Shooter runs in reverse direction to handle jams
-    STOP,       // Shooter is stopped
-    SCORE,      // Shooter ramped to an initial speed before shooting
-    PASS        // Shooter slowed to passing speed
+    REVERSE,    // Launcher runs in reverse direction to handle jams
+    STOP,       // Launcher is stopped
+    SCORE,      // Launcher ramped to an initial speed before launching
+    PASS        // Launcher slowed to passing speed
   }
 
   // Devices  objects
-  private final TalonFX                       m_leftMotor             = new TalonFX(Ports.kCANID_ShooterLeft);
-  private final TalonFX                       m_rightMotor            = new TalonFX(Ports.kCANID_ShooterRight);
+  private final TalonFX                       m_leftMotor             = new TalonFX(Ports.kCANID_LauncherLeft);
+  private final TalonFX                       m_rightMotor            = new TalonFX(Ports.kCANID_LauncherRight);
 
   // Alerts
   private final Alert                         m_leftAlert             =
-      new Alert(String.format("%s: Lower motor init failed!", getSubsystem( )), AlertType.kError);
+      new Alert(String.format("%s: Left motor init failed!", getSubsystem( )), AlertType.kError);
   private final Alert                         m_rightAlert            =
-      new Alert(String.format("%s: Upper motor init failed!", getSubsystem( )), AlertType.kError);
+      new Alert(String.format("%s: Right motor init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
   private final TalonFXSimState               m_leftMotorSim          = new TalonFXSimState(m_leftMotor);
   private final TalonFXSimState               m_rightMotorSim         = new TalonFXSimState(m_rightMotor);
   private final FlywheelSim                   m_leftFlywheelSim       = new FlywheelSim(
-      LinearSystemId.createFlywheelSystem(DCMotor.getFalcon500(1), kMOI, kFlywheelGearRatio), DCMotor.getFalcon500(1), 0.0);
+      LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(1), kMOI, kFlywheelGearRatio), DCMotor.getKrakenX60(1), 0.0);
   private final FlywheelSim                   m_rightFlywheelSim      = new FlywheelSim(
-      LinearSystemId.createFlywheelSystem(DCMotor.getFalcon500(1), kMOI, kFlywheelGearRatio), DCMotor.getFalcon500(1), 0.0);
+      LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60(1), kMOI, kFlywheelGearRatio), DCMotor.getKrakenX60(1), 0.0);
 
   // CTRE Status signals for sensors
   private final StatusSignal<AngularVelocity> m_leftVelocity;   // Default 4Hz (250ms)
   private final StatusSignal<AngularVelocity> m_rightVelocity;   // Default 4Hz (250ms)
 
   // Declare module variables
-  private boolean                             m_shooterValid;
+  private boolean                             m_launcherValid;
   private boolean                             m_isAttargetRPM         = false; // Indicates flywheel RPM is close to target
   private boolean                             m_isAttargetRPMPrevious = false;
 
@@ -106,22 +106,22 @@ public class Shooter extends SubsystemBase
 
   private BooleanPublisher                    m_atDesiredRPMPub;
   private DoublePublisher                     m_targetRPMPub;
-  private DoubleEntry                         m_flywheelScoreEntry;
+  private DoubleEntry                         m_ScoreRPMEntry;
 
   /****************************************************************************
    * 
    * Constructor
    */
-  public Shooter( )
+  public Launcher( )
   {
-    setName("Shooter");
-    setSubsystem("Shooter");
+    setName("Launcher");
+    setSubsystem("Launcher");
 
     boolean leftValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Lower", CTREConfigs6.shooterFXConfig( ));
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left", CTREConfigs6.launcherFXConfig( ));
     boolean rightValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Upper", CTREConfigs6.shooterFXConfig( ));
-    m_shooterValid = leftValid && rightValid;
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.launcherFXConfig( ));
+    m_launcherValid = leftValid && rightValid;
 
     m_leftAlert.set(!leftValid);
     m_rightAlert.set(!rightValid);
@@ -157,7 +157,7 @@ public class Shooter extends SubsystemBase
     // This method will be called once per scheduler run
 
     // Update network table publishers
-    if (m_shooterValid)
+    if (m_launcherValid)
     {
       // Calculate flywheel RPM and update network tables publishers
       BaseStatusSignal.refreshAll(m_leftVelocity, m_rightVelocity);
@@ -216,7 +216,7 @@ public class Shooter extends SubsystemBase
   {
     // Get the default instance of NetworkTables that was created automatically when the robot program starts
     NetworkTableInstance inst = NetworkTableInstance.getDefault( );
-    NetworkTable table = inst.getTable("shooter");
+    NetworkTable table = inst.getTable("launcher");
 
     // Initialize network tables publishers
     m_leftSpeedPub = table.getDoubleTopic("leftSpeed").publish( );
@@ -224,13 +224,13 @@ public class Shooter extends SubsystemBase
 
     m_atDesiredRPMPub = table.getBooleanTopic("atDesiredRPM").publish( );
     m_targetRPMPub = table.getDoubleTopic("targetRPM").publish( );
-    m_flywheelScoreEntry = table.getDoubleTopic("flywheelRPM").getEntry(0.0);
-    m_flywheelScoreEntry.set(kFlywheelScoreRPM);
+    m_ScoreRPMEntry = table.getDoubleTopic("scoreRPM").getEntry(0.0);
+    m_ScoreRPMEntry.set(kFlywheelScoreRPM);
 
     // Add commands
-    SmartDashboard.putData("ShRunScore", getShooterScoreCommand( ));
-    SmartDashboard.putData("ShRunPass", getShooterPassCommand( ));
-    SmartDashboard.putData("ShRunStop", getShooterStopCommand( ));
+    SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
+    SmartDashboard.putData("LauncherPass", getLauncherPassCommand( ));
+    SmartDashboard.putData("LauncherStop", getLauncherStopCommand( ));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -242,7 +242,7 @@ public class Shooter extends SubsystemBase
   public void initialize( )
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getSubsystem( )));
-    setShooterMode(ShooterMode.STOP);
+    setLauncherMode(LauncherMode.STOP);
   }
 
   /****************************************************************************
@@ -251,8 +251,8 @@ public class Shooter extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotor, "ShooterLower");
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rightMotor, "ShooterUpper");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotor, "LauncherLeft");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rightMotor, "LauncherRight");
     m_leftMotor.clearStickyFaults( );
     m_rightMotor.clearStickyFaults( );
   }
@@ -263,25 +263,25 @@ public class Shooter extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Set shooter speed based on requested mode
+   * Set launcher speed based on requested mode
    * 
    * @param mode
    *          requested speed
    */
-  private void setShooterMode(ShooterMode mode)
+  private void setLauncherMode(LauncherMode mode)
   {
-    DataLogManager.log(String.format("%s: Set shooter mode to %s", getSubsystem( ), mode));
+    DataLogManager.log(String.format("%s: Set launcher mode to %s", getSubsystem( ), mode));
 
-    // Select the shooter RPM for the requested mode - NEVER NEGATIVE when running!
+    // Select the launcher RPM for the requested mode - NEVER NEGATIVE when running!
     switch (mode)
     {
       default :
-        DataLogManager.log(String.format("%s: Shooter mode is invalid: %s", getSubsystem( ), mode));
+        DataLogManager.log(String.format("%s: Launcher mode is invalid: %s", getSubsystem( ), mode));
       case STOP :
         m_targetRPM = 0.0;
         break;
       case SCORE :
-        m_targetRPM = m_flywheelScoreEntry.get(0.0);
+        m_targetRPM = m_ScoreRPMEntry.get(0.0);
         break;
       case PASS :
         m_targetRPM = kFlywheelPassRPM;
@@ -289,24 +289,24 @@ public class Shooter extends SubsystemBase
     }
 
     double rotPerSecond = m_targetRPM / 60.0;
-    if (m_shooterValid)
+    if (m_launcherValid)
     {
       if (m_targetRPM > 100.0)
-        setShooterVelocity(rotPerSecond);
+        setLauncherVelocity(rotPerSecond);
       else
-        setShooterStopped( );
+        setLauncherStopped( );
     }
     DataLogManager.log(String.format("%s: Target rpm is %.1f rps %.1f", getSubsystem( ), m_targetRPM, rotPerSecond));
   }
 
   /****************************************************************************
    * 
-   * Set shooter motors to requested velocity
+   * Set launcher motors to requested velocity
    * 
    * @param rps
    *          rotations per second
    */
-  private void setShooterVelocity(double rps)
+  private void setLauncherVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
     m_rightMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
@@ -314,9 +314,9 @@ public class Shooter extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Set shooter motors to stopped
+   * Set launcher motors to stopped
    */
-  private void setShooterStopped( )
+  private void setLauncherStopped( )
   {
     m_leftMotor.setControl(m_requestVolts);
     m_rightMotor.setControl(m_requestVolts);
@@ -328,9 +328,9 @@ public class Shooter extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Return shooter speed check against target RPM
+   * Return launcher speed check against target RPM
    * 
-   * @return true if shooter is at target RPM
+   * @return true if launcher is at target RPM
    */
   public boolean isAtTargetRPM( )
   {
@@ -343,51 +343,51 @@ public class Shooter extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Create shooter command based on passed mode
+   * Create launcher command based on passed mode
    * 
    * @param mode
-   *          shooter mode that detemines speed
-   * @return instant command that changes shooter motors
+   *          launcher mode that detemines speed
+   * @return instant command that changes launcher motors
    */
-  private Command getShooterCommand(ShooterMode mode)
+  private Command getLauncherCommand(LauncherMode mode)
   {
     return new InstantCommand(        // Command that runs exactly once
-        ( ) -> setShooterMode(mode),  // Method to call
+        ( ) -> setLauncherMode(mode),  // Method to call
         this                          // Subsystem requirement
     );
   }
 
   /****************************************************************************
    * 
-   * Create shooter mode command for passing
+   * Create launcher mode command for passing
    * 
-   * @return instant command that runs shooter motors for scoring
+   * @return instant command that runs launcher motors for scoring
    */
-  public Command getShooterPassCommand( )
+  public Command getLauncherPassCommand( )
   {
-    return getShooterCommand(ShooterMode.PASS).withName("ShooterPass");
+    return getLauncherCommand(LauncherMode.PASS).withName("LauncherPass");
   }
 
   /****************************************************************************
    * 
-   * Create shooter mode command for scoring
+   * Create launcher mode command for scoring
    * 
-   * @return instant command that runs shooter motors for scoring
+   * @return instant command that runs launcher motors for scoring
    */
-  public Command getShooterScoreCommand( )
+  public Command getLauncherScoreCommand( )
   {
-    return getShooterCommand(ShooterMode.SCORE).withName("ShooterScore");
+    return getLauncherCommand(LauncherMode.SCORE).withName("LauncherScore");
   }
 
   /****************************************************************************
    * 
-   * Create shooter mode command to stop motors
+   * Create launcher mode command to stop motors
    * 
-   * @return instant command that stops shooter motors
+   * @return instant command that stops launcher motors
    */
-  public Command getShooterStopCommand( )
+  public Command getLauncherStopCommand( )
   {
-    return getShooterCommand(ShooterMode.STOP).withName("ShooterStop");
+    return getLauncherCommand(LauncherMode.STOP).withName("LauncherStop");
   }
 
 }
