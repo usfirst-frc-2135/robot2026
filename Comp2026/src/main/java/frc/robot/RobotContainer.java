@@ -41,13 +41,21 @@ import frc.robot.autos.AutoLeave;
 import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
+import frc.robot.commands.AcquireFuel;
+import frc.robot.commands.ExpelFuel;
+import frc.robot.commands.ShootFuel;
 import frc.robot.commands.LogCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Kicker;
+import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.Power;
 import frc.robot.subsystems.Telemetry;
 
@@ -104,6 +112,11 @@ public class RobotContainer
 
   // These subsystems may use LED or vision and must be created afterward
   private final CommandSwerveDrivetrain               m_drivetrain    = TunerConstants.createDrivetrain( );
+  private final Intake                                m_intake        = new Intake( );
+  private final Launcher                              m_launcher      = new Launcher( );
+  private final Hopper                                m_hopper        = new Hopper( );
+  private final Kicker                                m_kicker        = new Kicker( );
+  private final Climber                               m_climber       = new Climber( );
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command
@@ -279,8 +292,8 @@ public class RobotContainer
     //
     // Driver - Bumpers, start, back
     //
-    m_driverPad.leftBumper( ).onTrue(new LogCommand("driverPad", "Left Bumper"));
-    m_driverPad.rightBumper( ).onTrue(new LogCommand("driverPad", "Right Bumper"));
+    m_driverPad.leftBumper( ).onTrue(new ShootFuel(m_launcher, m_kicker, m_hopper));
+    m_driverPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
     m_driverPad.rightBumper( ).onFalse(new LogCommand("driverPad", "Right Bumper"));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
@@ -301,7 +314,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("driverPad", "Left Trigger"));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("driverPad", "Right Trigger"));
+    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new ExpelFuel(m_intake, m_hopper));
 
     m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
     m_driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
