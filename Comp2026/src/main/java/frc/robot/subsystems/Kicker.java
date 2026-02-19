@@ -125,9 +125,9 @@ public class Kicker extends SubsystemBase
     m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
 
     // Add commands
-    SmartDashboard.putData("InRollStop", getRollerModeCommand(KKRollerMode.STOP));
-    SmartDashboard.putData("InRollAcquire", getRollerModeCommand(KKRollerMode.ACQUIRE));
-    SmartDashboard.putData("InRollExpel", getRollerModeCommand(KKRollerMode.EXPEL));
+    SmartDashboard.putData("KickerStop", getRollerModeCommand(KKRollerMode.STOP));
+    SmartDashboard.putData("KickerAcquire", getRollerModeCommand(KKRollerMode.ACQUIRE));
+    SmartDashboard.putData("KickerExpel", getRollerModeCommand(KKRollerMode.EXPEL));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.

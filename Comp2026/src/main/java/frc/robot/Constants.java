@@ -20,8 +20,8 @@ import edu.wpi.first.math.util.Units;
 public final class Constants
 {
   // bot serial nums
-  public static final String  kCompSN               = "03260A3A";
-  public static final String  kPracticeSN           = "03238074";
+  public static final String  kCompSN               = "03220587";
+  public static final String  kPracticeSN           = "032B1F7E";
 
   // Game controller definitions
   public static final int     kDriverPadPort        = 0;
@@ -39,8 +39,8 @@ public final class Constants
 
   public static final String  kRobotString          = "RobotContainer";
 
-  public static final String  kLLLeftName           = "limelight-left";
-  public static final String  kLLRightName          = "limelight-right";
+  public static final String  kLLFrontName          = "limelight-front";
+  public static final String  kLLBackName           = "limelight-back";
 
   // Robot physical dimensions
   public static final double  kChassisLength        = 26.0;                                     // Length (and width) of chassis frame
@@ -51,8 +51,6 @@ public final class Constants
   public static final double  kBumperPadding        = 2.5;                                      // Thickness of foam padding      
   public static final double  kBumperTotal          = kBumperBacking + kBumperPadding;
   public static final double  kRobotLength          = Units.inchesToMeters(kFramePerimeter + 2 * kBumperGap + 2 * kBumperTotal); // Our robot length
-
-  // Alignment poses relative to an AprilTag (X - robot setback, Y - left, center, right) TODO
 
   /****************************************************************************
    * CAN IDs and PWM IDs
@@ -88,15 +86,14 @@ public final class Constants
 
     public static final int    kCANID_HopperRoller   = 19; // Kraken X44 (Hopper) 
 
-    public static final int    kCANID_KickerRoller   = 20; // Kraken X44 (Kicker)
-
-    public static final int    kCANID_ShooterLeft    = 22; // Kraken X60 (Shooter)
-    public static final int    kCANID_ShooterRight   = 23; // Kraken X60 (Shooter)
+    public static final int    kCANID_KickerRoller   = 21; // Kraken X44 (Kicker)
+    public static final int    kCANID_LauncherLeft   = 22; // Kraken X60 (Launcher)
+    public static final int    kCANID_LauncherRight  = 23; // Kraken X60 (Launcher)
 
     public static final int    kCANID_ClimberLeft    = 25; // Kraken X60 (Climber telescope)
     public static final int    kCANID_ClimberRight   = 26; // Kraken X60 (Climber telescope)
 
-    public static final int    kDIO0_FuelDetected    = 28; // CANrange (Hopper). // TODO: Do we have one?
+    public static final int    kDIO0_FuelDetected    = 28; // CANrange (Hopper). // TODO: Do we need one?
 
     public static final int    kCANID_CANdle         = 0;
   }
@@ -130,7 +127,7 @@ public final class Constants
     public enum HPRollerMode
     {
       STOP,     // Stop all rotation
-      ACQUIRE,  // Speed for moving a game piece toward shooter
+      ACQUIRE,  // Speed for moving a game piece toward launcher
       EXPEL,    // Speed for moving a game piece toward intake (to expel)
       HOLD      // Maintain existing speed setting
     }
@@ -145,14 +142,14 @@ public final class Constants
     public enum KKRollerMode
     {
       STOP,     // Stop all rotation
-      ACQUIRE,  // Speed for moving a game piece toward shooter
+      ACQUIRE,  // Speed for moving a game piece toward launcher
       EXPEL,    // Speed for moving a game piece toward intake (to expel)
       HOLD      // Maintain existing speed setting
     }
   }
 
   /****************************************************************************
-   * Shooter subsystem constants
+   * Launcher subsystem constants
    ****************************************************************************/
   public static final class SHConsts
   {

@@ -104,7 +104,7 @@ public class Climber extends SubsystemBase
 
   // Simulation objects
   private final TalonFXSimState       m_climberSim        = m_leftMotor.getSimState( );
-  private final ElevatorSim           m_elevSim           = new ElevatorSim(DCMotor.getFalcon500(1), kGearRatio, kCarriageMassKg,
+  private final ElevatorSim           m_elevSim           = new ElevatorSim(DCMotor.getKrakenX60(1), kGearRatio, kCarriageMassKg,
       kDrumRadiusMeters, -kLengthMax, kLengthMax, false, 0.0);
 
   // Mechanism2d
@@ -121,7 +121,7 @@ public class Climber extends SubsystemBase
   private final StatusSignal<Current> m_rightStatorCur;  // Default 4Hz (250ms)
 
   // Declare module variables
-  private boolean                     m_climberValid;             // Health indicator for Falcon 
+  private boolean                     m_climberValid;             // Health indicator for motor 
   private double                      m_leftLength        = 0.0;  // Current length in inches on left (default) side
   private double                      m_rightLength       = 0.0;  // Current length in inches on right side
   private double                      m_targetLength      = 0.0;  // Target length in inches
@@ -277,9 +277,9 @@ public class Climber extends SubsystemBase
     SmartDashboard.putData(kSubsystemName + "Mech", m_climberMech);
 
     // Add commands
-    SmartDashboard.putData("ClRunExtended", getMoveToPositionCommand(this::getClimberFullyExtended));
-    SmartDashboard.putData("ClRunClimbed", getMoveToPositionCommand(this::getClimberClimbed));
-    SmartDashboard.putData("ClCalibrate", getCalibrateCommand( ));
+    SmartDashboard.putData("ClimberExtend", getMoveToPositionCommand(this::getClimberFullyExtended));
+    SmartDashboard.putData("ClimberLift", getMoveToPositionCommand(this::getClimberClimbed));
+    SmartDashboard.putData("ClimberCalibrate", getCalibrateCommand( ));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
