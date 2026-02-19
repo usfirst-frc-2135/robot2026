@@ -53,7 +53,7 @@ public class Launcher extends SubsystemBase
   private static final double kFlywheelPassRPM   = 3000.0;    // RPM to pass
   private static final double kToleranceRPM      = 150.0;     // Tolerance band around target RPM
 
-  private static final double kFlywheelGearRatio = (18.0 / 18.0);
+  private static final double kFlywheelGearRatio = (18.0 / 24.0);
 
   /** Launcher (speed) modes */
   private enum LauncherMode
