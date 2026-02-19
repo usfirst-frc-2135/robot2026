@@ -8,12 +8,12 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 
 /**
- * Command to acquire a fuel from floor
+ * Command to bring the intake back
  */
 public class RetractIntake extends SequentialCommandGroup
 {
     /**
-     * Group command to use the intake to acquire a fuel from the floor
+     * Group command to use retract intake back from the floor
      * 
      * @param intake
      *            intake subsystem

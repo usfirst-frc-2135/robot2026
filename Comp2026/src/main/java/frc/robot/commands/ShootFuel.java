@@ -10,12 +10,12 @@ import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Shooter;
 
 /**
- * Command to acquire a fuel from floor
+ * Command to launch fuel
  */
 public class ShootFuel extends SequentialCommandGroup
 {
     /**
-     * Group command to use the intake to acquire a fuel from the floor
+     * Group command to use the launcher to shoot a fuel
      * 
      * @param shooter
      *            shooter subsystem

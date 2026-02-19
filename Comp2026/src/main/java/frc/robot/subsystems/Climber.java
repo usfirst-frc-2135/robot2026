@@ -78,6 +78,7 @@ public class Climber extends SubsystemBase
 
   // Climber lengths - Motion Magic config parameters
   private static final double  kLengthClimbed       = 0.0;     // By definition - Climber fully climbed
+  private static final double  kLengthStowed        = 0.0;    //Climber fully down/back
   private static final double  kLengthFull          = 18.0;    // From Mech Design height needed to reach max extension
 
   private static final double  kLengthMin           = 0.0;     // Climber minimum allowable length
@@ -639,6 +640,17 @@ public class Climber extends SubsystemBase
   public double getClimberFullyExtended( )
   {
     return kLengthFull;
+  }
+
+  /****************************************************************************
+   * 
+   * Return climber length for fully extended state
+   * 
+   * @return fully extended state length
+   */
+  public double getClimberStowed( )
+  {
+    return kLengthStowed;
   }
 
   ////////////////////////////////////////////////////////////////////////////

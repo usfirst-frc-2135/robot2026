@@ -8,12 +8,12 @@ import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Shooter;
 
 /**
- * Command to acquire a fuel from floor
+ * Command to start launcher wheels to score
  */
 public class RampShooter extends SequentialCommandGroup
 {
     /**
-     * Group command to use the intake to acquire a fuel from the floor
+     * Group command to start the launcher wheels
      * 
      * @param shooter
      *            shooter subsystem
@@ -27,7 +27,7 @@ public class RampShooter extends SequentialCommandGroup
         addCommands(
                 // Add Commands here:
 
-            // @formatter:off
+                // @formatter:off
             new LogCommand(getName(), "Stop Kicker Rollers"), 
             kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
         

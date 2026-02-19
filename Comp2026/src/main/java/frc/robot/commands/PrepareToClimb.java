@@ -7,12 +7,12 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
 
 /**
- * Command to acquire a fuel from floor
+ * Command to prepare climber to climb
  */
 public class PrepareToClimb extends SequentialCommandGroup
 {
     /**
-     * Group command to use the intake to acquire a fuel from the floor
+     * Group command to prepare the climber to climb the tower
      * 
      * @param climber
      *            climber subsystem
@@ -27,10 +27,11 @@ public class PrepareToClimb extends SequentialCommandGroup
                 // Add Commands here: 
 
                 // @formatter:off
-new LogCommand(getName(), "Retract intake "), 
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getIntakeRetracted),
-   new LogCommand(getName(), "Extend Climber"), 
-        climber.getMoveToPositionCommand(climber::getClimberFullyExtended)
+
+            new LogCommand(getName(), "Retract intake"), 
+            intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getIntakeRetracted),
+            new LogCommand(getName(), "Extend Climber"), 
+            climber.getMoveToPositionCommand(climber::getClimberFullyExtended)
        
         // @formatter:on
         );
