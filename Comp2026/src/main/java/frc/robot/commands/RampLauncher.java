@@ -32,7 +32,7 @@ public class RampLauncher extends SequentialCommandGroup
             kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
         
             new LogCommand(getName(), "Start up Launcher rollers "),
-            Launcher.getLauncherScoreCommand()
+            launcher.getLauncherScoreCommand()
         
 
             // @formatter:on
