@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start2-DR"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DR-DL"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "DL-Hub3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Hub3-N3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "N3-Hub3"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "3-AutoScore2",
+  "choreoAuto": false
+}
