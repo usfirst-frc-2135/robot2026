@@ -5,24 +5,24 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.KKConsts;
 import frc.robot.Constants.SHConsts;
 import frc.robot.subsystems.Kicker;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Launcher;
 
 /**
  * Command to start launcher wheels to score
  */
-public class RampShooter extends SequentialCommandGroup
+public class RampLauncher extends SequentialCommandGroup
 {
     /**
      * Group command to start the launcher wheels
      * 
-     * @param shooter
-     *            shooter subsystem
+     * @param launcher
+     *            launcher subsystem
      * @param kicker
      *            kicker subsystem
      */
-    public RampShooter(Shooter shooter, Kicker kicker)
+    public RampLauncher(Launcher launcher, Kicker kicker)
     {
-        setName("RampShooter");
+        setName("RampLauncher");
 
         addCommands(
                 // Add Commands here:
@@ -31,8 +31,8 @@ public class RampShooter extends SequentialCommandGroup
             new LogCommand(getName(), "Stop Kicker Rollers"), 
             kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
         
-            new LogCommand(getName(), "Start up Shooter rollers "),
-            shooter.getShooterScoreCommand()
+            new LogCommand(getName(), "Start up Launcher rollers "),
+            Launcher.getLauncherScoreCommand()
         
 
             // @formatter:on
