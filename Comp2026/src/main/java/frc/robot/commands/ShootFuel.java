@@ -4,7 +4,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.HPConsts;
 import frc.robot.Constants.KKConsts;
-import frc.robot.Constants.SHConsts;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Launcher;
