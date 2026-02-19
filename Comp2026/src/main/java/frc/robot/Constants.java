@@ -20,8 +20,8 @@ import edu.wpi.first.math.util.Units;
 public final class Constants
 {
   // bot serial nums
-  public static final String  kCompSN               = "03260A3A";
-  public static final String  kPracticeSN           = "03238074";
+  public static final String  kCompSN               = "03220587";
+  public static final String  kPracticeSN           = "032B1F7E";
 
   // Game controller definitions
   public static final int     kDriverPadPort        = 0;
