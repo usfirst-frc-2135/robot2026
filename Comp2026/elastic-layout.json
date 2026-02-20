@@ -9,7 +9,7 @@
         "containers": [
           {
             "title": "Alerts",
-            "x": 896.0,
+            "x": 1024.0,
             "y": 128.0,
             "width": 256.0,
             "height": 256.0,
@@ -21,7 +21,7 @@
           },
           {
             "title": "AutoMode",
-            "x": 640.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -34,7 +34,7 @@
           },
           {
             "title": "StartPosition",
-            "x": 640.0,
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -47,7 +47,7 @@
           },
           {
             "title": "AutoDelay",
-            "x": 640.0,
+            "x": 768.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -63,13 +63,13 @@
             "title": "Field",
             "x": 0.0,
             "y": 0.0,
-            "width": 640.0,
+            "width": 768.0,
             "height": 384.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",
               "period": 0.06,
-              "field_game": "Reefscape",
+              "field_game": "Rebuilt (No Fuel)",
               "robot_width": 0.85,
               "robot_length": 0.85,
               "show_other_objects": true,
@@ -77,12 +77,12 @@
               "field_rotation": 0.0,
               "robot_color": 4294198070,
               "trajectory_color": 4294967295,
-              "show_robot_outside_widget": true
+              "show_robot_outside_widget": false
             }
           },
           {
             "title": "LeftUpdate",
-            "x": 896.0,
+            "x": 1024.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -99,7 +99,7 @@
           },
           {
             "title": "RightUpdate",
-            "x": 1024.0,
+            "x": 1152.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -359,8 +359,8 @@
           },
           {
             "title": "rightSpeed",
-            "x": 256.0,
-            "y": 128.0,
+            "x": 384.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -373,8 +373,8 @@
           },
           {
             "title": "targetRPM",
-            "x": 384.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -387,8 +387,8 @@
           },
           {
             "title": "scoreRPM",
-            "x": 384.0,
-            "y": 256.0,
+            "x": 512.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
