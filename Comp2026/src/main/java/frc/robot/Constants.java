@@ -98,11 +98,6 @@ public final class Constants
     public static final int    kCANID_CANdle         = 0;
   }
 
-  public static class OperatorConstants
-  {
-    public static final int kDriverControllerPort = 0;
-  }
-
   /****************************************************************************
    * Intake subsystem constants
    ****************************************************************************/

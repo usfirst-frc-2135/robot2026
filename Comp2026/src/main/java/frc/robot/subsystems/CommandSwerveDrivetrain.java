@@ -585,7 +585,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         );
 
         setControl(new SwerveRequest.ApplyRobotSpeeds( ).withSpeeds(m_previousSetpoint.robotRelativeSpeeds( )));
-        // setModuleStates(m_previousSetpoint.moduleStates( )); // TODO: Original setpoint generator sample code
+        // setModuleStates(m_previousSetpoint.moduleStates( )); // TODO: swerve setpoint generator sample code
     }
 
     ////////////////////////////////////////////////////////////////////////////

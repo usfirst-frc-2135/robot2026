@@ -11,36 +11,36 @@ import frc.robot.subsystems.Launcher;
  */
 public class RampLauncher extends SequentialCommandGroup
 {
-    /**
-     * Group command to start the launcher wheels
-     * 
-     * @param launcher
-     *            launcher subsystem
-     * @param kicker
-     *            kicker subsystem
-     */
-    public RampLauncher(Launcher launcher, Kicker kicker)
-    {
-        setName("RampLauncher");
+  /**
+   * Group command to start the launcher wheels
+   * 
+   * @param launcher
+   *          launcher subsystem
+   * @param kicker
+   *          kicker subsystem
+   */
+  public RampLauncher(Launcher launcher, Kicker kicker)
+  {
+    setName("RampLauncher");
 
-        addCommands(
-                // Add Commands here:
+    addCommands(
+        // Add Commands here:
 
-                // @formatter:off
-            new LogCommand(getName(), "Stop Kicker Rollers"), 
-            kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
-        
-            new LogCommand(getName(), "Start up Launcher rollers "),
-            launcher.getLauncherScoreCommand()
-        
+        // @formatter:off
 
-            // @formatter:on
-        );
-    }
+        new LogCommand(getName(), "Stop Kicker Rollers"), 
+        kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
+    
+        new LogCommand(getName(), "Start up Launcher rollers "),
+        launcher.getLauncherScoreCommand()
+    
+        // @formatter:on
+    );
+  }
 
-    @Override
-    public boolean runsWhenDisabled( )
-    {
-        return false;
-    }
+  @Override
+  public boolean runsWhenDisabled( )
+  {
+    return false;
+  }
 }

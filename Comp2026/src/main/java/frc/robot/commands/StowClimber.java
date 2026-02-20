@@ -9,31 +9,31 @@ import frc.robot.subsystems.Climber;
  */
 public class StowClimber extends SequentialCommandGroup
 {
-    /**
-     * Group command to put the climber in stowed position for gameplay
-     * 
-     * @param climber
-     *            climber subsystem
-     */
-    public StowClimber(Climber climber)
-    {
-        setName("StowClimber");
+  /**
+   * Group command to put the climber in stowed position for gameplay
+   * 
+   * @param climber
+   *          climber subsystem
+   */
+  public StowClimber(Climber climber)
+  {
+    setName("StowClimber");
 
-        addCommands(
-                // Add Commands here: 
+    addCommands(
+        // Add Commands here: 
 
-                // @formatter:off
+        // @formatter:off
 
         new LogCommand(getName(), "Bring Climber back down"), 
         climber.getMoveToPositionCommand(climber::getClimberStowed)
        
         // @formatter:on
-        );
-    }
+    );
+  }
 
-    @Override
-    public boolean runsWhenDisabled( )
-    {
-        return false;
-    }
+  @Override
+  public boolean runsWhenDisabled( )
+  {
+    return false;
+  }
 }

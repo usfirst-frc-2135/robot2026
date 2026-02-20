@@ -37,7 +37,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.Constants.INConsts;
 import frc.robot.autos.AutoLeave;
 import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
@@ -115,9 +114,9 @@ public class RobotContainer
   // These subsystems may use LED or vision and must be created afterward
   private final CommandSwerveDrivetrain               m_drivetrain    = TunerConstants.createDrivetrain( );
   private final Intake                                m_intake        = new Intake( );
-  private final Launcher                              m_launcher      = new Launcher( );
   private final Hopper                                m_hopper        = new Hopper( );
   private final Kicker                                m_kicker        = new Kicker( );
+  private final Launcher                              m_launcher      = new Launcher( );
   private final Climber                               m_climber       = new Climber( );
 
   // Selected autonomous command
@@ -193,9 +192,9 @@ public class RobotContainer
     facing.HeadingController = new PhoenixPIDController(kHeadingKp, kHeadingKi, kHeadingKd);    // Swerve steer PID for facing swerve request
     facing.HeadingController.enableContinuousInput(-180.0, 180.0);
 
-    addDashboardWidgets( );           // Add some dashboard widgets for commands
-    configureButtonBindings( );       // Configure game controller buttons
-    initDefaultCommands( );           // Initialize subsystem default commands
+    addDashboardWidgets( );     // Add some dashboard widgets for commands
+    configureBindings( );       // Configure game controller buttons and triggers
+    initDefaultCommands( );     // Initialize subsystem default commands
 
     // Add periodic calls for non-subsystem classes
     robot.addPeriodic(( ) -> m_hid.periodic( ), Seconds.of(0.020));
@@ -260,13 +259,7 @@ public class RobotContainer
       }
     }));
 
-    // Add buttons for testing HID rumble features to dashboard
-    SmartDashboard.putData("HIDRumbleDriver",
-        m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
-    SmartDashboard.putData("HIDRumbleOperator",
-        m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
-
-    // Add subsystem command objects and main scheduler to dashboard
+    // Add main command scheduler to dashboard
 
     SmartDashboard.putData(CommandScheduler.getInstance( ));
 
@@ -278,7 +271,7 @@ public class RobotContainer
    * 
    * Define button-command mappings. Triggers are created and bound to the desired commands.
    */
-  private void configureButtonBindings( )
+  private void configureBindings( )
   {
     ///////////////////////////////////////////////////////
     //
@@ -294,7 +287,7 @@ public class RobotContainer
     //
     // Driver - Bumpers, start, back
     //
-    m_driverPad.leftBumper( ).onTrue(new ShootFuel(m_launcher, m_kicker, m_hopper));
+    m_driverPad.leftBumper( ).onTrue(new ShootFuel(m_hopper, m_kicker, m_launcher));
     m_driverPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
     m_driverPad.rightBumper( ).onFalse(new LogCommand("driverPad", "Right Bumper"));
 
@@ -391,12 +384,11 @@ public class RobotContainer
     }
 
     // Idle while the robot is disabled. This ensures the configured neutral mode is applied to the drive motors while disabled.
-    final var idle = new SwerveRequest.Idle( );
     RobotModeTriggers.disabled( ).whileTrue(m_drivetrain.applyRequest(( ) -> idle).ignoringDisable(true));
 
-    m_drivetrain.registerTelemetry(logger::telemeterize);
-
     // Note: Only one default command can be active per subsystem--use the manual modes during bring-up
+
+    m_drivetrain.registerTelemetry(logger::telemeterize);
   }
 
   /****************************************************************************
@@ -567,8 +559,11 @@ public class RobotContainer
    */
   public void disabledInit( )
   {
-    m_power.initialize( );
+    m_hid.initialize( );
+    m_led.initialize( );
     m_vision.initialize( );
+
+    m_power.initialize( );
   }
 
   /****************************************************************************

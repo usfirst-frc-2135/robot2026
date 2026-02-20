@@ -21,9 +21,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
 // @formatter:off
-
+//generated project in phoenix tunerx
 public class Telemetry {
-    @SuppressWarnings("unused")
     private final double MaxSpeed;
 
     /**

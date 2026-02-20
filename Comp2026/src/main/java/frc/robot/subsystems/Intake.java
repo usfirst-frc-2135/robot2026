@@ -91,44 +91,44 @@ public class Intake extends SubsystemBase
 
   /** Rotary Motion Magic movement parameters */
 
-  private static final double       kToleranceDegrees     = 3.0;      // PID tolerance in degrees
-  private static final double       kMMDebounceTime       = 0.060;    // Seconds to debounce a final position check
-  private static final double       kMMMoveTimeout        = 1.0;      // Seconds allowed for a Motion Magic movement
+  private static final double       kToleranceDegrees    = 3.0;      // PID tolerance in degrees
+  private static final double       kMMDebounceTime      = 0.060;    // Seconds to debounce a final position check
+  private static final double       kMMMoveTimeout       = 1.0;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
   //    Measured hardstops and pre-defined positions:
   //               hstop  retracted deployed  hstop
   //      Comp     -13.0  -10.0     90.0      93.0    TODO (fix for 2026)
   //      Practice -13.0  -10.0     80.0      93.0    TODO (fix for 2026)
-  private static final double       kRotaryAngleRetracted = Robot.isComp( ) ? -10.0 : -10.0;  // One degree from hardstops
-  private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 90.0 : 90.0;      // One degree from hardstops
+  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -10.0 : -10.0;  // One degree from hardstops
+  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 90.0 : 90.0;      // One degree from hardstops
 
-  private static final double       kRotaryAngleMin       = kRotaryAngleRetracted - 3.0;
-  private static final double       kRotaryAngleMax       = kRotaryAngleDeployed + 3.0;
+  private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
+  private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;
 
   // Declare device objects
-  private final TalonFX             m_rollerMotor         = new TalonFX(Ports.kCANID_IntakeRoller);
-  private final TalonFX             m_rotaryMotor         = new TalonFX(Ports.kCANID_IntakeRotary);
-  private final CANcoder            m_CANcoder            = new CANcoder(Ports.kCANID_IntakeCANcoder);
+  private final TalonFX             m_rollerMotor        = new TalonFX(Ports.kCANID_IntakeRoller);
+  private final TalonFX             m_rotaryMotor        = new TalonFX(Ports.kCANID_IntakeRotary);
+  private final CANcoder            m_CANcoder           = new CANcoder(Ports.kCANID_IntakeCANcoder);
 
   // Alerts
-  private final Alert               m_rollerAlert         =
+  private final Alert               m_rollerAlert        =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert               m_rotaryAlert         =
+  private final Alert               m_rotaryAlert        =
       new Alert(String.format("%s: Rotary motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert               m_canCoderAlert       =
+  private final Alert               m_canCoderAlert      =
       new Alert(String.format("%s: CANcoder init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
-  private final TalonFXSimState     m_rollerMotorSim      = m_rollerMotor.getSimState( );
-  private final TalonFXSimState     m_rotarySim           = m_rotaryMotor.getSimState( );
-  private final CANcoderSimState    m_CANcoderSim         = m_CANcoder.getSimState( );
-  private final SingleJointedArmSim m_armSim              = new SingleJointedArmSim(DCMotor.getKrakenX60(1), kRotaryGearRatio,
+  private final TalonFXSimState     m_rollerMotorSim     = m_rollerMotor.getSimState( );
+  private final TalonFXSimState     m_rotarySim          = m_rotaryMotor.getSimState( );
+  private final CANcoderSimState    m_CANcoderSim        = m_CANcoder.getSimState( );
+  private final SingleJointedArmSim m_armSim             = new SingleJointedArmSim(DCMotor.getKrakenX60(1), kRotaryGearRatio,
       SingleJointedArmSim.estimateMOI(kRotaryLengthMeters, kRotaryWeightKg), kRotaryLengthMeters, -Math.PI, Math.PI, false, 0.0);
 
   // Mechanism2d
-  private final Mechanism2d         m_rotaryMech          = new Mechanism2d(1.0, 1.0);
-  private final MechanismLigament2d m_mechLigament        = m_rotaryMech.getRoot("Rotary", 0.5, 0.5)
+  private final Mechanism2d         m_rotaryMech         = new Mechanism2d(1.0, 1.0);
+  private final MechanismLigament2d m_mechLigament       = m_rotaryMech.getRoot("Rotary", 0.5, 0.5)
       .append(new MechanismLigament2d(kSubsystemName, 0.5, 0.0, 6, new Color8Bit(Color.kPurple)));
 
   // Status signals
@@ -143,18 +143,18 @@ public class Intake extends SubsystemBase
   // Rotary variables
   private boolean                   m_rotaryValid;                // Health indicator for motor 
   private boolean                   m_canCoderValid;              // Health indicator for CANcoder 
-  private double                    m_currentDegrees      = 0.0;  // Current angle in degrees
-  private double                    m_goalDegrees         = 0.0;  // Goal angle in degrees
-  private double                    m_ccDegrees           = 0.0;  // CANcoder angle in degrees
+  private double                    m_currentDegrees     = 0.0;  // Current angle in degrees
+  private double                    m_goalDegrees        = 0.0;  // Goal angle in degrees
+  private double                    m_ccDegrees          = 0.0;  // CANcoder angle in degrees
 
   // Manual mode config parameters
-  private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0));
-  private RotaryMode                m_rotaryMode          = RotaryMode.INIT;    // Manual movement mode with joysticks
+  private VoltageOut                m_requestVolts       = new VoltageOut(Volts.of(0));
+  private RotaryMode                m_rotaryMode         = RotaryMode.INIT;    // Manual movement mode with joysticks
 
   // Motion Magic config parameters    // Manual movement mode with joysticks
-  private MotionMagicVoltage        m_mmRequestVolts      = new MotionMagicVoltage(0).withSlot(0);
-  private Debouncer                 m_mmWithinTolerance   = new Debouncer(kMMDebounceTime, DebounceType.kRising);
-  private Timer                     m_mmMoveTimer         = new Timer( );       // Movement timer
+  private MotionMagicVoltage        m_mmRequestVolts     = new MotionMagicVoltage(0).withSlot(0);
+  private Debouncer                 m_mmWithinTolerance  = new Debouncer(kMMDebounceTime, DebounceType.kRising);
+  private Timer                     m_mmMoveTimer        = new Timer( );       // Movement timer
   private boolean                   m_mmMoveIsFinished;                         // Movement has completed (within tolerance)
 
   // Network tables publisher objects
@@ -302,8 +302,8 @@ public class Intake extends SubsystemBase
     SmartDashboard.putData("IntakeExpel", getMoveToAngleCommand(INRollerMode.EXPEL, this::getCurrentAngle));
     SmartDashboard.putData("IntakeHold", getMoveToAngleCommand(INRollerMode.HOLD, this::getCurrentAngle));
 
-    SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getIntakeDeployed));
-    SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getIntakeRetracted));
+    SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle));
+    SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -553,13 +553,13 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Return intake angle for retracted state
+   * Return intake angle for stowed state
    * 
-   * @return retracted state angle
+   * @return stowed state angle
    */
-  public double getIntakeRetracted( )
+  public double getStowedAngle( )
   {
-    return kRotaryAngleRetracted;
+    return kRotaryAngleStowed;
   }
 
   /****************************************************************************
@@ -568,7 +568,7 @@ public class Intake extends SubsystemBase
    * 
    * @return deployed state angle
    */
-  public double getIntakeDeployed( )
+  public double getDeployedAngle( )
   {
     return kRotaryAngleDeployed;
   }
