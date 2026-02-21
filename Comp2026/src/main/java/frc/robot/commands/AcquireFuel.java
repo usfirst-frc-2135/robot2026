@@ -30,7 +30,7 @@ public class AcquireFuel extends SequentialCommandGroup
         // @formatter:off
 
         new LogCommand(getName(), "Start rollers & Deploy intake rotary"),
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.ACQUIRE, intake::getDeployedAngle),
+        intake.getMoveToAngleCommand(INConsts.INRollerMode.ACQUIRE, intake::getCurrentAngle),
 
         new LogCommand(getName(), "Run Hopper Rollers"), 
         hopper.getRollerModeCommand(HPConsts.HPRollerMode.ACQUIRE)

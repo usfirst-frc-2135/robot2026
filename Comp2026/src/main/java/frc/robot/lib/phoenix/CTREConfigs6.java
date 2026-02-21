@@ -44,7 +44,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     inRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
-    inRollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    inRollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     inRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     return inRollerConfig;
@@ -91,8 +91,8 @@ public final class CTREConfigs6
     // inRotaryConfig.HardwareLimitSwitch.*
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
-    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 50.0 / gearRatio;  // Rotations / second
-    inRotaryConfig.MotionMagic.MotionMagicAcceleration = 220.0 / gearRatio;   // Rotations / second ^ 2
+    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = (50.0 / gearRatio) / 4;  // Rotations / second
+    inRotaryConfig.MotionMagic.MotionMagicAcceleration = (220.0 / gearRatio) / 4;   // Rotations / second ^ 2
     inRotaryConfig.MotionMagic.MotionMagicJerk = 1600.0 / gearRatio;          // Rotations / second ^ 3
 
     // Motor output settings
@@ -113,7 +113,7 @@ public final class CTREConfigs6
     inRotaryConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
-    inRotaryConfig.Slot0.kP = 3.6 * gearRatio;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    inRotaryConfig.Slot0.kP = (3.6 * gearRatio) / 5;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
     inRotaryConfig.Slot0.kI = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per accumulated unit
     inRotaryConfig.Slot0.kD = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
