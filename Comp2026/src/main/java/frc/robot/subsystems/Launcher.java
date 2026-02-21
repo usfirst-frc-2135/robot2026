@@ -51,8 +51,8 @@ public class Launcher extends SubsystemBase
   private static final String kSubsystemName     = "Launcher";
 
   private static final double kMOI               = 0.001;     // Simulation - Moment of Inertia
-  private static final double kFlywheelScoreRPM  = 3300.0;    // RPM to score
-  private static final double kFlywheelPassRPM   = 3000.0;    // RPM to pass
+  private static final double kFlywheelScoreRPM  = 3500.0;    // RPM to score 
+  private static final double kFlywheelPassRPM   = 3000.0;    // RPM to pass 
   private static final double kToleranceRPM      = 150.0;     // Tolerance band around target RPM
 
   private static final double kFlywheelGearRatio = (18.0 / 24.0);
@@ -312,7 +312,7 @@ public class Launcher extends SubsystemBase
   private void setLauncherVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
-    m_rightMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
+    //m_rightMotor.setControl(m_requestVelocity.withVelocity(Conversions.rotationsToInputRotations(rps, kFlywheelGearRatio)));
   }
 
   /****************************************************************************
@@ -322,7 +322,7 @@ public class Launcher extends SubsystemBase
   private void setLauncherStopped( )
   {
     m_leftMotor.setControl(m_requestVolts);
-    m_rightMotor.setControl(m_requestVolts);
+    // m_rightMotor.setControl(m_requestVolts);
   }
 
   ////////////////////////////////////////////////////////////////////////////

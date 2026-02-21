@@ -66,7 +66,7 @@ public class Intake extends SubsystemBase
   // Constants
   private static final String  kSubsystemName      = "Intake";
 
-  private static final double  kRollerSpeedAcquire = 0.5;     // Motor direction for positive input
+  private static final double  kRollerSpeedAcquire = 0.5;    // Motor direction for positive input
   private static final double  kRollerSpeedExpel   = -0.4;
 
   // Wrist rotary angles - Motion Magic move parameters
@@ -100,8 +100,8 @@ public class Intake extends SubsystemBase
   //               hstop  retracted deployed  hstop
   //      Comp     -13.0  -10.0     90.0      93.0    TODO (fix for 2026)
   //      Practice -13.0  -10.0     80.0      93.0    TODO (fix for 2026)
-  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -10.0 : -10.0;  // One degree from hardstops
-  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 90.0 : 90.0;      // One degree from hardstops
+  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -28.0 : -28.0;  // One degree from hardstops
+  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 105.0 : 105.0;      // One degree from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
   private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;

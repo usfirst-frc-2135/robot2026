@@ -33,8 +33,8 @@ public class Kicker extends SubsystemBase
   // Constants
   private static final String   kSubsystemName      = "Kicker";
 
-  private static final double   kRollerSpeedAcquire = 0.5;     // Motor direction for positive input
-  private static final double   kRollerSpeedExpel   = -0.4;
+  private static final double   kRollerSpeedAcquire = 0.5;  //0.5   // Motor direction for positive input
+  private static final double   kRollerSpeedExpel   = -0.4; //-0.4
 
   // Declare device objects
   private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_KickerRoller);
