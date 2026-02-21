@@ -406,6 +406,7 @@ public class RobotContainer
     {
       DataLogManager.log(String.format("getAuto: ERROR! - starting pose is missing"));
     }
+
   }
 
   /****************************************************************************
@@ -487,8 +488,11 @@ public class RobotContainer
 
     DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
 
-    // Update robot pose to where we want immediately so it displays correctly in dashboard
-    resetOdometryToInitialPose(m_ppPathList.get(0));
+    if (autoOption != AutoChooser.AUTOSTOP)
+    {
+      // Update robot pose to where we want immediately so it displays correctly in dashboard
+      resetOdometryToInitialPose(m_ppPathList.get(0));
+    }
 
     // Build the autonomous command to run
     m_autoCommand = new SequentialCommandGroup(                                                       //
