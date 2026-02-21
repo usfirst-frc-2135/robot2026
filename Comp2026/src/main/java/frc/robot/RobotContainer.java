@@ -284,8 +284,8 @@ public class RobotContainer
     // Driver - A, B, X, Y
     // 
     m_driverPad.a( ).onTrue(new RampLauncher(m_launcher, m_kicker));
-    m_driverPad.b( ).onTrue(new ExpelFuel(m_intake, m_hopper));
-    m_driverPad.x( ).onTrue(new ClimbTower(m_climber));
+    //m_driverPad.b( ).onTrue(new LogCommand(null, null));
+    //m_driverPad.x( ).onTrue(new ClimbTower(m_climber));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
     //
@@ -302,7 +302,7 @@ public class RobotContainer
     // Driver - POV buttons
     //
     m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climber));
-    m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV 90"));
+    m_driverPad.pov(90).onTrue(new ClimbTower(m_climber));
     m_driverPad.pov(180).onTrue(new StowClimber(m_climber));
     m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
