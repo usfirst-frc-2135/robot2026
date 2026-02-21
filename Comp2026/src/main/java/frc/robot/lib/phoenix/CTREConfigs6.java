@@ -44,7 +44,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     inRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
-    inRollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    inRollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     inRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     return inRollerConfig;
