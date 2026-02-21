@@ -12,38 +12,36 @@ import frc.robot.subsystems.Intake;
  */
 public class RetractIntake extends SequentialCommandGroup
 {
-    /**
-     * Group command to use retract intake back from the floor
-     * 
-     * @param intake
-     *            intake subsystem
-     * @param hopper
-     *            hoper subsystem
-     */
-    public RetractIntake(Intake intake, Hopper hopper)
-    {
-        setName("RetractIntake");
+  /**
+   * Group command to use retract intake back from the floor
+   * 
+   * @param intake
+   *          intake subsystem
+   * @param hopper
+   *          hoper subsystem
+   */
+  public RetractIntake(Intake intake, Hopper hopper)
+  {
+    setName("RetractIntake");
 
-        addCommands(
-                // Add Commands here:
+    addCommands(
+        // Add Commands here:
 
-                // @formatter:off
+        // @formatter:off
 
         new LogCommand(getName(), "Stop rollers & Retract intake rotary"),
-       
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getIntakeRetracted),
+        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getStowedAngle),
 
         new LogCommand(getName(), "Run Hopper Rollers"), 
-        hopper.getRollerModeCommand(HPConsts.HPRollerMode.ACQUIRE)
-        
+        hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP)
         
         // @formatter:on
-        );
-    }
+    );
+  }
 
-    @Override
-    public boolean runsWhenDisabled( )
-    {
-        return false;
-    }
+  @Override
+  public boolean runsWhenDisabled( )
+  {
+    return false;
+  }
 }

@@ -9,31 +9,31 @@ import frc.robot.subsystems.Climber;
  */
 public class ClimbTower extends SequentialCommandGroup
 {
-    /**
-     * Group command to use the climber to climb the tower
-     * 
-     * @param climber
-     *            climber subsystem
-     */
-    public ClimbTower(Climber climber)
-    {
-        setName("ClimbTower");
+  /**
+   * Group command to use the climber to climb the tower
+   * 
+   * @param climber
+   *          climber subsystem
+   */
+  public ClimbTower(Climber climber)
+  {
+    setName("ClimbTower");
 
-        addCommands(
-                // Add Commands here: 
+    addCommands(
+        // Add Commands here: 
 
-                // @formatter:off
+        // @formatter:off
 
         new LogCommand(getName(), "Climber "), 
         climber.getMoveToPositionCommand(climber::getClimberClimbed)
        
         // @formatter:on
-        );
-    }
+    );
+  }
 
-    @Override
-    public boolean runsWhenDisabled( )
-    {
-        return false;
-    }
+  @Override
+  public boolean runsWhenDisabled( )
+  {
+    return false;
+  }
 }

@@ -13,26 +13,26 @@ import frc.robot.subsystems.Launcher;
  */
 public class ShootFuel extends SequentialCommandGroup
 {
-    /**
-     * Group command to use the launcher to shoot a fuel
-     * 
-     * @param launcher
-     *            Launcher subsystem
-     * @param kicker
-     *            kicker subsystem
-     *            * @param hopper
-     *            hopper subsystem
-     */
-    public ShootFuel(Launcher launcher, Kicker kicker, Hopper hopper)
-    {
-        setName("ShootFuel");
+  /**
+   * Group command to use the launcher to shoot a fuel
+   * 
+   * @param hopper
+   *          hopper subsystem
+   * @param launcher
+   *          Launcher subsystem
+   * @param kicker
+   *          kicker subsystem
+   */
+  public ShootFuel(Hopper hopper, Kicker kicker, Launcher launcher)
+  {
+    setName("ShootFuel");
 
-        addCommands(
-                // Add Commands here: 
+    addCommands(
+        // Add Commands here: 
 
-                // @formatter:off
+        // @formatter:off
 
-        new LogCommand(getName(), "Start Kicker Rollers"), 
+        new LogCommand(getName(), "Start Hopper Rollers"), 
         hopper.getRollerModeCommand(HPConsts.HPRollerMode.ACQUIRE),
 
         new LogCommand(getName(), "Start Kicker Rollers"), 
@@ -41,14 +41,13 @@ public class ShootFuel extends SequentialCommandGroup
         new LogCommand(getName(), "Start up Launcher rollers "),
         launcher.getLauncherScoreCommand()
     
-
         // @formatter:on
-        );
-    }
+    );
+  }
 
-    @Override
-    public boolean runsWhenDisabled( )
-    {
-        return false;
-    }
+  @Override
+  public boolean runsWhenDisabled( )
+  {
+    return false;
+  }
 }

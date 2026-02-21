@@ -41,13 +41,26 @@ import frc.robot.autos.AutoLeave;
 import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
+import frc.robot.commands.AcquireFuel;
+import frc.robot.commands.ClimbTower;
+import frc.robot.commands.ExpelFuel;
 import frc.robot.commands.LogCommand;
+import frc.robot.commands.PrepareToClimb;
+import frc.robot.commands.RampLauncher;
+import frc.robot.commands.RetractIntake;
+import frc.robot.commands.ShootFuel;
+import frc.robot.commands.StowClimber;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Kicker;
+import frc.robot.subsystems.Launcher;
 import frc.robot.subsystems.Power;
 import frc.robot.subsystems.Telemetry;
 
@@ -104,6 +117,11 @@ public class RobotContainer
 
   // These subsystems may use LED or vision and must be created afterward
   private final CommandSwerveDrivetrain               m_drivetrain    = TunerConstants.createDrivetrain( );
+  private final Intake                                m_intake        = new Intake( );
+  private final Hopper                                m_hopper        = new Hopper( );
+  private final Kicker                                m_kicker        = new Kicker( );
+  private final Launcher                              m_launcher      = new Launcher( );
+  private final Climber                               m_climber       = new Climber( );
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command
@@ -178,9 +196,9 @@ public class RobotContainer
     facing.HeadingController = new PhoenixPIDController(kHeadingKp, kHeadingKi, kHeadingKd);    // Swerve steer PID for facing swerve request
     facing.HeadingController.enableContinuousInput(-180.0, 180.0);
 
-    addDashboardWidgets( );           // Add some dashboard widgets for commands
-    configureButtonBindings( );       // Configure game controller buttons
-    initDefaultCommands( );           // Initialize subsystem default commands
+    addDashboardWidgets( );     // Add some dashboard widgets for commands
+    configureBindings( );       // Configure game controller buttons and triggers
+    initDefaultCommands( );     // Initialize subsystem default commands
 
     // Add periodic calls for non-subsystem classes
     robot.addPeriodic(( ) -> m_hid.periodic( ), Seconds.of(0.020));
@@ -245,13 +263,7 @@ public class RobotContainer
       }
     }));
 
-    // Add buttons for testing HID rumble features to dashboard
-    SmartDashboard.putData("HIDRumbleDriver",
-        m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
-    SmartDashboard.putData("HIDRumbleOperator",
-        m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
-
-    // Add subsystem command objects and main scheduler to dashboard
+    // Add main command scheduler to dashboard
 
     SmartDashboard.putData(CommandScheduler.getInstance( ));
 
@@ -263,7 +275,7 @@ public class RobotContainer
    * 
    * Define button-command mappings. Triggers are created and bound to the desired commands.
    */
-  private void configureButtonBindings( )
+  private void configureBindings( )
   {
     ///////////////////////////////////////////////////////
     //
@@ -271,16 +283,16 @@ public class RobotContainer
     //
     // Driver - A, B, X, Y
     // 
-    m_driverPad.a( ).onTrue(new LogCommand("driverPad", "A"));
-    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
-    m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
+    m_driverPad.a( ).onTrue(new RampLauncher(m_launcher, m_kicker));
+    //m_driverPad.b( ).onTrue(new LogCommand(null, null));
+    //m_driverPad.x( ).onTrue(new ClimbTower(m_climber));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
     //
     // Driver - Bumpers, start, back
     //
-    m_driverPad.leftBumper( ).onTrue(new LogCommand("driverPad", "Left Bumper"));
-    m_driverPad.rightBumper( ).onTrue(new LogCommand("driverPad", "Right Bumper"));
+    m_driverPad.leftBumper( ).onTrue(new ShootFuel(m_hopper, m_kicker, m_launcher));
+    m_driverPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
     m_driverPad.rightBumper( ).onFalse(new LogCommand("driverPad", "Right Bumper"));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
@@ -289,9 +301,9 @@ public class RobotContainer
     //
     // Driver - POV buttons
     //
-    m_driverPad.pov(0).onTrue(new LogCommand("driverPad", "POV 0"));
-    m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV 90"));
-    m_driverPad.pov(180).onTrue(new LogCommand("driverPad", "POV 180"));
+    m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climber));
+    m_driverPad.pov(90).onTrue(new ClimbTower(m_climber));
+    m_driverPad.pov(180).onTrue(new StowClimber(m_climber));
     m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
     //
@@ -300,8 +312,8 @@ public class RobotContainer
     // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("driverPad", "Left Trigger"));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("driverPad", "Right Trigger"));
+    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new ExpelFuel(m_intake, m_hopper));
+    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
 
     m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
     m_driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
@@ -376,12 +388,11 @@ public class RobotContainer
     }
 
     // Idle while the robot is disabled. This ensures the configured neutral mode is applied to the drive motors while disabled.
-    final var idle = new SwerveRequest.Idle( );
     RobotModeTriggers.disabled( ).whileTrue(m_drivetrain.applyRequest(( ) -> idle).ignoringDisable(true));
 
-    m_drivetrain.registerTelemetry(logger::telemeterize);
-
     // Note: Only one default command can be active per subsystem--use the manual modes during bring-up
+
+    m_drivetrain.registerTelemetry(logger::telemeterize);
   }
 
   /****************************************************************************
@@ -552,8 +563,11 @@ public class RobotContainer
    */
   public void disabledInit( )
   {
-    m_power.initialize( );
+    m_hid.initialize( );
+    m_led.initialize( );
     m_vision.initialize( );
+
+    m_power.initialize( );
   }
 
   /****************************************************************************

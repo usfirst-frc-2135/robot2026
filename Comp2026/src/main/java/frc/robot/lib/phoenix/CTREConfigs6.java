@@ -64,7 +64,7 @@ public final class CTREConfigs6
    *          gear box ratio
    * @return inRotaryConfig
    */
-  public static TalonFXConfiguration intakeRotaryFXConfig(double min, double max, int ccPort, double gearRatio) // TODO: needs to be updated for Intake
+  public static TalonFXConfiguration intakeRotaryFXConfig(double min, double max, int ccPort, double gearRatio)
   {
     TalonFXConfiguration inRotaryConfig = new TalonFXConfiguration( );
 
@@ -208,8 +208,8 @@ public final class CTREConfigs6
    * 
    * @return launcherConfig
    */
-  public static TalonFXConfiguration launcherFXConfig( )
-  {     // TODO: needs to be updated for Launcher
+  public static TalonFXConfiguration launcherFXConfig( )      // TODO: needs to be updated for Launcher
+  {
     TalonFXConfiguration launcherConfig = new TalonFXConfiguration( );
 
     // Closed Loop settings
