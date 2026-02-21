@@ -9,9 +9,11 @@
     "FromHub"
   ],
   "autoFolders": [
+    "0-AutoStop",
     "1-AutoLeave",
     "2-AutoScore",
-    "3-AutoScore2"
+    "3-AutoScore2",
+    "4-AutoTest"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 2.0,
