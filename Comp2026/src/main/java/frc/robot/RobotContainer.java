@@ -42,10 +42,14 @@ import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
+import frc.robot.commands.ClimbTower;
 import frc.robot.commands.ExpelFuel;
 import frc.robot.commands.LogCommand;
+import frc.robot.commands.PrepareToClimb;
+import frc.robot.commands.RampLauncher;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.ShootFuel;
+import frc.robot.commands.StowClimber;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.HID;
 import frc.robot.lib.LED;
@@ -279,9 +283,9 @@ public class RobotContainer
     //
     // Driver - A, B, X, Y
     // 
-    m_driverPad.a( ).onTrue(new LogCommand("driverPad", "A"));
-    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
-    m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
+    m_driverPad.a( ).onTrue(new RampLauncher(m_launcher, m_kicker));
+    m_driverPad.b( ).onTrue(new ExpelFuel(m_intake, m_hopper));
+    m_driverPad.x( ).onTrue(new ClimbTower(m_climber));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
     //
@@ -297,9 +301,9 @@ public class RobotContainer
     //
     // Driver - POV buttons
     //
-    m_driverPad.pov(0).onTrue(new LogCommand("driverPad", "POV 0"));
+    m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climber));
     m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV 90"));
-    m_driverPad.pov(180).onTrue(new LogCommand("driverPad", "POV 180"));
+    m_driverPad.pov(180).onTrue(new StowClimber(m_climber));
     m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
     //
