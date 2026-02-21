@@ -37,7 +37,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.autos.AutoLeave;
 import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
@@ -133,7 +132,6 @@ public class RobotContainer
   private enum AutoChooser
   {
     AUTOSTOP,           // AutoStop - sit still, do nothing
-    AUTOLEAVE,          // Leave starting line
     AUTOTEST,           // Run a selected test auto
     AUTOSCORE,          // One cycle of scoring fuel
     AUTOSCORE2          // Two cycles of scoring fuel 
@@ -163,14 +161,6 @@ public class RobotContainer
    *          the auto filename associated with the key
    */
   private final HashMap<String, String> autoMap        = new HashMap<>(Map.ofEntries( //
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START1.toString( ), "Start1_Stop"),
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "Start2_Stop"),
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "Start3_Stop"),
-
-      Map.entry(AutoChooser.AUTOLEAVE.toString( ) + StartPose.START1.toString( ), "Start1_L1"),
-      Map.entry(AutoChooser.AUTOLEAVE.toString( ) + StartPose.START2.toString( ), "Start2_L2"),
-      Map.entry(AutoChooser.AUTOLEAVE.toString( ) + StartPose.START3.toString( ), "Start3_L3"),
-
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_Test1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_Test2"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_Test3"),
@@ -237,10 +227,9 @@ public class RobotContainer
 
     // Configure autonomous sendable chooser
     m_autoChooser.setDefaultOption("0 - AutoStop", AutoChooser.AUTOSTOP);
-    m_autoChooser.addOption("1 - AutoLeave", AutoChooser.AUTOLEAVE);
-    m_autoChooser.addOption("2 - AutoScore", AutoChooser.AUTOSCORE);
-    m_autoChooser.addOption("3 - AutoScore2", AutoChooser.AUTOSCORE2);
-    m_autoChooser.addOption("9 - AutoTestPath", AutoChooser.AUTOTEST);
+    m_autoChooser.addOption("1 - AutoScore", AutoChooser.AUTOSCORE);
+    m_autoChooser.addOption("2 - AutoScore2", AutoChooser.AUTOSCORE2);
+    m_autoChooser.addOption("3 - AutoTest", AutoChooser.AUTOTEST);
     m_autoChooser.onChange(this::updateAutoChooserCallback);
 
     // Configure starting pose sendable chooser
@@ -430,7 +419,6 @@ public class RobotContainer
     AutoChooser autoOption = m_autoChooser.getSelected( );
     StartPose startOption = m_startChooser.getSelected( );
     double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
-    String autoKey = autoOption.toString( ) + startOption.toString( );
 
     // Cancel any autos that were already running
     if (m_autoCommand != null)
@@ -442,54 +430,49 @@ public class RobotContainer
       m_autoCommand = null;
     }
 
+    String autoKey = autoOption.toString( ) + startOption.toString( );
+
     // Get auto name using created key
     String autoName = autoMap.get(autoKey);
     DataLogManager.log(String.format("========================================================================"));
     DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
     DataLogManager.log(String.format("========================================================================"));
 
-    // If auto not defined in hashmap, no path assigned so sit idle
-    if (autoName == null)
+    if (autoOption != AutoChooser.AUTOSTOP)
     {
-      DataLogManager.log(String.format("getAuto: ERROR - no auto defined for this autoKey (%s)", autoKey));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-    }
+      // Get list of paths within the auto file
+      try
+      {
+        m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+      }
+      catch (ParseException | IOException e)
+      {
+        DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
+        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+      }
 
-    // Get list of paths within the auto file
-    try
-    {
-      m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
-    }
-    catch (ParseException | IOException e)
-    {
-      DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-    }
+      if (m_ppPathList.isEmpty( ))
+      {
+        DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
+        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+      }
+      DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
 
-    if (m_ppPathList.isEmpty( ))
-    {
-      DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+      // {
+      //   // Debug only: print states of first path
+      //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
+      //   for (int i = 0; i < states.size( ); i++)
+      //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
+      // }
     }
-
-    DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
-
-    // {
-    //   // Debug only: print states of first path
-    //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
-    //   for (int i = 0; i < states.size( ); i++)
-    //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
-    // }
 
     // Create the correct base command and pass the path list
+
     switch (autoOption)
     {
       default :
       case AUTOSTOP :
         m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-        break;
-      case AUTOLEAVE :
-        m_autoCommand = new AutoLeave(m_ppPathList, m_drivetrain);
         break;
       case AUTOTEST :
         m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
@@ -500,7 +483,6 @@ public class RobotContainer
       case AUTOSCORE2 :
         m_autoCommand = new AutoScore2(m_ppPathList, m_drivetrain);
         break;
-
     }
 
     DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
