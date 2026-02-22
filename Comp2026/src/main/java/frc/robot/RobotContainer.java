@@ -120,7 +120,7 @@ public class RobotContainer
   private final Hopper                                m_hopper        = new Hopper( );
   private final Kicker                                m_kicker        = new Kicker( );
   private final Launcher                              m_launcher      = new Launcher( );
-  private final Climber                               m_climber       = new Climber( );
+  // private final Climber                               m_climber       = new Climber( );
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command
@@ -160,7 +160,11 @@ public class RobotContainer
    * @param value
    *          the auto filename associated with the key
    */
-  private final HashMap<String, String> autoMap        = new HashMap<>(Map.ofEntries( //
+  private final HashMap<String, String> autoMap        = new HashMap<>(Map.ofEntries(                 //
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START1.toString( ), "NoPath1"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "NoPath2"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "NoPath3"),
+
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_Test1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_Test2"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_Test3"),
@@ -171,8 +175,7 @@ public class RobotContainer
 
       Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START1.toString( ), "Start1_H_D_H"),
       Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START2.toString( ), "Start2_D_H_N_H"),
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START3.toString( ), "Start3_H_D_H")
-  //
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START3.toString( ), "Start3_H_D_H")    //
   ));
 
   /****************************************************************************
@@ -273,8 +276,8 @@ public class RobotContainer
     // Driver - A, B, X, Y
     // 
     m_driverPad.a( ).onTrue(new RampLauncher(m_launcher, m_kicker));
-    //m_driverPad.b( ).onTrue(new LogCommand(null, null));
-    //m_driverPad.x( ).onTrue(new ClimbTower(m_climber));
+    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
+    m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
     //
@@ -290,9 +293,9 @@ public class RobotContainer
     //
     // Driver - POV buttons
     //
-    m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climber));
-    m_driverPad.pov(90).onTrue(new ClimbTower(m_climber));
-    m_driverPad.pov(180).onTrue(new StowClimber(m_climber));
+    // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climber));
+    // m_driverPad.pov(90).onTrue(new ClimbTower(m_climber));
+    // m_driverPad.pov(180).onTrue(new StowClimber(m_climber));
     m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
     //
@@ -422,6 +425,7 @@ public class RobotContainer
     double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
 
     // Cancel any autos that were already running
+
     if (m_autoCommand != null)
     {
       if (m_autoCommand.isScheduled( ))
@@ -431,17 +435,18 @@ public class RobotContainer
       m_autoCommand = null;
     }
 
-    String autoKey = autoOption.toString( ) + startOption.toString( );
-
     // Get auto name using created key
+
+    String autoKey = autoOption.toString( ) + startOption.toString( );
     String autoName = autoMap.get(autoKey);
     DataLogManager.log(String.format("========================================================================"));
     DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
     DataLogManager.log(String.format("========================================================================"));
 
+    // Get list of paths within the auto file for all autos except AUTOSTOP
+
     if (autoOption != AutoChooser.AUTOSTOP)
     {
-      // Get list of paths within the auto file
       try
       {
         m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
@@ -457,6 +462,7 @@ public class RobotContainer
         DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
         return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
       }
+
       DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
 
       // {
@@ -488,24 +494,26 @@ public class RobotContainer
 
     DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
 
+    // Build a new sequential command from the base command that allows for a delay and handles odometry
+
     if (autoOption != AutoChooser.AUTOSTOP)
     {
       // Update robot pose to where we want immediately so it displays correctly in dashboard
       resetOdometryToInitialPose(m_ppPathList.get(0));
-    }
 
-    // Build the autonomous command to run
-    m_autoCommand = new SequentialCommandGroup(                                                       //
-        new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
-        new InstantCommand(( ) ->      // Update pose again right before we run the command
-        {
-          resetOdometryToInitialPose(m_ppPathList.get(0));
-        }, m_drivetrain),                                                                             //
-        new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
-        new WaitCommand(delay),                                                                       //
-        m_autoCommand,                                                                                //
-        new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
-    );
+      // Build the autonomous command to run
+      m_autoCommand = new SequentialCommandGroup(                                                       //
+          new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
+          new InstantCommand(( ) ->      // Update pose again right before we run the command
+          {
+            resetOdometryToInitialPose(m_ppPathList.get(0));
+          }, m_drivetrain),                                                                             //
+          new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
+          new WaitCommand(delay),                                                                       //
+          m_autoCommand,                                                                                //
+          new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
+      );
+    }
 
     return m_autoCommand;
   }
