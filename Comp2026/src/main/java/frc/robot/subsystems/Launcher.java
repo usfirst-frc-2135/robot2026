@@ -1,5 +1,5 @@
 //
-// Launcher Subystem - scores Notes into the Speaker
+// Launcher Subystem - scores Notes into the Hub
 //
 package frc.robot.subsystems;
 
