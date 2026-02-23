@@ -292,7 +292,7 @@ public class Intake extends SubsystemBase
 
     m_ccDegreesPub = table.getDoubleTopic("ccDegrees").publish( );
     m_rotDegreesPub = table.getDoubleTopic("rotDegrees").publish( );
-    m_goalDegreesPub = table.getDoubleTopic("taregetDegrees").publish( );
+    m_goalDegreesPub = table.getDoubleTopic("targetDegrees").publish( );
 
     SmartDashboard.putData("INRotaryMech", m_rotaryMech);
 

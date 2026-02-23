@@ -44,7 +44,6 @@ import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.ExpelFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
-import frc.robot.commands.RampLauncher;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.StopIntaking;
 import frc.robot.commands.StopLaunching;
