@@ -41,20 +41,18 @@ import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
-import frc.robot.commands.ClimbTower;
 import frc.robot.commands.ExpelFuel;
+import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
-import frc.robot.commands.PrepareToClimb;
 import frc.robot.commands.RampLauncher;
 import frc.robot.commands.RetractIntake;
-import frc.robot.commands.ShootFuel;
-import frc.robot.commands.StowClimber;
+import frc.robot.commands.StopIntaking;
+import frc.robot.commands.StopLaunching;
 import frc.robot.generated.TunerConstants;
 import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -275,7 +273,7 @@ public class RobotContainer
     //
     // Driver - A, B, X, Y
     // 
-    m_driverPad.a( ).onTrue(new RampLauncher(m_launcher, m_kicker));
+    m_driverPad.a( ).onTrue(new LogCommand("driverPad", "A"));
     m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
@@ -283,9 +281,10 @@ public class RobotContainer
     //
     // Driver - Bumpers, start, back
     //
-    m_driverPad.leftBumper( ).onTrue(new ShootFuel(m_hopper, m_kicker, m_launcher));
+    m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper));
+    m_driverPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
     m_driverPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
-    m_driverPad.rightBumper( ).onFalse(new LogCommand("driverPad", "Right Bumper"));
+    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
     m_driverPad.start( ).onTrue(m_drivetrain.runOnce(( ) -> m_drivetrain.seedFieldCentric( )));         // aka Menu button
@@ -296,6 +295,9 @@ public class RobotContainer
     // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climber));
     // m_driverPad.pov(90).onTrue(new ClimbTower(m_climber));
     // m_driverPad.pov(180).onTrue(new StowClimber(m_climber));
+    m_driverPad.pov(0).onTrue(new LogCommand("driverPad", "POV:0"));
+    m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV:90"));
+    m_driverPad.pov(180).onTrue(new LogCommand("driverPad", "POV:180"));
     m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
     //
@@ -304,8 +306,10 @@ public class RobotContainer
     // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new ExpelFuel(m_intake, m_hopper));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
+    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
+    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new StopIntaking(m_intake, m_hopper));
+    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
+    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
     m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
     m_driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
@@ -324,9 +328,10 @@ public class RobotContainer
     //
     // Operator - Bumpers, start, back
     //
-    m_operatorPad.leftBumper( ).onTrue(new LogCommand("operatorPad", "Left Bumper"));
-    m_operatorPad.rightBumper( ).onTrue(new LogCommand("operatorPad", "Right Bumper"));
-    m_operatorPad.rightBumper( ).onFalse(new LogCommand("operatorPad", "Right Bumper"));
+    m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper));
+    m_operatorPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
+    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_operatorPad.back( ).toggleOnTrue(new LogCommand("operatorPad", "view"));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(new LogCommand("operatorPad", "menu"));  // aka Menu button
@@ -345,8 +350,10 @@ public class RobotContainer
     // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
-    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("operatorPad", "Left Trigger"));
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LogCommand("operatorPad", "Right Trigger"));
+    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
+    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
+    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
     m_operatorPad.leftStick( ).toggleOnTrue(new LogCommand("operPad", "left stick"));
     m_operatorPad.rightStick( ).toggleOnTrue(new LogCommand("operPad", "right stick"));

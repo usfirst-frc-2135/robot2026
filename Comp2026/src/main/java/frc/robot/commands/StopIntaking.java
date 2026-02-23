@@ -8,32 +8,32 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 
 /**
- * Command to acquire a fuel from floor
+ * Command to stop intaking fuel from floor
  */
-public class AcquireFuel extends SequentialCommandGroup
+public class StopIntaking extends SequentialCommandGroup
 {
   /**
-   * Group command to use the intake to acquire a fuel from the floor
+   * Group command to stop using the intake to acquire a fuel
    * 
    * @param intake
    *          intake subsystem
    * @param hopper
    *          hopper subsystem
    */
-  public AcquireFuel(Intake intake, Hopper hopper)
+  public StopIntaking(Intake intake, Hopper hopper)
   {
-    setName("AcquireFuel");
+    setName("StopIntaking");
 
     addCommands(
         // Add Commands here:
 
         // @formatter:off
 
-        new LogCommand(getName(), "Start rollers & Deploy intake rotary"),
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.ACQUIRE, intake::getDeployedAngle),
+        new LogCommand(getName(), "Stop rollers & Hold the intake rotary"),
+        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getCurrentAngle),
 
-        new LogCommand(getName(), "Run Hopper Rollers"), 
-        hopper.getRollerModeCommand(HPConsts.HPRollerMode.ACQUIRE)
+        new LogCommand(getName(), "Stop Hopper Rollers"), 
+        hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP)
 
         // @formatter:on
     );

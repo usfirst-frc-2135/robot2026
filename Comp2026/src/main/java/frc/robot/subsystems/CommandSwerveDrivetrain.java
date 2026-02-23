@@ -51,8 +51,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
@@ -81,9 +79,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
 
     /* Robot pose for field positioning */
-    private final Field2d               kField               = new Field2d();
-    private final FieldObject2d         kLLPoseFront         = kField.getObject("llPose-front"); 
-    private final FieldObject2d         kLLPoseBack          = kField.getObject("llPose-backj"); 
+    private final NetworkTable          kFieldTable = kNTInst.getTable("Pose");
+
+    private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
+    private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
 
     private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
     private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
@@ -454,7 +453,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private void initDashboard( )
     {
         m_setPosePub.set(new double[3]);
-        SmartDashboard.putData("Field", kField);
 
         // Get the default instance of NetworkTables that was created automatically when the robot program starts
         SmartDashboard.putData("SetPose", getResetPoseCommand( ));
@@ -475,7 +473,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * This example is sufficient to show that vision integration is possible, though exact
      * implementation of how to use vision should be tuned per-robot and to the team's specification.
      */
-    private boolean visionUpdate(String limelightName, FieldObject2d fieldObject)
+    private boolean visionUpdate(String limelightName, DoubleArrayPublisher poseArray)
     {
         boolean useMegaTag2 = true; // set to false to use MegaTag1
         boolean doRejectUpdate = false;
@@ -508,7 +506,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
             if (!doRejectUpdate)
             {
-                fieldObject.setPose(mt1.pose.getX( ), mt1.pose.getY( ), mt1.pose.getRotation( ));
+                double[ ] array =
+                {
+                        mt1.pose.getX( ), mt1.pose.getY( ), mt1.pose.getRotation( ).getRotations( )
+                };
+                poseArray.set(array);
 
                 setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
                 addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
@@ -539,7 +541,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             {
                 final double kBase = 0.5;
                 final double kProportional = 0.9;
-                fieldObject.setPose(mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ));
+                double[ ] array =
+                {
+                        mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ).getRotations( )
+                };
+                poseArray.set(array);
 
                 // Code used by some teams to scale std devs by distance (below) and used by several teams
                 setVisionMeasurementStdDevs(VecBuilder.fill( //
