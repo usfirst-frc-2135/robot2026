@@ -15,7 +15,7 @@ import frc.robot.subsystems.Launcher;
 public class LaunchFuel extends SequentialCommandGroup
 {
   /**
-   * Group command to use the launcher to lauch a fuel
+   * Group command to use the launcher to launch a fuel
    * 
    * @param hopper
    *          hopper subsystem
