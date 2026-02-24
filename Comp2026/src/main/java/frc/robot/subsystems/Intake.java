@@ -66,14 +66,11 @@ public class Intake extends SubsystemBase
   // Constants
   private static final String  kSubsystemName      = "Intake";
 
-  private static final double  kRollerSpeedAcquire = 0.5;    // Motor direction for positive input
+  // Intake roller constants
+  private static final double  kRollerSpeedAcquire = 0.7;    // Motor direction for positive input
   private static final double  kRollerSpeedExpel   = -0.4;
 
-  // Wrist rotary angles - Motion Magic move parameters
-  //    Measured hardstops and pre-defined positions:
-  //               hstop    hstop
-  //      Comp     -119.0   52.0
-  //      Practice -119.0   52.0
+  // Intake rotary constants
   private static final double  kRotaryGearRatio    = 25.0;      // Simulation
   private static final double  kRotaryLengthMeters = 0.3;       // Simulation
   private static final double  kRotaryWeightKg     = 3.0;       // Simulation
@@ -96,12 +93,12 @@ public class Intake extends SubsystemBase
   private static final double       kMMMoveTimeout       = 1.0;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
-  //    Measured hardstops and pre-defined positions:
-  //               hstop  retracted deployed  hstop
-  //      Comp     -13.0  -10.0     90.0      93.0    TODO (fix for 2026)
-  //      Practice -13.0  -10.0     80.0      93.0    TODO (fix for 2026)
-  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -28.0 : -28.0;  // One degree from hardstops
-  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 105.0 : 105.0;      // One degree from hardstops
+  //    Measured hardstops and pre-defined positions (0 degrees is horizontal to the floor):
+  //               hstop   retracted  deployed  hstop
+  //      Comp     -121.0  -118.0     15.0      18.0    TODO (fix for 2026)
+  //      Practice -121.0  -118.0     15.0      18.0    TODO (fix for 2026)
+  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -90.0 : -90.0;  // One degree from hardstops
+  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 3.0 : 3.0;      // One degree from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
   private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;

@@ -333,7 +333,7 @@ public class RobotContainer
     m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_operatorPad.back( ).toggleOnTrue(new LogCommand("operatorPad", "view"));   // aka View button
-    m_operatorPad.start( ).toggleOnTrue(new LogCommand("operatorPad", "menu"));  // aka Menu button
+    m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
 
     //
     // Operator - POV buttons
@@ -543,10 +543,10 @@ public class RobotContainer
    * 
    * Gamepad joystick axis interfaces
    */
-  // private double getIntakeRotaryAxis( )
-  // {
-  //   return -m_operatorPad.getLeftY( );
-  // }
+  private double getIntakeRotaryAxis( )
+  {
+    return m_operatorPad.getRightX( );
+  }
 
   /****************************************************************************
    * 
@@ -554,7 +554,7 @@ public class RobotContainer
    */
   // private double getClimberAxis( )
   // {
-  //   return m_operatorPad.getRightX( );
+  //   return -m_operatorPad.getLeftY( );
   // }
 
   /****************************************************************************
