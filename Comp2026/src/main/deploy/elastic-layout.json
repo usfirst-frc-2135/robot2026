@@ -369,23 +369,6 @@
             }
           },
           {
-            "title": "atDesiredRPM",
-            "x": 640.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/launcher/atDesiredRPM",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "leftSpeed",
             "x": 512.0,
             "y": 0.0,
@@ -414,23 +397,9 @@
             }
           },
           {
-            "title": "targetRPM",
-            "x": 512.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/launcher/targetRPM",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "scoreRPM",
-            "x": 768.0,
-            "y": 0.0,
+            "x": 640.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -481,6 +450,51 @@
               "period": 0.06,
               "show_type": true,
               "maximize_button_space": false
+            }
+          },
+          {
+            "title": "launcherRPM",
+            "x": 640.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/launcher/launcherRPM",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "motorRPM",
+            "x": 512.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/launcher/motorRPM",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "atRequestedRPM",
+            "x": 512.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/launcher/atRequestedRPM",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]

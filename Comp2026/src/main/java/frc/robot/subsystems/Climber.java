@@ -105,8 +105,8 @@ public class Climber extends SubsystemBase
 
   // Simulation objects
   private final TalonFXSimState       m_climberSim        = m_leftMotor.getSimState( );
-  private final ElevatorSim           m_elevSim           = new ElevatorSim(DCMotor.getKrakenX60(1), kGearRatio, kCarriageMassKg,
-      kDrumRadiusMeters, -kLengthMax, kLengthMax, false, 0.0);
+  private final ElevatorSim           m_elevSim           = new ElevatorSim(DCMotor.getKrakenX60Foc(1), kGearRatio,
+      kCarriageMassKg, kDrumRadiusMeters, -kLengthMax, kLengthMax, false, 0.0);
 
   // Mechanism2d
   private final Mechanism2d           m_climberMech       = new Mechanism2d(1.0, 1.0);
@@ -139,7 +139,7 @@ public class Climber extends SubsystemBase
   private ClimberMode                 m_mode              = ClimberMode.INIT;       // Manual movement mode with joysticks
 
   // Motion Magic mode config parameters
-  private MotionMagicVoltage          m_mmRequestVolts    = new MotionMagicVoltage(0).withSlot(0);
+  private MotionMagicVoltage          m_mmRequestVolts    = new MotionMagicVoltage(0).withSlot(0).withEnableFOC(true);
   private Debouncer                   m_mmWithinTolerance = new Debouncer(kMMDebounceTime, DebounceType.kRising);
   private Timer                       m_mmMoveTimer       = new Timer( );           // Movement timer
   private Voltage                     m_mmArbFeedForward  = Volts.of(0);  // Arbitrary feedforward added to counteract gravity
