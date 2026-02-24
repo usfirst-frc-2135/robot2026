@@ -160,7 +160,7 @@
       }
     },
     {
-      "name": "Commands",
+      "name": "Intaking",
       "grid_layout": {
         "layouts": [],
         "containers": [
@@ -236,7 +236,7 @@
           },
           {
             "title": "HopperAcquire",
-            "x": 512.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -250,7 +250,7 @@
           },
           {
             "title": "HopperExpel",
-            "x": 512.0,
+            "x": 768.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
@@ -264,7 +264,7 @@
           },
           {
             "title": "HopperStop",
-            "x": 512.0,
+            "x": 768.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -277,58 +277,58 @@
             }
           },
           {
-            "title": "KickerAcquire",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/KickerAcquire",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
-            "title": "KickerExpel",
-            "x": 768.0,
-            "y": 256.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/KickerExpel",
-              "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
-            }
-          },
-          {
-            "title": "KickerStop",
-            "x": 768.0,
+            "title": "ccDegrees",
+            "x": 512.0,
             "y": 128.0,
-            "width": 256.0,
+            "width": 128.0,
             "height": 128.0,
-            "type": "Command",
+            "type": "Text Display",
             "properties": {
-              "topic": "/SmartDashboard/KickerStop",
+              "topic": "/intake/ccDegrees",
+              "period": 0.033,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "rotDegrees",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/intake/rotDegrees",
               "period": 0.06,
-              "show_type": true,
-              "maximize_button_space": false
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "targetDegrees",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/intake/targetDegrees",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
             }
           }
         ]
       }
     },
     {
-      "name": "Launcher",
+      "name": "Launching",
       "grid_layout": {
         "layouts": [],
         "containers": [
           {
             "title": "LauncherPass",
-            "x": 0.0,
+            "x": 256.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -342,7 +342,7 @@
           },
           {
             "title": "LauncherStop",
-            "x": 0.0,
+            "x": 256.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
@@ -356,7 +356,7 @@
           },
           {
             "title": "LauncherScore",
-            "x": 0.0,
+            "x": 256.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -370,7 +370,7 @@
           },
           {
             "title": "atDesiredRPM",
-            "x": 384.0,
+            "x": 640.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -387,7 +387,7 @@
           },
           {
             "title": "leftSpeed",
-            "x": 256.0,
+            "x": 512.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -401,7 +401,7 @@
           },
           {
             "title": "rightSpeed",
-            "x": 384.0,
+            "x": 640.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -415,7 +415,7 @@
           },
           {
             "title": "targetRPM",
-            "x": 256.0,
+            "x": 512.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -429,7 +429,7 @@
           },
           {
             "title": "scoreRPM",
-            "x": 512.0,
+            "x": 768.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -439,6 +439,48 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "KickerAcquire",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/KickerAcquire",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
+            }
+          },
+          {
+            "title": "KickerExpel",
+            "x": 0.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/KickerExpel",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
+            }
+          },
+          {
+            "title": "KickerStop",
+            "x": 0.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/KickerStop",
+              "period": 0.06,
+              "show_type": true,
+              "maximize_button_space": false
             }
           }
         ]

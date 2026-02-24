@@ -543,7 +543,7 @@ public class RobotContainer
    * 
    * Gamepad joystick axis interfaces
    */
-  // private double getElevatorAxis( )
+  // private double getIntakeRotaryAxis( )
   // {
   //   return -m_operatorPad.getLeftY( );
   // }
@@ -552,7 +552,7 @@ public class RobotContainer
    * 
    * Gamepad joystick axis interfaces
    */
-  // private double getWristAxis( )
+  // private double getClimberAxis( )
   // {
   //   return m_operatorPad.getRightX( );
   // }
