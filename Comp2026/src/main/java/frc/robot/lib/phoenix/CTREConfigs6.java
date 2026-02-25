@@ -34,17 +34,17 @@ public final class CTREConfigs6
     TalonFXConfiguration inRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    inRollerConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
-    inRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
+    inRollerConfig.CurrentLimits.SupplyCurrentLimit = 12.0;       // XXX 25.0;       // Amps
+    inRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 12.0;  // XXX 25.0;  // Amps
     inRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     inRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    inRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
+    inRollerConfig.CurrentLimits.StatorCurrentLimit = 100.0;      // XXX 200.0;      // Amps
     inRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
     inRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
-    inRollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    inRollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     inRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     return inRollerConfig;
@@ -73,8 +73,8 @@ public final class CTREConfigs6
     // inRotaryConfig.ClosedLoopRamps.*                           // Seconds to ramp
 
     // Current limit settings
-    inRotaryConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
-    inRotaryConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
+    inRotaryConfig.CurrentLimits.SupplyCurrentLimit = 12.0;       // XXX 25.0;       // Amps
+    inRotaryConfig.CurrentLimits.SupplyCurrentLowerLimit = 12.0;  // XXX 25.0;  // Amps
     inRotaryConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;  // Seconds
     inRotaryConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
@@ -91,8 +91,8 @@ public final class CTREConfigs6
     // inRotaryConfig.HardwareLimitSwitch.*
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
-    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 50.0 / gearRatio;  // Rotations / second
-    inRotaryConfig.MotionMagic.MotionMagicAcceleration = 220.0 / gearRatio;   // Rotations / second ^ 2
+    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = (50.0 / gearRatio) / 4;  // Rotations / second
+    inRotaryConfig.MotionMagic.MotionMagicAcceleration = (220.0 / gearRatio) / 4;   // Rotations / second ^ 2
     inRotaryConfig.MotionMagic.MotionMagicJerk = 1600.0 / gearRatio;          // Rotations / second ^ 3
 
     // Motor output settings
@@ -113,7 +113,7 @@ public final class CTREConfigs6
     inRotaryConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
-    inRotaryConfig.Slot0.kP = 3.6 * gearRatio;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    inRotaryConfig.Slot0.kP = (3.6 * gearRatio) / 5;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
     inRotaryConfig.Slot0.kI = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per accumulated unit
     inRotaryConfig.Slot0.kD = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
@@ -137,11 +137,12 @@ public final class CTREConfigs6
     CANcoderConfiguration inRotaryConfig = new CANcoderConfiguration( );
     double kQuarterRotation = 0.25;
 
-    inRotaryConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    inRotaryConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.25;
+    inRotaryConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+    inRotaryConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
 
     if (Robot.isReal( ))
-      inRotaryConfig.MagnetSensor.MagnetOffset = (Robot.isComp( )) ? (-0.311768 - kQuarterRotation) : (0.1184 - kQuarterRotation); // TODO: Update for 2026
+      inRotaryConfig.MagnetSensor.MagnetOffset =
+          (Robot.isComp( )) ? (0.481201 - kQuarterRotation) : (0.481201 - kQuarterRotation); // TODO: Update for 2026
     else
       inRotaryConfig.MagnetSensor.MagnetOffset = -0.25;                   // Simulated CANcoder default in rotations
 
@@ -159,12 +160,12 @@ public final class CTREConfigs6
     TalonFXConfiguration hpRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
-    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 12.0;       // XXX 25.0;       // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 12.0;  // XXX 25.0;  // Amps
     hpRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     hpRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
+    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 100.0;      // XXX 200.0;      // Amps
     hpRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
@@ -186,12 +187,12 @@ public final class CTREConfigs6
     TalonFXConfiguration kkRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
-    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 12.0;       // XXX 25.0;       // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 12.0;  // XXX 25.0;  // Amps
     kkRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     kkRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    kkRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
+    kkRollerConfig.CurrentLimits.StatorCurrentLimit = 100.0;      // XXX 200.0;      // Amps
     kkRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
@@ -271,12 +272,12 @@ public final class CTREConfigs6
     // exConfig.ClosedLoopRamps.*
 
     // Current limit settings
-    climberConfig.CurrentLimits.SupplyCurrentLimit = 80.0;        // Amps
-    climberConfig.CurrentLimits.SupplyCurrentLowerLimit = 80.0;   // Amps
+    climberConfig.CurrentLimits.SupplyCurrentLimit = 40.0;        // XXX 80.0;        // Amps
+    climberConfig.CurrentLimits.SupplyCurrentLowerLimit = 40.0;   // XXX 80.0;   // Amps
     climberConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;   // Seconds
     climberConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    climberConfig.CurrentLimits.StatorCurrentLimit = 800.0;        // Amps
+    climberConfig.CurrentLimits.StatorCurrentLimit = 200.0;       // XXX 800.0;        // Amps
     climberConfig.CurrentLimits.StatorCurrentLimitEnable = false;
 
     // Feedback settings

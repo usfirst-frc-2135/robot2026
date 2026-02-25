@@ -66,14 +66,11 @@ public class Intake extends SubsystemBase
   // Constants
   private static final String  kSubsystemName      = "Intake";
 
-  private static final double  kRollerSpeedAcquire = 0.5;     // Motor direction for positive input
+  // Intake roller constants
+  private static final double  kRollerSpeedAcquire = 0.7;    // Motor direction for positive input
   private static final double  kRollerSpeedExpel   = -0.4;
 
-  // Wrist rotary angles - Motion Magic move parameters
-  //    Measured hardstops and pre-defined positions:
-  //               hstop    hstop
-  //      Comp     -119.0   52.0
-  //      Practice -119.0   52.0
+  // Intake rotary constants
   private static final double  kRotaryGearRatio    = 25.0;      // Simulation
   private static final double  kRotaryLengthMeters = 0.3;       // Simulation
   private static final double  kRotaryWeightKg     = 3.0;       // Simulation
@@ -96,12 +93,12 @@ public class Intake extends SubsystemBase
   private static final double       kMMMoveTimeout       = 1.0;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
-  //    Measured hardstops and pre-defined positions:
-  //               hstop  retracted deployed  hstop
-  //      Comp     -13.0  -10.0     90.0      93.0    TODO (fix for 2026)
-  //      Practice -13.0  -10.0     80.0      93.0    TODO (fix for 2026)
-  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -10.0 : -10.0;  // One degree from hardstops
-  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 90.0 : 90.0;      // One degree from hardstops
+  //    Measured hardstops and pre-defined positions (0 degrees is horizontal to the floor):
+  //               hstop   retracted  deployed  hstop
+  //      Comp     -121.0  -118.0     15.0      18.0    TODO (fix for 2026)
+  //      Practice -121.0  -118.0     15.0      18.0    TODO (fix for 2026)
+  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -90.0 : -90.0;  // One degree from hardstops
+  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 3.0 : 3.0;      // One degree from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
   private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;
@@ -123,7 +120,7 @@ public class Intake extends SubsystemBase
   private final TalonFXSimState     m_rollerMotorSim     = m_rollerMotor.getSimState( );
   private final TalonFXSimState     m_rotarySim          = m_rotaryMotor.getSimState( );
   private final CANcoderSimState    m_CANcoderSim        = m_CANcoder.getSimState( );
-  private final SingleJointedArmSim m_armSim             = new SingleJointedArmSim(DCMotor.getKrakenX60(1), kRotaryGearRatio,
+  private final SingleJointedArmSim m_armSim             = new SingleJointedArmSim(DCMotor.getKrakenX60Foc(1), kRotaryGearRatio,
       SingleJointedArmSim.estimateMOI(kRotaryLengthMeters, kRotaryWeightKg), kRotaryLengthMeters, -Math.PI, Math.PI, false, 0.0);
 
   // Mechanism2d
@@ -152,7 +149,7 @@ public class Intake extends SubsystemBase
   private RotaryMode                m_rotaryMode         = RotaryMode.INIT;    // Manual movement mode with joysticks
 
   // Motion Magic config parameters    // Manual movement mode with joysticks
-  private MotionMagicVoltage        m_mmRequestVolts     = new MotionMagicVoltage(0).withSlot(0);
+  private MotionMagicVoltage        m_mmRequestVolts     = new MotionMagicVoltage(0).withSlot(0).withEnableFOC(true);
   private Debouncer                 m_mmWithinTolerance  = new Debouncer(kMMDebounceTime, DebounceType.kRising);
   private Timer                     m_mmMoveTimer        = new Timer( );       // Movement timer
   private boolean                   m_mmMoveIsFinished;                         // Movement has completed (within tolerance)
@@ -292,7 +289,7 @@ public class Intake extends SubsystemBase
 
     m_ccDegreesPub = table.getDoubleTopic("ccDegrees").publish( );
     m_rotDegreesPub = table.getDoubleTopic("rotDegrees").publish( );
-    m_goalDegreesPub = table.getDoubleTopic("taregetDegrees").publish( );
+    m_goalDegreesPub = table.getDoubleTopic("targetDegrees").publish( );
 
     SmartDashboard.putData("INRotaryMech", m_rotaryMech);
 
