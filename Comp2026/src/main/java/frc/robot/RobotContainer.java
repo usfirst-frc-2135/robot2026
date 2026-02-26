@@ -94,7 +94,7 @@ public class RobotContainer
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);       // We want field-centric driving in open loop
   @SuppressWarnings("unused")
   private final SwerveRequest.PointWheelsAt           point           = new SwerveRequest.PointWheelsAt( );
-  // private final SwerveRequest.RobotCentric            aim             = new SwerveRequest.RobotCentric( );
+  private final SwerveRequest.RobotCentric            aim             = new SwerveRequest.RobotCentric( );
   private final SwerveRequest.Idle                    idle            = new SwerveRequest.Idle( );
   @SuppressWarnings("unused")
   private final SwerveRequest.RobotCentric            forwardStraight = new SwerveRequest.RobotCentric( )     //
@@ -272,7 +272,11 @@ public class RobotContainer
     //
     // Driver - A, B, X, Y
     // 
-    m_driverPad.a( ).onTrue(new LogCommand("driverPad", "A"));
+    m_driverPad.a( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim       //
+    .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
+    .withVelocityY(0)                                    //
+    .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
+    
     m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
