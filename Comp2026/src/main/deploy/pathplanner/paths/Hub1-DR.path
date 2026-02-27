@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.3033874045801523,
-        "y": 2.8466984732824425
+        "x": 2.688,
+        "y": 1.95
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.5837118320606094,
-        "y": 7.014122137409333
+        "x": 1.9683244274804572,
+        "y": 6.117423664126891
       },
       "isLocked": false,
       "linkedName": "Hub1"
     },
     {
       "anchor": {
-        "x": 0.432,
+        "x": 0.502,
         "y": 7.221
       },
       "prevControl": {
-        "x": 1.4864083969465653,
+        "x": 1.5564083969465654,
         "y": 7.112211832061069
       },
       "nextControl": null,
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
