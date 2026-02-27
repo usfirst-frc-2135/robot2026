@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.LogCommand;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.ExpelFuel;
+import frc.robot.commands.LaunchFuel;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -50,7 +51,7 @@ public class AutoScore extends SequentialCommandGroup
           launcher.getLauncherScoreCommand( )
         ), 
 
-        new ExpelFuel(intake, hopper)
+        new LaunchFuel(hopper, kicker, launcher)
 
         // @formatter:on
         );
