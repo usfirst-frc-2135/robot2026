@@ -276,7 +276,6 @@ public class RobotContainer
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
         .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
-
     m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
