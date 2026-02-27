@@ -8,6 +8,10 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.LogCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Kicker;
+import frc.robot.subsystems.Launcher;
 
 /**
  * Auto command that just leaves the starting zone
@@ -23,7 +27,8 @@ public class AutoScore extends SequentialCommandGroup
      * @param drivetrain
      *            swerve drivetrain subsystem
      */
-    public AutoScore(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain)
+    public AutoScore(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper,
+            Launcher launcher, Kicker kicker)
     {
         setName("AutoScore");
 
