@@ -5,8 +5,11 @@ import java.util.List;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.LogCommand;
+import frc.robot.commands.AcquireFuel;
+import frc.robot.commands.ExpelFuel;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -38,8 +41,16 @@ public class AutoScore extends SequentialCommandGroup
                 // @formatter:off
 
         new LogCommand(getName(), "Acquire fuel and score once"),
-        drivetrain.getPathCommand(ppAuto.get(0)),
-        drivetrain.getPathCommand(ppAuto.get(1))
+        new ParallelCommandGroup(
+          drivetrain.getPathCommand(ppAuto.get(0)),
+          new AcquireFuel(intake, hopper)
+        ), 
+        new ParallelCommandGroup(
+          drivetrain.getPathCommand(ppAuto.get(1)),
+          launcher.getLauncherScoreCommand( )
+        ), 
+
+        new ExpelFuel(intake, hopper)
 
         // @formatter:on
         );
