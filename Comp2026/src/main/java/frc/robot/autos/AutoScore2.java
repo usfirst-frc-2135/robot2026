@@ -18,24 +18,24 @@ import frc.robot.subsystems.Launcher;
  */
 public class AutoScore2 extends SequentialCommandGroup
 {
-    /**
-     * Autonomous command to:
-     * 1 - Leave the starting line
-     * 
-     * @param ppAuto
-     *            list of auto paths to follow
-     * @param drivetrain
-     *            swerve drivetrain subsystem
-     */
-    public AutoScore2(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper,
-            Launcher launcher, Kicker kicker)
-    {
-        setName("AutoScore2");
+  /**
+   * Autonomous command to:
+   * 1 - Leave the starting line
+   * 
+   * @param ppAuto
+   *          list of auto paths to follow
+   * @param drivetrain
+   *          swerve drivetrain subsystem
+   */
+  public AutoScore2(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper, Kicker kicker,
+      Launcher launcher)
+  {
+    setName("AutoScore2");
 
-        addCommands(
-                // Add Commands here:
+    addCommands(
+        // Add Commands here:
 
-                // @formatter:off
+        // @formatter:off
 
         new LogCommand(getName(), "Acquire fuel and score once"),
         drivetrain.getPathCommand(ppAuto.get(0)),
@@ -43,13 +43,14 @@ public class AutoScore2 extends SequentialCommandGroup
         drivetrain.getPathCommand(ppAuto.get(2)),
         drivetrain.getPathCommand(ppAuto.get(3)),
         drivetrain.getPathCommand(ppAuto.get(4))
+        
         // @formatter:on
-        );
-    }
+    );
+  }
 
-    @Override
-    public boolean runsWhenDisabled( )
-    {
-        return false;
-    }
+  @Override
+  public boolean runsWhenDisabled( )
+  {
+    return false;
+  }
 }
