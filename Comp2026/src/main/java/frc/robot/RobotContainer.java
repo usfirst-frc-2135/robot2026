@@ -494,10 +494,10 @@ public class RobotContainer
         m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
         break;
       case AUTOSCORE :
-        m_autoCommand = new AutoScore(m_ppPathList, m_drivetrain);
+        m_autoCommand = new AutoScore(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
         break;
       case AUTOSCORE2 :
-        m_autoCommand = new AutoScore2(m_ppPathList, m_drivetrain);
+        m_autoCommand = new AutoScore2(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
         break;
     }
 
