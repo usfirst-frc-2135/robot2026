@@ -34,12 +34,12 @@ public final class CTREConfigs6
     TalonFXConfiguration inRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    inRollerConfig.CurrentLimits.SupplyCurrentLimit = 12.0;       // XXX 25.0;       // Amps
-    inRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 12.0;  // XXX 25.0;  // Amps
+    inRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // XXX 25.0;       // Amps
+    inRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // XXX 25.0;  // Amps
     inRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     inRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    inRollerConfig.CurrentLimits.StatorCurrentLimit = 100.0;      // XXX 200.0;      // Amps
+    inRollerConfig.CurrentLimits.StatorCurrentLimit = 300.0;      // XXX 200.0;      // Amps
     inRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
@@ -159,12 +159,12 @@ public final class CTREConfigs6
     TalonFXConfiguration hpRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 12.0;       // XXX 25.0;       // Amps
-    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 12.0;  // XXX 25.0;  // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 15.0;       // XXX 25.0;       // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 15.0;  // XXX 25.0;  // Amps
     hpRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     hpRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 100.0;      // XXX 200.0;      // Amps
+    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // XXX 200.0;      // Amps
     hpRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
@@ -186,12 +186,12 @@ public final class CTREConfigs6
     TalonFXConfiguration kkRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 12.0;       // XXX 25.0;       // Amps
-    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 12.0;  // XXX 25.0;  // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // XXX 25.0;       // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // XXX 25.0;  // Amps
     kkRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     kkRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    kkRollerConfig.CurrentLimits.StatorCurrentLimit = 100.0;      // XXX 200.0;      // Amps
+    kkRollerConfig.CurrentLimits.StatorCurrentLimit = 300.0;      // XXX 200.0;      // Amps
     kkRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
