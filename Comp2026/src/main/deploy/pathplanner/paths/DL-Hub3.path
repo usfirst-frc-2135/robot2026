@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.688330152671756,
-        "y": 6.118711832061069
+        "x": 2.0,
+        "y": 6.4
       },
       "prevControl": {
-        "x": 2.445309600528434,
-        "y": 6.060051698785096
+        "x": 1.7569794478566791,
+        "y": 6.341339866724027
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -40.0
+    "rotation": -45.0
   },
   "reversed": false,
   "folder": "FromDepot",
