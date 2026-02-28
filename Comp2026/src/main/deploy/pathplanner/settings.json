@@ -3,10 +3,9 @@
   "robotLength": 0.838,
   "holonomicMode": true,
   "pathFolders": [
-    "FromDepot",
     "FromNeutralZone",
     "FromStart",
-    "FromHub"
+    "Unused"
   ],
   "autoFolders": [
     "0-AutoStop",
@@ -14,8 +13,8 @@
     "3-AutoScore2",
     "4-AutoTest"
   ],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxVel": 3.2,
+  "defaultMaxAccel": 3.2,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,
