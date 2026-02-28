@@ -159,12 +159,12 @@ public final class CTREConfigs6
     TalonFXConfiguration hpRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 15.0;       // XXX 25.0;       // Amps
-    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 15.0;  // XXX 25.0;  // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 22.0;       // XXX 25.0;       // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 22.0;  // XXX 25.0;  // Amps
     hpRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     hpRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // XXX 200.0;      // Amps
+    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 400.0;      // XXX 200.0;      // Amps
     hpRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
