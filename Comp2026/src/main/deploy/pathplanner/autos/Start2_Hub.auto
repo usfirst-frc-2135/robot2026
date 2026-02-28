@@ -9,6 +9,12 @@
           "data": {
             "pathName": "Start2-Hub"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "New Path"
+          }
         }
       ]
     }
