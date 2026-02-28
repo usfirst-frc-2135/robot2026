@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Constants.HPConsts;
 import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
@@ -276,7 +277,8 @@ public class RobotContainer
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
         .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
-    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
+    m_driverPad.b( ).whileTrue(m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL));
+    m_driverPad.b( ).onFalse(m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP));
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
@@ -323,7 +325,8 @@ public class RobotContainer
     // Operator - A, B, X, Y
     //
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
-    m_operatorPad.b( ).onTrue(new LogCommand("operatorPad", "B"));
+    m_operatorPad.b( ).whileTrue(m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL));
+    m_operatorPad.b( ).onFalse(m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP));
     m_operatorPad.x( ).onTrue(new LogCommand("operatorPad", "X"));
     m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
 
