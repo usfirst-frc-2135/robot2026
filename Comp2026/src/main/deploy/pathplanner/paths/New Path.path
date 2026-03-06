@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.502,
-        "y": 5.6
+        "x": 1.6,
+        "y": 6.08
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.9309828244274811,
-        "y": 5.675190839694657
+        "x": 1.804788011072248,
+        "y": 5.936605890912238
       },
       "isLocked": false,
-      "linkedName": "DL"
+      "linkedName": "Hub3"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 6.08
       },
       "prevControl": {
-        "x": 1.3569794478566781,
-        "y": 6.021339866724027
+        "x": 1.3952119889277521,
+        "y": 6.223394109087762
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,10 +45,10 @@
     "rotation": -35.0
   },
   "reversed": false,
-  "folder": "Unused",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -35.0
   },
   "useDefaultConstraints": true
 }

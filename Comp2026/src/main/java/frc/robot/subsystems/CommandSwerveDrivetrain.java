@@ -73,7 +73,7 @@ import frc.robot.lib.Vision;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final boolean        m_useLimelight       = true;
+    private static final boolean        m_useLimelight       = false;
 
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
@@ -92,11 +92,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final DoubleArrayPublisher  m_setPosePub         = kSwerveTable.getDoubleArrayTopic("setPose").publish();
     private final DoubleArraySubscriber m_setPoseSub         = kSwerveTable.getDoubleArrayTopic("setPose").subscribe(new double[3]);
 
-    private MedianFilter                m_leftFilter         = new MedianFilter(5);
-    private MedianFilter                m_rightFilter        = new MedianFilter(5);
+    private MedianFilter                m_frontFilter        = new MedianFilter(5);
+    private MedianFilter                m_backFilter         = new MedianFilter(5);
 
-    private BooleanPublisher            m_leftUpdate         = kSwerveTable.getBooleanTopic("LeftUpdate").publish();
-    private BooleanPublisher            m_rightUpdate        = kSwerveTable.getBooleanTopic("RightUpdate").publish();
+    private BooleanPublisher            m_frontUpdate        = kSwerveTable.getBooleanTopic("FrontCam").publish();
+    private BooleanPublisher            m_backUpdate         = kSwerveTable.getBooleanTopic("BackCam").publish();
 
     private double []                   m_moduleDistances    = {0, 0, 0, 0};
 
@@ -374,11 +374,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         if (m_useLimelight) {
-            double left = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
-            m_leftUpdate.set(m_leftFilter.calculate(left) > 0.5);
+            double front = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
+            m_frontUpdate.set(m_frontFilter.calculate(front) > 0.5);
 
-            double right = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
-            m_rightUpdate.set(m_rightFilter.calculate(right) > 0.5);
+            double back = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
+            m_backUpdate.set(m_backFilter.calculate(back) > 0.5);
         }
     }
 

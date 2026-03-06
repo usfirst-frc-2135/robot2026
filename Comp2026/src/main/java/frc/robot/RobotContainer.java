@@ -32,11 +32,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Constants.HPConsts;
+import frc.robot.Constants.KKConsts;
 import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
@@ -276,7 +279,15 @@ public class RobotContainer
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
         .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
-    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
+    m_driverPad.b( ).onTrue(Commands.sequence(     //
+        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
+    ));  //
+
+    m_driverPad.b( ).onFalse(Commands.sequence(   //
+        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
+    ));
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
@@ -309,7 +320,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new StopIntaking(m_intake, m_hopper));
+    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
@@ -323,7 +334,15 @@ public class RobotContainer
     // Operator - A, B, X, Y
     //
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
-    m_operatorPad.b( ).onTrue(new LogCommand("operatorPad", "B"));
+    m_operatorPad.b( ).onTrue(Commands.sequence(    //
+        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
+    ));
+
+    m_operatorPad.b( ).onFalse(Commands.sequence(   //
+        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
+    ));
     m_operatorPad.x( ).onTrue(new LogCommand("operatorPad", "X"));
     m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
 
@@ -353,7 +372,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
