@@ -4,6 +4,8 @@
 //
 package frc.robot.lib;
 
+import java.util.Optional;
+
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -46,8 +48,8 @@ public class Vision
     EXTERNAL(0),        // Use external IMU
     EXTERNAL_SEED(1),   // Use external IMU, seed internal
     INTERNAL(2),        // Use internal
-    INTERNAL_MT1(3),    // Use internal with MT1 assisted convergence
-    INTERNAL_ASSIST(4)  // Use internal IMU with external IMU assisted convergence
+    INTERNAL_MT1_ASSIST(3),    // Use internal with MT1 assisted convergence
+    INTERNAL_EXT_ASSIST(4)  // Use internal IMU with external IMU assisted convergence
     ;
 
     public final int value;
@@ -115,6 +117,20 @@ public class Vision
 
     SetCPUThrottleLevel(true);
     SetIMUModeExternalSeed( );
+
+    if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Red)))
+    {
+      setPriorityId(10, "RED");
+    }
+    else if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Blue)))
+    {
+      setPriorityId(26, "BLUE");
+    }
+    else
+    {
+      DataLogManager.log(String.format("%s: Driver station alliance color NOT SET!", getName( )));
+    }
+
   }
 
   /****************************************************************************
@@ -126,12 +142,12 @@ public class Vision
     DataLogManager.log(String.format("%s: Subsystem running!", getName( )));
 
     SetCPUThrottleLevel(false);
-    SetIMUModeInternal( );
+    SetIMUModeAssistExternal( );
   }
 
   /****************************************************************************
    * 
-   * Limelight auto-aiming control for rotational velocity. Only aligns the left Limelight.
+   * Limelight auto-aiming control for rotational velocity. Only aligns the front Limelight.
    * 
    * @param maxAngularRate
    *          max angular rate to scale against
@@ -146,7 +162,7 @@ public class Vision
 
   /****************************************************************************
    * 
-   * Limelight auto-ranging control for distance velocity. Only aligns the left Limelight.
+   * Limelight auto-ranging control for distance velocity. Only aligns the front Limelight.
    * 
    * @param maxSpeed
    *          max speed to scale against
@@ -176,15 +192,24 @@ public class Vision
 
   /****************************************************************************
    * 
+   * Set IMU mode to passed parameter
+   * 
+   */
+  private void SetIMUModes(imuMode mode)
+  {
+    DataLogManager.log(String.format("%s: Set IMU Mode to %d (%s)", getName( ), mode.value, mode));
+    LimelightHelpers.SetIMUMode(Constants.kLLFrontName, mode.value);
+    LimelightHelpers.SetIMUMode(Constants.kLLBackName, mode.value);
+  }
+
+  /****************************************************************************
+   * 
    * Set IMU mode to EXTERNAL_SEED mode (load the LL4 internal IMU from robot IMU)
    * 
    */
   public void SetIMUModeExternalSeed( )
   {
-    final imuMode mode = imuMode.EXTERNAL_SEED;
-    DataLogManager.log(String.format("%s: Set IMU Mode to %d (%s)", getName( ), mode.value, mode));
-    // LimelightHelpers.SetIMUMode(Constants.kLLFrontName, mode.value);
-    // LimelightHelpers.SetIMUMode(Constants.kLLBackName, mode.value);
+    SetIMUModes(imuMode.EXTERNAL_SEED);
   }
 
   /****************************************************************************
@@ -194,10 +219,42 @@ public class Vision
    */
   public void SetIMUModeInternal( )
   {
-    final imuMode mode = imuMode.INTERNAL;
-    DataLogManager.log(String.format("%s: Set IMU Mode to %d (%s)", getName( ), mode.value, mode));
-    // LimelightHelpers.SetIMUMode(Constants.kLLFrontName, mode.value);
-    // LimelightHelpers.SetIMUMode(Constants.kLLBackName, mode.value);
+    SetIMUModes(imuMode.INTERNAL);
+  }
+
+  /****************************************************************************
+   * 
+   * Set IMU mode to MT1 ASSIST mode (use the LL4 internal IMU with MT1 updates)
+   * 
+   */
+  public void SetIMUModeAssistMT1( )
+  {
+    SetIMUModes(imuMode.INTERNAL_MT1_ASSIST);
+  }
+
+  /****************************************************************************
+   * 
+   * Set IMU mode to External ASSIST mode (use the LL4 internal IMU with External updates)
+   * 
+   */
+  public void SetIMUModeAssistExternal( )
+  {
+    SetIMUModes(imuMode.INTERNAL_EXT_ASSIST);
+  }
+
+  /****************************************************************************
+   * 
+   * Set priorityid and display alliance color
+   * 
+   * @param id
+   *          aprilTag ID to set as priority
+   * @param alliance
+   *          alliance color string selected
+   */
+  private void setPriorityId(int id, String alliance)
+  {
+    DataLogManager.log(String.format("%s: Set AprilTag priority id %d (%s)", getName( ), id, alliance));
+    LimelightHelpers.setPriorityTagID(Constants.kLLFrontName, id);
   }
 
   ////////////////////////////////////////////////////////////////////////////
