@@ -321,7 +321,7 @@ public class RobotContainer
     //
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
+    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher, m_intake));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
     m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
@@ -373,7 +373,7 @@ public class RobotContainer
     //
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
+    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher, m_intake));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
     m_operatorPad.leftStick( ).toggleOnTrue(new LogCommand("operPad", "left stick"));
