@@ -238,11 +238,11 @@ public final class CTREConfigs6
 
     // Slot settings
     // launcherConfig.Slot0.GravityType = *; 
-    launcherConfig.Slot0.kS = 0.0;                                     // Feedforward: Voltage or duty cycle to overcome static friction
+    launcherConfig.Slot0.kS = 0.3;                                     // Feedforward: Voltage or duty cycle to overcome static friction
     launcherConfig.Slot0.kG = 0.0;                                     // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
-    launcherConfig.Slot0.kV = 0.1140;                                  // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
+    launcherConfig.Slot0.kV = 0.1193;                                  // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
-    launcherConfig.Slot0.kP = 0.25;                                    // Voltage or duty cycle per velocity unit (velocity modes)
+    launcherConfig.Slot0.kP = 0.465;                                    // Voltage or duty cycle per velocity unit (velocity modes)
     launcherConfig.Slot0.kI = 0.0;                                     // Voltage or duty cycle per accumulated unit
     launcherConfig.Slot0.kD = 0.0;                                     // Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
