@@ -61,8 +61,8 @@ public class Vision
   };
 
   // Constants
-  private static final double kAimingKp  = 0.01;
-  private static final double kDrivingKp = 0.06;
+  private static final double kAimingKp  = -0.09;
+  private static final double kDrivingKp = -0.07;
 
   // Objects
 
@@ -120,7 +120,7 @@ public class Vision
 
     if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Red)))
     {
-      setPriorityId(10, "RED");
+      setPriorityId(4, "RED");
     }
     else if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Blue)))
     {
