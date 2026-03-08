@@ -288,6 +288,7 @@ public class RobotContainer
         m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
         m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
     ));
+
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
@@ -334,15 +335,18 @@ public class RobotContainer
     // Operator - A, B, X, Y
     //
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
-    m_operatorPad.b( ).onTrue(Commands.sequence(    //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
-    ));
+    // m_operatorPad.b( ).onTrue(Commands.sequence(    //
+    //     m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
+    //     m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
+    // ));
 
-    m_operatorPad.b( ).onFalse(Commands.sequence(   //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
-    ));
+    // m_operatorPad.b( ).onFalse(Commands.sequence(   //
+    //     m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
+    //     m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
+    // ));
+    m_operatorPad.b( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_operatorPad.b( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+
     m_operatorPad.x( ).onTrue(new LogCommand("operatorPad", "X"));
     m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
 
