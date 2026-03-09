@@ -89,13 +89,12 @@ public class Hopper extends SubsystemBase
     // Update network table publishers
     m_rollSpeedPub.set(m_rollerMotor.get( ));
     m_rollSupCurPub.set(m_rollerMotor.get( ));
-    //if rollermode is acquire and m_pulsemode 
-    //if timer is less than 0.5 then acquire else do expel 
+
+    // If rollermode is acquire and m_pulsemode is active
     if (m_rollerMode == HPRollerMode.ACQUIRE && m_pulseMode)
     {
-
+      // If timer is less than 0.5 then acquire else do expel to alternate motor direction
       m_rollerMotor.set((getMantissa(m_pulseTimer.get( )) < 0.5) ? kRollerSpeedAcquire : kRollerSpeedExpel);
-
     }
   }
 
@@ -163,11 +162,6 @@ public class Hopper extends SubsystemBase
     m_rollerMotor.clearStickyFaults( );
   }
 
-  public double getMantissa(double num)
-  {
-    double numInt = Math.round(num);
-    return num - numInt;
-  }
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// PRIVATE HELPERS //////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
@@ -211,9 +205,36 @@ public class Hopper extends SubsystemBase
     m_rollerMode = mode;
   }
 
+  /****************************************************************************
+   * 
+   * Return the mantissa of a floating point (double) value
+   * 
+   * @param num
+   *          number to return mantissa for
+   * @return decimal mantissa with integer remove
+   */
+  private double getMantissa(double num)
+  {
+    double numInt = Math.floor(num);
+    return num - numInt;
+  }
+
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// PUBLIC HELPERS ///////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
+
+  /****************************************************************************
+   * 
+   * Update the pulse mode value for external control of motor pulsing
+   * 
+   * @param mode
+   *          requested mode
+   */
+  public void setPulseMode(boolean mode)
+  {
+    m_pulseMode = mode;
+    DataLogManager.log(String.format("%s: Set PULSE MODE: %s", getSubsystem( ), mode));
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// COMMAND FACTORIES ////////////////////////////////
