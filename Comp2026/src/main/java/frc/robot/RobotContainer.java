@@ -161,21 +161,21 @@ public class RobotContainer
    *          the auto filename associated with the key
    */
   private final HashMap<String, String> autoMap        = new HashMap<>(Map.ofEntries(                 //
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START1.toString( ), "NoPath1"),
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "NoPath2"),
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "NoPath3"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START1.toString( ), "Start1_Stop"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "Start2_Stop"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "STart3_Stop"),
 
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_Test1"),
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_Test2"),
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_Test3"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START2.toString( ), "Start2_L2_L2"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START1.toString( ), "Start1_Hub"),
-      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START2.toString( ), "Start2_Hub"),
-      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START3.toString( ), "Start3_Hub"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START1.toString( ), "Start1_L1_D_L1"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START2.toString( ), "Start2_D_L2_N_L2"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START3.toString( ), "Start3_L3_D_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START1.toString( ), "Start1_H_D_H"),
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START2.toString( ), "Start2_D_H_N_H"),
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START3.toString( ), "Start3_H_D_H")    //
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_T1"),
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_T2"),
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_T3")       // 
   ));
 
   /****************************************************************************
@@ -232,7 +232,7 @@ public class RobotContainer
     m_autoChooser.setDefaultOption("0 - AutoStop", AutoChooser.AUTOSTOP);
     m_autoChooser.addOption("1 - AutoScore", AutoChooser.AUTOSCORE);
     m_autoChooser.addOption("2 - AutoScore2", AutoChooser.AUTOSCORE2);
-    m_autoChooser.addOption("3 - AutoTest", AutoChooser.AUTOTEST);
+    m_autoChooser.addOption("9 - AutoTest", AutoChooser.AUTOTEST);
     m_autoChooser.onChange(this::updateAutoChooserCallback);
 
     // Configure starting pose sendable chooser
@@ -473,33 +473,30 @@ public class RobotContainer
 
     // Get list of paths within the auto file for all autos except AUTOSTOP
 
-    if (autoOption != AutoChooser.AUTOSTOP)
+    try
     {
-      try
-      {
-        m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
-      }
-      catch (ParseException | IOException e)
-      {
-        DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
-        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-      }
-
-      if (m_ppPathList.isEmpty( ))
-      {
-        DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
-        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-      }
-
-      DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
-
-      // {
-      //   // Debug only: print states of first path
-      //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
-      //   for (int i = 0; i < states.size( ); i++)
-      //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
-      // }
+      m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
     }
+    catch (ParseException | IOException e)
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
+      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+    }
+
+    if (m_ppPathList.isEmpty( ))
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
+      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+    }
+
+    DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
+
+    // {
+    //   // Debug only: print states of first path
+    //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
+    //   for (int i = 0; i < states.size( ); i++)
+    //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
+    // }
 
     // Create the correct base command and pass the path list
 
@@ -507,7 +504,7 @@ public class RobotContainer
     {
       default :
       case AUTOSTOP :
-        m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+        m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
         break;
       case AUTOTEST :
         m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
@@ -524,12 +521,12 @@ public class RobotContainer
 
     // Build a new sequential command from the base command that allows for a delay and handles odometry
 
+    // Update robot pose to where we want immediately so it displays correctly in dashboard
+    resetOdometryToInitialPose(m_ppPathList.get(0));
+
+    // Build the autonomous command to run
     if (autoOption != AutoChooser.AUTOSTOP)
     {
-      // Update robot pose to where we want immediately so it displays correctly in dashboard
-      resetOdometryToInitialPose(m_ppPathList.get(0));
-
-      // Build the autonomous command to run
       m_autoCommand = new SequentialCommandGroup(                                                       //
           new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
           new InstantCommand(( ) ->      // Update pose again right before we run the command
@@ -574,10 +571,10 @@ public class RobotContainer
    * 
    * Gamepad joystick axis interfaces
    */
-  // private double getClimberAxis( )
-  // {
-  //   return -m_operatorPad.getLeftY( );
-  // }
+  private double getClimberAxis( )
+  {
+    return -m_operatorPad.getLeftY( );
+  }
 
   /****************************************************************************
    * 

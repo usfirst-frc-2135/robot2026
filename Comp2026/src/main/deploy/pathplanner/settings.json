@@ -5,13 +5,14 @@
   "pathFolders": [
     "FromNeutralZone",
     "FromStart",
+    "FromLaunch",
     "Unused"
   ],
   "autoFolders": [
     "0-AutoStop",
     "2-AutoScore",
     "3-AutoScore2",
-    "4-AutoTest"
+    "9-AutoTest"
   ],
   "defaultMaxVel": 3.2,
   "defaultMaxAccel": 3.2,

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.39,
-        "y": 7.443
+        "x": 4.403,
+        "y": 0.63
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.968654580152672,
-        "y": 7.733797709923666
+        "x": 1.981654580152672,
+        "y": 0.9207977099236659
       },
       "isLocked": false,
       "linkedName": "Start3"
@@ -20,12 +20,12 @@
         "y": 6.08
       },
       "prevControl": {
-        "x": 1.4749999999999999,
+        "x": 1.4749999999999996,
         "y": 6.296506350946109
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Hub3"
+      "linkedName": "L1"
     }
   ],
   "rotationTargets": [],

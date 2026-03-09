@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start2-Hub"
+            "pathName": "Start2-L2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "L2-L2"
           }
         }
       ]

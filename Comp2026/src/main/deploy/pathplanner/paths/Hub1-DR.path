@@ -12,7 +12,7 @@
         "y": 6.157423664126891
       },
       "isLocked": false,
-      "linkedName": "Hub1"
+      "linkedName": "L3"
     },
     {
       "anchor": {
@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "DR"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],

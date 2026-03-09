@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start1-T1"
+            "pathName": "Start3-NZ3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NZ3-L3"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "4-AutoTest",
+  "folder": "2-AutoScore",
   "choreoAuto": false
 }
