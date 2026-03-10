@@ -123,6 +123,7 @@ public class RobotContainer
   private final Hopper                                m_hopper        = new Hopper( );
   private final Kicker                                m_kicker        = new Kicker( );
   private final Launcher                              m_launcher      = new Launcher( );
+  // private final Climber                               m_climberLeft   = new Climber("Left", "CL-", false);
   // private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
 
   // Selected autonomous command
