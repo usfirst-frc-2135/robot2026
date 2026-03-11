@@ -49,7 +49,7 @@ public class LaunchFuel extends SequentialCommandGroup
         new LogCommand(getName(), "Start Kicker Rollers"), 
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.ACQUIRE),
 
-        new WaitUntilCommand(2.0),
+        new WaitUntilCommand(1.0),
         intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getStowedAngle)
 
 

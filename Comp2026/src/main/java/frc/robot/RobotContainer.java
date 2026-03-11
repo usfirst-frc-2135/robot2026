@@ -335,15 +335,7 @@ public class RobotContainer
     // Operator - A, B, X, Y
     //
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
-    // m_operatorPad.b( ).onTrue(Commands.sequence(    //
-    //     m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
-    //     m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
-    // ));
 
-    // m_operatorPad.b( ).onFalse(Commands.sequence(   //
-    //     m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
-    //     m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
-    // ));
     m_operatorPad.b( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
     m_operatorPad.b( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
 

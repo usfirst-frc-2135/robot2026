@@ -96,6 +96,10 @@ public class Hopper extends SubsystemBase
       // If timer is less than 0.5 then acquire else do expel to alternate motor direction
       m_rollerMotor.set((getMantissa(m_pulseTimer.get( )) < 0.5) ? kRollerSpeedAcquire : kRollerSpeedExpel);
     }
+    if (m_rollerMode == HPRollerMode.ACQUIRE & !m_pulseMode)
+    {
+      m_rollerMotor.set(kRollerSpeedAcquire);
+    }
   }
 
   /****************************************************************************
