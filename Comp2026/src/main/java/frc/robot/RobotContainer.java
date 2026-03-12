@@ -44,9 +44,11 @@ import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
+import frc.robot.commands.ClimbTower;
 import frc.robot.commands.ExpelFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
+import frc.robot.commands.PrepareToClimb;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.StopIntaking;
 import frc.robot.commands.StopLaunching;
@@ -55,6 +57,7 @@ import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -120,7 +123,8 @@ public class RobotContainer
   private final Hopper                                m_hopper        = new Hopper( );
   private final Kicker                                m_kicker        = new Kicker( );
   private final Launcher                              m_launcher      = new Launcher( );
-  // private final Climber                               m_climber       = new Climber( );
+  // private final Climber                               m_climberLeft   = new Climber("Left", "CL-", false);
+  // private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command
@@ -305,9 +309,8 @@ public class RobotContainer
     //
     // Driver - POV buttons
     //
-    // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climber));
-    // m_driverPad.pov(90).onTrue(new ClimbTower(m_climber));
-    // m_driverPad.pov(180).onTrue(new StowClimber(m_climber));
+    // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
+    // m_driverPad.pov(180).onTrue(new ClimbTower(m_climberRight));
     m_driverPad.pov(0).onTrue(new LogCommand("driverPad", "POV:0"));
     m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV:90"));
     m_driverPad.pov(180).onTrue(new LogCommand("driverPad", "POV:180"));
