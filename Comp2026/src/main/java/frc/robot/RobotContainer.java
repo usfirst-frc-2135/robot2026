@@ -283,15 +283,8 @@ public class RobotContainer
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
         .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
-    m_driverPad.b( ).onTrue(Commands.sequence(     //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
-    ));  //
-
-    m_driverPad.b( ).onFalse(Commands.sequence(   //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
-    ));
+    m_driverPad.b( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_driverPad.b( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
 
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
