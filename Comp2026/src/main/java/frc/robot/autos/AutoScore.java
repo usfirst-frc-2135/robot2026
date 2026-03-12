@@ -53,7 +53,7 @@ public class AutoScore extends SequentialCommandGroup
           drivetrain.getPathCommand(ppAuto.get(1)),
           launcher.getLauncherScoreCommand( )
         ), 
-        new LaunchFuel(hopper, kicker, launcher),
+        new LaunchFuel(hopper, kicker, launcher,intake),
         new WaitCommand(2.0),
         intake.runOnce(()-> intake.getMoveToAngleCommand(INConsts.INRollerMode.ACQUIRE, intake::getStowedAngle))
 

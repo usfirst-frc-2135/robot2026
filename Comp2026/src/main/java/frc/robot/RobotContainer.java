@@ -292,6 +292,7 @@ public class RobotContainer
         m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
         m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
     ));
+
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
@@ -324,7 +325,7 @@ public class RobotContainer
     //
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
+    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher, m_intake));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
     m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
@@ -337,15 +338,10 @@ public class RobotContainer
     // Operator - A, B, X, Y
     //
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
-    m_operatorPad.b( ).onTrue(Commands.sequence(    //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
-    ));
 
-    m_operatorPad.b( ).onFalse(Commands.sequence(   //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
-    ));
+    m_operatorPad.b( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_operatorPad.b( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+
     m_operatorPad.x( ).onTrue(new LogCommand("operatorPad", "X"));
     m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
 
@@ -376,7 +372,7 @@ public class RobotContainer
     //
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
+    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher, m_intake));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
     m_operatorPad.leftStick( ).toggleOnTrue(new LogCommand("operPad", "left stick"));
