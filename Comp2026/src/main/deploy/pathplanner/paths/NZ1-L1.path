@@ -3,61 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.75,
-        "y": 3.3
+        "x": 7.693,
+        "y": 4.841
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.75,
-        "y": 2.3
+        "x": 6.193,
+        "y": 4.841
       },
       "isLocked": false,
-      "linkedName": "N1"
+      "linkedName": "NZ1"
     },
     {
       "anchor": {
-        "x": 5.8,
-        "y": 0.7
+        "x": 6.023,
+        "y": 7.44
       },
       "prevControl": {
-        "x": 6.796194698091745,
-        "y": 0.7871557427476581
+        "x": 7.019194698091745,
+        "y": 7.352844257252342
       },
       "nextControl": {
-        "x": 5.102663711335778,
-        "y": 0.6389909800766392
+        "x": 5.325663711335777,
+        "y": 7.501009019923361
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TR1-EX"
     },
     {
       "anchor": {
         "x": 3.6,
-        "y": 0.626
+        "y": 7.444
       },
       "prevControl": {
         "x": 4.6,
-        "y": 0.6259999999999999
+        "y": 7.444
       },
       "nextControl": {
         "x": 2.6,
-        "y": 0.6260000000000001
+        "y": 7.444
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TR1-EN"
     },
     {
       "anchor": {
         "x": 1.6,
-        "y": 1.99
+        "y": 6.08
       },
       "prevControl": {
         "x": 1.85,
-        "y": 1.5569872981077806
+        "y": 6.51301270189222
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Hub1"
+      "linkedName": "L1"
     }
   ],
   "rotationTargets": [
@@ -79,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": -35.0
   },
   "reversed": false,
   "folder": "FromNeutralZone",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }
