@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start1-N1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "N1-Hub1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Hub1-DR"
+            "pathName": "Start2-DR"
           }
         },
         {
@@ -32,6 +20,18 @@
           "type": "path",
           "data": {
             "pathName": "DL-Hub3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Hub3-N3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NZ1-L1"
           }
         }
       ]

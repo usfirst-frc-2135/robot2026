@@ -44,9 +44,11 @@ import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
+import frc.robot.commands.ClimbTower;
 import frc.robot.commands.ExpelFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
+import frc.robot.commands.PrepareToClimb;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.StopIntaking;
 import frc.robot.commands.StopLaunching;
@@ -55,6 +57,7 @@ import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -120,7 +123,8 @@ public class RobotContainer
   private final Hopper                                m_hopper        = new Hopper( );
   private final Kicker                                m_kicker        = new Kicker( );
   private final Launcher                              m_launcher      = new Launcher( );
-  // private final Climber                               m_climber       = new Climber( );
+  // private final Climber                               m_climberLeft   = new Climber("Left", "CL-", false);
+  // private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command
@@ -161,21 +165,21 @@ public class RobotContainer
    *          the auto filename associated with the key
    */
   private final HashMap<String, String> autoMap        = new HashMap<>(Map.ofEntries(                 //
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START1.toString( ), "NoPath1"),
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "NoPath2"),
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "NoPath3"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START1.toString( ), "Start1_Stop"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "Start2_Stop"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "STart3_Stop"),
 
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_Test1"),
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_Test2"),
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_Test3"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START2.toString( ), "Start2_L2_L2"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START1.toString( ), "Start1_Hub"),
-      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START2.toString( ), "Start2_Hub"),
-      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START3.toString( ), "Start3_Hub"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START1.toString( ), "Start1_L1_D_L1"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START2.toString( ), "Start2_D_L2_N_L2"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START3.toString( ), "Start3_L3_D_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START1.toString( ), "Start1_H_D_H"),
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START2.toString( ), "Start2_D_H_N_H"),
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START3.toString( ), "Start3_H_D_H")    //
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_T1"),
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_T2"),
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_T3")       // 
   ));
 
   /****************************************************************************
@@ -232,7 +236,7 @@ public class RobotContainer
     m_autoChooser.setDefaultOption("0 - AutoStop", AutoChooser.AUTOSTOP);
     m_autoChooser.addOption("1 - AutoScore", AutoChooser.AUTOSCORE);
     m_autoChooser.addOption("2 - AutoScore2", AutoChooser.AUTOSCORE2);
-    m_autoChooser.addOption("3 - AutoTest", AutoChooser.AUTOTEST);
+    m_autoChooser.addOption("9 - AutoTest", AutoChooser.AUTOTEST);
     m_autoChooser.onChange(this::updateAutoChooserCallback);
 
     // Configure starting pose sendable chooser
@@ -279,15 +283,9 @@ public class RobotContainer
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
         .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
-    m_driverPad.b( ).onTrue(Commands.sequence(     //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
-    ));  //
+    m_driverPad.b( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_driverPad.b( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
 
-    m_driverPad.b( ).onFalse(Commands.sequence(   //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
-    ));
     m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
@@ -305,9 +303,8 @@ public class RobotContainer
     //
     // Driver - POV buttons
     //
-    // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climber));
-    // m_driverPad.pov(90).onTrue(new ClimbTower(m_climber));
-    // m_driverPad.pov(180).onTrue(new StowClimber(m_climber));
+    // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
+    // m_driverPad.pov(180).onTrue(new ClimbTower(m_climberRight));
     m_driverPad.pov(0).onTrue(new LogCommand("driverPad", "POV:0"));
     m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV:90"));
     m_driverPad.pov(180).onTrue(new LogCommand("driverPad", "POV:180"));
@@ -321,7 +318,7 @@ public class RobotContainer
     //
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
+    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher, m_intake));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
     m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
@@ -334,15 +331,10 @@ public class RobotContainer
     // Operator - A, B, X, Y
     //
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
-    m_operatorPad.b( ).onTrue(Commands.sequence(    //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)  //
-    ));
 
-    m_operatorPad.b( ).onFalse(Commands.sequence(   //
-        m_hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP), //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP)  //
-    ));
+    m_operatorPad.b( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_operatorPad.b( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+
     m_operatorPad.x( ).onTrue(new LogCommand("operatorPad", "X"));
     m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
 
@@ -373,7 +365,7 @@ public class RobotContainer
     //
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher));
+    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_hopper, m_kicker, m_launcher, m_intake));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
     m_operatorPad.leftStick( ).toggleOnTrue(new LogCommand("operPad", "left stick"));
@@ -473,33 +465,30 @@ public class RobotContainer
 
     // Get list of paths within the auto file for all autos except AUTOSTOP
 
-    if (autoOption != AutoChooser.AUTOSTOP)
+    try
     {
-      try
-      {
-        m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
-      }
-      catch (ParseException | IOException e)
-      {
-        DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
-        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-      }
-
-      if (m_ppPathList.isEmpty( ))
-      {
-        DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
-        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-      }
-
-      DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
-
-      // {
-      //   // Debug only: print states of first path
-      //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
-      //   for (int i = 0; i < states.size( ); i++)
-      //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
-      // }
+      m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
     }
+    catch (ParseException | IOException e)
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
+      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+    }
+
+    if (m_ppPathList.isEmpty( ))
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
+      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+    }
+
+    DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
+
+    // {
+    //   // Debug only: print states of first path
+    //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
+    //   for (int i = 0; i < states.size( ); i++)
+    //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
+    // }
 
     // Create the correct base command and pass the path list
 
@@ -507,7 +496,7 @@ public class RobotContainer
     {
       default :
       case AUTOSTOP :
-        m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+        m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
         break;
       case AUTOTEST :
         m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
@@ -524,12 +513,12 @@ public class RobotContainer
 
     // Build a new sequential command from the base command that allows for a delay and handles odometry
 
+    // Update robot pose to where we want immediately so it displays correctly in dashboard
+    resetOdometryToInitialPose(m_ppPathList.get(0));
+
+    // Build the autonomous command to run
     if (autoOption != AutoChooser.AUTOSTOP)
     {
-      // Update robot pose to where we want immediately so it displays correctly in dashboard
-      resetOdometryToInitialPose(m_ppPathList.get(0));
-
-      // Build the autonomous command to run
       m_autoCommand = new SequentialCommandGroup(                                                       //
           new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
           new InstantCommand(( ) ->      // Update pose again right before we run the command
@@ -574,10 +563,10 @@ public class RobotContainer
    * 
    * Gamepad joystick axis interfaces
    */
-  // private double getClimberAxis( )
-  // {
-  //   return -m_operatorPad.getLeftY( );
-  // }
+  private double getClimberAxis( )
+  {
+    return -m_operatorPad.getLeftY( );
+  }
 
   /****************************************************************************
    * 

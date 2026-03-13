@@ -3,71 +3,67 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.552,
-        "y": 4.035
+        "x": 7.693,
+        "y": 3.228
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.944231378165744,
-        "y": 7.481827135542728
+        "x": 6.193,
+        "y": 3.228
       },
       "isLocked": false,
-      "linkedName": "Start2"
+      "linkedName": "NZ3"
     },
     {
       "anchor": {
-        "x": 0.5,
-        "y": 7.3
+        "x": 6.023,
+        "y": 0.63
       },
       "prevControl": {
-        "x": 0.5,
-        "y": 7.55
+        "x": 7.019194698091745,
+        "y": 0.7171557427476583
       },
       "nextControl": {
-        "x": 0.5,
-        "y": 7.05
+        "x": 5.325663711335777,
+        "y": 0.5689909800766393
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TR3-EX"
     },
     {
       "anchor": {
-        "x": 0.5,
-        "y": 5.6
+        "x": 3.6,
+        "y": 0.626
       },
       "prevControl": {
-        "x": 0.5,
-        "y": 5.85
+        "x": 4.596194698091746,
+        "y": 0.5388442572523418
       },
       "nextControl": {
-        "x": 0.5,
-        "y": 5.35
+        "x": 2.6038053019082543,
+        "y": 0.7131557427476583
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "TR3-EN"
     },
     {
       "anchor": {
         "x": 1.6,
-        "y": 6.079
+        "y": 1.99
       },
       "prevControl": {
-        "x": 2.0999999999999996,
-        "y": 5.212974596215561
+        "x": 1.85,
+        "y": 1.5569872981077806
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Hub2"
+      "linkedName": "L3"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": -90.0
-    },
-    {
-      "waypointRelativePos": 2,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -83,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -35.0
+    "rotation": 35.0
   },
   "reversed": false,
-  "folder": "FromStart",
+  "folder": "FromNeutralZone",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
