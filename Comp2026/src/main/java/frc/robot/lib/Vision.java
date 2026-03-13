@@ -120,7 +120,7 @@ public class Vision
 
     if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Red)))
     {
-      setPriorityId(10, "RED");
+      setPriorityId(4, "RED");
     }
     else if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Blue)))
     {
@@ -157,6 +157,11 @@ public class Vision
   {
     double proportionalFactor = -LimelightHelpers.getTX(Constants.kLLFrontName) * kAimingKp;
 
+<<<<<<< Updated upstream
+=======
+    proportionalFactor *= 1.0;
+
+>>>>>>> Stashed changes
     return maxAngularRate.times(proportionalFactor);
   }
 
@@ -171,6 +176,8 @@ public class Vision
   public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
   {
     double proportionalFactor = LimelightHelpers.getTY(Constants.kLLFrontName) * kDrivingKp;
+
+    proportionalFactor *= -1.0;
 
     return maxSpeed.times(proportionalFactor);
   }
