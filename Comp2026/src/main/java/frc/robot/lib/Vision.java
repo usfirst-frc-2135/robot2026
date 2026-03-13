@@ -177,6 +177,8 @@ public class Vision
   {
     double proportionalFactor = LimelightHelpers.getTY(Constants.kLLFrontName) * kDrivingKp;
 
+    proportionalFactor *= -1.0;
+
     return maxSpeed.times(proportionalFactor);
   }
 
