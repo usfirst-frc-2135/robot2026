@@ -170,7 +170,7 @@ public class Vision
    */
   public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
   {
-    double proportionalFactor = -LimelightHelpers.getTY(Constants.kLLFrontName) * kDrivingKp;
+    double proportionalFactor = (-LimelightHelpers.getTY(Constants.kLLFrontName)+Constants.TY) * kDrivingKp;
 
     return maxSpeed.times(proportionalFactor);
   }
