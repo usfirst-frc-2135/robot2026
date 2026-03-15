@@ -21,18 +21,6 @@
           "data": {
             "pathName": "DL-Hub3"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Hub3-N3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "NZ1-L1"
-          }
         }
       ]
     }

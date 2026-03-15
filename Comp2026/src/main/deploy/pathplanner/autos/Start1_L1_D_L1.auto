@@ -15,24 +15,6 @@
           "data": {
             "pathName": "NZ1-L1"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Hub1-DR"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "DR-DL"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "DL-Hub3"
-          }
         }
       ]
     }
