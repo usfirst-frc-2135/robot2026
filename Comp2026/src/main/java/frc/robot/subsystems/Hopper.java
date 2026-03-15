@@ -34,8 +34,9 @@ public class Hopper extends SubsystemBase
   // Constants
   private static final String   kSubsystemName      = "Hopper";
 
-  private static final double   kRollerSpeedAcquire = 0.5;     // Motor direction for positive input
+  private static final double   kRollerSpeedAcquire = 0.6;     // Motor direction for positive input
   private static final double   kRollerSpeedExpel   = -0.4;
+  private static final double   kPulseModeDuration  = 0.5;
 
   // Declare device objects
   private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_HopperRoller);
@@ -94,7 +95,7 @@ public class Hopper extends SubsystemBase
     if (m_rollerMode == HPRollerMode.ACQUIRE && m_pulseMode)
     {
       // If timer is less than 0.5 then acquire else do expel to alternate motor direction
-      m_rollerMotor.set((getMantissa(m_pulseTimer.get( )) < 0.5) ? kRollerSpeedAcquire : kRollerSpeedExpel);
+      m_rollerMotor.set((getMantissa(m_pulseTimer.get( )) < kPulseModeDuration) ? kRollerSpeedAcquire : kRollerSpeedExpel);
     }
     if (m_rollerMode == HPRollerMode.ACQUIRE & !m_pulseMode)
     {

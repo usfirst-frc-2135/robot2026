@@ -508,7 +508,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             {
                 double[ ] array =
                 {
-                        mt1.pose.getX( ), mt1.pose.getY( ), mt1.pose.getRotation( ).getRotations( )
+                        mt1.pose.getX( ), mt1.pose.getY( ), mt1.pose.getRotation( ).getDegrees( )
                 };
                 poseArray.set(array);
 
@@ -543,7 +543,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 final double kProportional = 0.9;
                 double[ ] array =
                 {
-                        mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ).getRotations( )
+                        mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ).getDegrees( )
                 };
                 poseArray.set(array);
 

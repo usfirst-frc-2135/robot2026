@@ -67,7 +67,7 @@ public class Intake extends SubsystemBase
   private static final String  kSubsystemName      = "Intake";
 
   // Intake roller constants
-  private static final double  kRollerSpeedAcquire = 0.7;    // Motor direction for positive input
+  private static final double  kRollerSpeedAcquire = 0.8;    // Motor direction for positive input
   private static final double  kRollerSpeedExpel   = -0.4;
 
   // Intake rotary constants
