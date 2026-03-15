@@ -15,11 +15,23 @@
           "data": {
             "pathName": "NZ1-L1"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L1-NZA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NZ1A-L1"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "1-AutoScore",
+  "folder": "3-AutoScore2B",
   "choreoAuto": false
 }
