@@ -120,7 +120,7 @@ public class Vision
 
     if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Red)))
     {
-      setPriorityId(10, "RED");
+      setPriorityId(4, "RED");
     }
     else if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Blue)))
     {

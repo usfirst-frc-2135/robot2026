@@ -41,7 +41,7 @@ public final class Constants
 
   public static final String  kLLFrontName          = "limelight-front";
   public static final String  kLLBackName           = "limelight-back";
-  public static final double  TY                    = 9.84; //Sample ty value//4.72
+  public static final double  TY                    = 4.72;
 
   // Robot physical dimensions
   public static final double  kChassisLength        = 26.0;                                     // Length (and width) of chassis frame
