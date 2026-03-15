@@ -32,23 +32,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.Constants.HPConsts;
-import frc.robot.Constants.KKConsts;
 import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
-import frc.robot.commands.ClimbTower;
 import frc.robot.commands.ExpelFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
-import frc.robot.commands.PrepareToClimb;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.StopIntaking;
 import frc.robot.commands.StopLaunching;
@@ -124,7 +119,7 @@ public class RobotContainer
   private final Kicker                                m_kicker        = new Kicker( );
   private final Launcher                              m_launcher      = new Launcher( );
   // private final Climber                               m_climberLeft   = new Climber("Left", "CL-", false);
-  // private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
+  private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command

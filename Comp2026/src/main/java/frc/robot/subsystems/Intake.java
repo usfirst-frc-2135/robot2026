@@ -71,7 +71,7 @@ public class Intake extends SubsystemBase
   private static final double  kRollerSpeedExpel   = -0.4;
 
   // Intake rotary constants
-  private static final double  kRotaryGearRatio    = 25.0;      // Simulation
+  private static final double  kRotaryGearRatio    = Robot.isComp( ) ? 36.0 : 25.0;      // Simulation
   private static final double  kRotaryLengthMeters = 0.3;       // Simulation
   private static final double  kRotaryWeightKg     = 3.0;       // Simulation
   private static final Voltage kRotaryManualVolts  = Volts.of(3.5); // Motor voltage during manual operation (joystick)
