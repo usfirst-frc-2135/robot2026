@@ -283,10 +283,10 @@ public class RobotContainer
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
         .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
-    m_driverPad.b( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
-    m_driverPad.b( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
 
-    m_driverPad.x( ).onTrue(new LogCommand("driverPad", "X"));
+    m_driverPad.x( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_driverPad.x( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
     //
@@ -331,11 +331,10 @@ public class RobotContainer
     // Operator - A, B, X, Y
     //
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
+    m_operatorPad.b( ).onTrue(new LogCommand("operatorPad", "B"));
 
-    m_operatorPad.b( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
-    m_operatorPad.b( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
-
-    m_operatorPad.x( ).onTrue(new LogCommand("operatorPad", "X"));
+    m_operatorPad.x( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_operatorPad.x( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
     m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
 
     //

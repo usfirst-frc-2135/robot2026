@@ -51,9 +51,9 @@ public class Launcher extends SubsystemBase
   private static final String kSubsystemName     = "Launcher";
 
   private static final double kMOI               = 0.005;     // Simulation - Moment of Inertia
-  private static final double kLauncherScoreRPM  = 3200.0;    // RPM to score 
-  private static final double kLauncherPassRPM   = 3000.0;    // RPM to pass 
-  private static final double kToleranceRPM      = 150.0;     // Tolerance band around requested RPM
+  private static final double kLauncherScoreRPM  = 3000.0;    // RPM to score 
+  private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
+  private static final double kToleranceRPM      = 60.0;      // Tolerance band around requested RPM
 
   private static final double kLauncherGearRatio = (18.0 / 24.0);
 

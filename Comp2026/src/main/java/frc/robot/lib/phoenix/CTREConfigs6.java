@@ -34,16 +34,16 @@ public final class CTREConfigs6
     TalonFXConfiguration inRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    inRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // XXX 25.0;       // Amps
-    inRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // XXX 25.0;  // Amps
+    inRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // Amps
+    inRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // Amps
     inRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     inRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    inRollerConfig.CurrentLimits.StatorCurrentLimit = 300.0;      // XXX 200.0;      // Amps
+    inRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
     inRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
-    inRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
+    inRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;   // Percentage
     inRollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     inRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
@@ -159,18 +159,22 @@ public final class CTREConfigs6
     TalonFXConfiguration hpRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 22.0;       // XXX 25.0;       // Amps
-    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 22.0;  // XXX 25.0;  // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // Amps
     hpRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     hpRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 400.0;      // XXX 200.0;      // Amps
+    hpRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
     hpRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
-    hpRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
-    hpRollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    hpRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;  // Percentage
+    hpRollerConfig.MotorOutput.Inverted =
+        Robot.isComp( ) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     hpRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+    // Open Loop settings
+    hpRollerConfig.OpenLoopRamps.VoltageOpenLoopRampPeriod = 0.100; // Seconds to ramp
 
     return hpRollerConfig;
   }
@@ -186,12 +190,12 @@ public final class CTREConfigs6
     TalonFXConfiguration kkRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // XXX 25.0;       // Amps
-    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // XXX 25.0;  // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // Amps
     kkRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     kkRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    kkRollerConfig.CurrentLimits.StatorCurrentLimit = 300.0;      // XXX 200.0;      // Amps
+    kkRollerConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
     kkRollerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
     // Motor output settings
@@ -221,7 +225,7 @@ public final class CTREConfigs6
     launcherConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;     // Seconds
     launcherConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    // launcherConfig.CurrentLimits.StatorCurrentLimit = 100.0;      // Amps
+    // launcherConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
     // launcherConfig.CurrentLimits.StatorCurrentLimitEnable = false;
 
     // launcherConfig.Feedback.*
@@ -271,12 +275,12 @@ public final class CTREConfigs6
     // exConfig.ClosedLoopRamps.*
 
     // Current limit settings
-    climberConfig.CurrentLimits.SupplyCurrentLimit = 40.0;        // XXX 80.0;        // Amps
-    climberConfig.CurrentLimits.SupplyCurrentLowerLimit = 40.0;   // XXX 80.0;   // Amps
+    climberConfig.CurrentLimits.SupplyCurrentLimit = 40.0;        // Amps
+    climberConfig.CurrentLimits.SupplyCurrentLowerLimit = 40.0;   // Amps
     climberConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;   // Seconds
     climberConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    climberConfig.CurrentLimits.StatorCurrentLimit = 200.0;       // XXX 800.0;        // Amps
+    climberConfig.CurrentLimits.StatorCurrentLimit = 400.0;       // Amps
     climberConfig.CurrentLimits.StatorCurrentLimitEnable = false;
 
     // Feedback settings
