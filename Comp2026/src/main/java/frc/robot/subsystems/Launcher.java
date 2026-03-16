@@ -242,10 +242,16 @@ public class Launcher extends SubsystemBase
     SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
     SmartDashboard.putData("LauncherPass", getLauncherPassCommand( ));
     SmartDashboard.putData("LauncherStop", getLauncherStopCommand( ));
-    SmartDashboard.putData("HoodLeftIn", Commands.runOnce(( ) -> m_hoodLeft.setSpeed(1.0)));
-    SmartDashboard.putData("HoodLeftOut", Commands.runOnce(( ) -> m_hoodLeft.setSpeed(-1.0)));
-    SmartDashboard.putData("HoodRightIn", Commands.runOnce(( ) -> m_hoodRight.setSpeed(1.0)));
-    SmartDashboard.putData("HoodRightOut", Commands.runOnce(( ) -> m_hoodRight.setSpeed(-1.0)));
+    SmartDashboard.putData("HoodIn", Commands.runOnce(( ) ->
+    {
+      m_hoodLeft.setSpeed(1.0);
+      m_hoodRight.setSpeed(1.0);
+    }));
+    SmartDashboard.putData("HoodOut", Commands.runOnce(( ) ->
+    {
+      m_hoodLeft.setSpeed(-1.0);
+      m_hoodRight.setSpeed(-1.0);
+    }));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
