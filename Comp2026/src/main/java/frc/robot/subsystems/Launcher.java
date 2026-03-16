@@ -29,11 +29,13 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
@@ -68,6 +70,8 @@ public class Launcher extends SubsystemBase
   // Devices  objects
   private final TalonFX                       m_leftMotor            = new TalonFX(Ports.kCANID_LauncherLeft);
   private final TalonFX                       m_rightMotor           = new TalonFX(Ports.kCANID_LauncherRight);
+  private final Servo                         m_hoodLeft             = new Servo(0);
+  private final Servo                         m_hoodRight            = new Servo(1);
 
   // Alerts
   private final Alert                         m_leftAlert            =
@@ -140,6 +144,9 @@ public class Launcher extends SubsystemBase
     StatusSignal<Current> m_leftStatorCur = m_leftMotor.getStatorCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightSupplyCur = m_rightMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightStatorCur = m_rightMotor.getStatorCurrent( ); // Default 4Hz (250ms)
+
+    m_hoodLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
+    m_hoodRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
 
     DataLogManager.log(String.format(
         "%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f leftStatorCur: %.1f rightSupplyCur: %.1f rightStatorCur: %.1f",
@@ -235,6 +242,16 @@ public class Launcher extends SubsystemBase
     SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
     SmartDashboard.putData("LauncherPass", getLauncherPassCommand( ));
     SmartDashboard.putData("LauncherStop", getLauncherStopCommand( ));
+    SmartDashboard.putData("HoodIn", Commands.runOnce(( ) ->
+    {
+      m_hoodLeft.setSpeed(1.0);
+      m_hoodRight.setSpeed(1.0);
+    }));
+    SmartDashboard.putData("HoodOut", Commands.runOnce(( ) ->
+    {
+      m_hoodLeft.setSpeed(-1.0);
+      m_hoodRight.setSpeed(-1.0);
+    }));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
