@@ -70,8 +70,8 @@ public class Launcher extends SubsystemBase
   // Devices  objects
   private final TalonFX                       m_leftMotor            = new TalonFX(Ports.kCANID_LauncherLeft);
   private final TalonFX                       m_rightMotor           = new TalonFX(Ports.kCANID_LauncherRight);
-  private final Servo                         m_actuator             = new Servo(0);
-  private final Servo                         m_actuator1            = new Servo(1);
+  private final Servo                         m_hoodLeft             = new Servo(0);
+  private final Servo                         m_hoodRight            = new Servo(1);
 
   // Alerts
   private final Alert                         m_leftAlert            =
@@ -145,8 +145,8 @@ public class Launcher extends SubsystemBase
     StatusSignal<Current> m_rightSupplyCur = m_rightMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightStatorCur = m_rightMotor.getStatorCurrent( ); // Default 4Hz (250ms)
 
-    m_actuator.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
-    m_actuator1.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
+    m_hoodLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
+    m_hoodRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
 
     DataLogManager.log(String.format(
         "%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f leftStatorCur: %.1f rightSupplyCur: %.1f rightStatorCur: %.1f",
@@ -242,10 +242,10 @@ public class Launcher extends SubsystemBase
     SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
     SmartDashboard.putData("LauncherPass", getLauncherPassCommand( ));
     SmartDashboard.putData("LauncherStop", getLauncherStopCommand( ));
-    SmartDashboard.putData("Actuator_IN_Open", Commands.runOnce(( ) -> m_actuator.setSpeed(1.0)));
-    SmartDashboard.putData("Actuator_OUT_Close", Commands.runOnce(( ) -> m_actuator.setSpeed(-1.0)));
-    SmartDashboard.putData("Actuator_IN_Open1", Commands.runOnce(( ) -> m_actuator1.setSpeed(1.0)));
-    SmartDashboard.putData("Actuator_OUT_Close1", Commands.runOnce(( ) -> m_actuator1.setSpeed(-1.0)));
+    SmartDashboard.putData("Actuator_IN_Open", Commands.runOnce(( ) -> m_hoodLeft.setSpeed(1.0)));
+    SmartDashboard.putData("Actuator_OUT_Close", Commands.runOnce(( ) -> m_hoodLeft.setSpeed(-1.0)));
+    SmartDashboard.putData("Actuator_IN_Open1", Commands.runOnce(( ) -> m_hoodRight.setSpeed(1.0)));
+    SmartDashboard.putData("Actuator_OUT_Close1", Commands.runOnce(( ) -> m_hoodRight.setSpeed(-1.0)));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
