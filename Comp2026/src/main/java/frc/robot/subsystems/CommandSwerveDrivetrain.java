@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -73,7 +74,7 @@ import frc.robot.lib.Vision;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final boolean        m_useLimelight       = false;
+    private static final boolean        m_useLimelight       = true;
 
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
@@ -518,7 +519,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         else if (useMegaTag2 == true)
         {
-            LimelightHelpers.SetRobotOrientation(limelightName, getState( ).Pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
+            Pigeon2 pigeon = getPigeon2( );
+            double yawRate = pigeon.getAngularVelocityZWorld( ).getValueAsDouble( );
+            LimelightHelpers.SetRobotOrientation(limelightName, pigeon.getYaw( ).getValueAsDouble( ), yawRate,
+                    pigeon.getPitch( ).getValueAsDouble( ), 0, pigeon.getRoll( ).getValueAsDouble( ), 0);
             LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
             // if our angular velocity is greater than 720 degrees per second, ignore vision updates
