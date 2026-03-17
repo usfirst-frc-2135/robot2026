@@ -109,8 +109,8 @@ public final class CTREConfigs6
     // kS = (0.40 - 0.25) / 2
     inRotaryConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine; // Feedforward: Mechanism is an arm and needs cosine
     inRotaryConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
-    inRotaryConfig.Slot0.kS = 0.07;                                    // Feedforward: Voltage or duty cycle to overcome static friction
-    inRotaryConfig.Slot0.kG = -0.45;                                 // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
+    inRotaryConfig.Slot0.kS = 0.07;                                 // Feedforward: Voltage or duty cycle to overcome static friction
+    inRotaryConfig.Slot0.kG = -0.45;                                // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
     inRotaryConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder

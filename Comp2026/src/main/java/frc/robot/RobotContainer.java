@@ -22,7 +22,9 @@ import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -41,9 +43,11 @@ import frc.robot.autos.AutoScore;
 import frc.robot.autos.AutoScore2;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
+import frc.robot.commands.ClimbTower;
 import frc.robot.commands.ExpelFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
+import frc.robot.commands.PrepareToClimb;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.StopIntaking;
 import frc.robot.commands.StopLaunching;
@@ -280,8 +284,8 @@ public class RobotContainer
         .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
     m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
 
-    m_driverPad.x( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
-    m_driverPad.x( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_driverPad.x( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
+    m_driverPad.x( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
 
     //
@@ -300,9 +304,12 @@ public class RobotContainer
     //
     // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
     // m_driverPad.pov(180).onTrue(new ClimbTower(m_climberRight));
-    m_driverPad.pov(0).onTrue(new LogCommand("driverPad", "POV:0"));
-    m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV:90"));
-    m_driverPad.pov(180).onTrue(new LogCommand("driverPad", "POV:180"));
+    m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
+    m_driverPad.pov(90).onTrue(new ClimbTower(m_climberRight));
+    m_driverPad.pov(180).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
+        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
+        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
+        .withTargetDirection(Rotation2d.fromDegrees(-180.0))));
     m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
     //
@@ -328,8 +335,8 @@ public class RobotContainer
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
     m_operatorPad.b( ).onTrue(new LogCommand("operatorPad", "B"));
 
-    m_operatorPad.x( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
-    m_operatorPad.x( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getBButtonPressed( ))));
+    m_operatorPad.x( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
+    m_operatorPad.x( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
     m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
 
     //
@@ -346,8 +353,8 @@ public class RobotContainer
     //
     // Operator - POV buttons
     //
-    m_operatorPad.pov(0).onTrue(new LogCommand("operatorPad", "POV:0"));
-    m_operatorPad.pov(90).onTrue(new LogCommand("operatorPad", "POV:90"));
+    m_operatorPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
+    m_operatorPad.pov(90).onTrue(new ClimbTower(m_climberRight));
     m_operatorPad.pov(180).onTrue(new LogCommand("operatorPad", "POV:180"));
     m_operatorPad.pov(270).onTrue(new LogCommand("operatorPad", "POV:270"));
 
@@ -374,22 +381,24 @@ public class RobotContainer
   {
     if (!m_macOSXSim)
     {
-      m_drivetrain.setDefaultCommand(                                                         // Drivetrain will execute this command periodically
-          m_drivetrain.applyRequest(( ) -> drive                                              //
-              .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                       // Drive forward with negative Y (forward)
-              .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                       // Drive left with negative X (left)
-              .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getRightX( )))           // Drive counterclockwise with negative X (left)
-          )                                                                                   //
+      m_drivetrain.setDefaultCommand(                                                                 // Drivetrain will execute this command periodically
+          m_drivetrain.applyRequest(( ) -> drive                                                      //
+              .withVelocityX(kMaxSpeed.times(                                                         // Apply deadband to joystick value
+                  MathUtil.applyDeadband(-m_driverPad.getLeftY( ), 0.15, 1.0))) // Drive forward with negative Y (forward)
+              .withVelocityY(kMaxSpeed.times(                                                         // Apply deadband to joystick value
+                  MathUtil.applyDeadband(-m_driverPad.getLeftX( ), 0.15, 1.0))) // Drive left with negative X (left)
+              .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getRightX( )))                   // Drive counterclockwise with negative X (left)
+          )                                                                                           //
               .withName("CommandSwerveDrivetrain"));
     }
     else // When using simulation on MacOS X, XBox controllers need to be re-mapped due to an Apple bug
     {
-      m_drivetrain.setDefaultCommand(                                                         // Drivetrain will execute this command periodically
-          m_drivetrain.applyRequest(( ) -> drive                                              //
-              .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                       // Drive forward with negative Y (forward)
-              .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                       // Drive left with negative X (left)
-              .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getLeftTriggerAxis( )))  // Drive counterclockwise with negative X (left)
-          )                                                                                   //
+      m_drivetrain.setDefaultCommand(                                                                 // Drivetrain will execute this command periodically
+          m_drivetrain.applyRequest(( ) -> drive                                                      //
+              .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                               // Drive forward with negative Y (forward)
+              .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                               // Drive left with negative X (left)
+              .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getLeftTriggerAxis( )))          // Drive counterclockwise with negative X (left)
+          )                                                                                           //
               .withName("CommandSwerveDrivetrain"));
     }
 
