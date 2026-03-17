@@ -44,7 +44,6 @@ public class StopLaunching extends SequentialCommandGroup
         new LogCommand(getName(), "Stop Launcher rollers "),
         launcher.getLauncherStopCommand()
 
-    
         // @formatter:on
     );
   }

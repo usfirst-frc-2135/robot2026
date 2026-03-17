@@ -90,15 +90,15 @@ public class Intake extends SubsystemBase
 
   private static final double       kToleranceDegrees    = 3.0;      // PID tolerance in degrees
   private static final double       kMMDebounceTime      = 0.060;    // Seconds to debounce a final position check
-  private static final double       kMMMoveTimeout       = 1.0;      // Seconds allowed for a Motion Magic movement
+  private static final double       kMMMoveTimeout       = 1.3;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
   //    Measured hardstops and pre-defined positions (0 degrees is horizontal to the floor):
   //               hstop   retracted  deployed  hstop
-  //      Comp     -121.0  -118.0     15.0      18.0    TODO (fix for 2026)
-  //      Practice -121.0  -118.0     15.0      18.0    TODO (fix for 2026)
-  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -115.0 : -115.0;  // Three degrees from hardstops
-  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 9.6 : 9.6;      // Three degrees from hardstops
+  //      Comp     -124.7  -120.7     5.1       6.1      TODO (fix for 2026)
+  //      Practice -121.0  -118.0     15.0      18.0     TODO (fix for 2026)
+  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -115.0;  // Three degrees from hardstops
+  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 9.6;      // Three degrees from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
   private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;
@@ -333,7 +333,7 @@ public class Intake extends SubsystemBase
     m_CANcoder.clearStickyFaults( );
   }
 
-  private final static Voltage kManualKG = Volts.of(-0.51);
+  private final static Voltage kManualKG = Volts.of(-0.45);
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// MANUAL MOVEMENT //////////////////////////////////

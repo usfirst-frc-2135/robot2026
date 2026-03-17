@@ -44,7 +44,8 @@ public final class CTREConfigs6
 
     // Motor output settings
     inRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;   // Percentage
-    inRollerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    inRollerConfig.MotorOutput.Inverted =
+        Robot.isComp( ) ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
     inRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     return inRollerConfig;
@@ -73,9 +74,9 @@ public final class CTREConfigs6
     // inRotaryConfig.ClosedLoopRamps.*                           // Seconds to ramp
 
     // Current limit settings
-    inRotaryConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
-    inRotaryConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
-    inRotaryConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;  // Seconds
+    inRotaryConfig.CurrentLimits.SupplyCurrentLimit = 50.0;       // Amps
+    inRotaryConfig.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  // Amps
+    inRotaryConfig.CurrentLimits.SupplyCurrentLowerTime = 0.200;  // Seconds
     inRotaryConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     inRotaryConfig.CurrentLimits.StatorCurrentLimit = 400.0;      // Amps
@@ -91,8 +92,8 @@ public final class CTREConfigs6
     // inRotaryConfig.HardwareLimitSwitch.*
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
-    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = (50.0 / gearRatio) / 4;  // Rotations / second
-    inRotaryConfig.MotionMagic.MotionMagicAcceleration = (220.0 / gearRatio) / 4;   // Rotations / second ^ 2
+    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 27.0 / gearRatio;  // Rotations / second
+    inRotaryConfig.MotionMagic.MotionMagicAcceleration = 80.0 / gearRatio;    // Rotations / second ^ 2
     inRotaryConfig.MotionMagic.MotionMagicJerk = 1600.0 / gearRatio;          // Rotations / second ^ 3
 
     // Motor output settings
@@ -108,12 +109,12 @@ public final class CTREConfigs6
     // kS = (0.40 - 0.25) / 2
     inRotaryConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine; // Feedforward: Mechanism is an arm and needs cosine
     inRotaryConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
-    inRotaryConfig.Slot0.kS = 0;                                  // Feedforward: Voltage or duty cycle to overcome static friction
-    inRotaryConfig.Slot0.kG = -0.4;                                // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
+    inRotaryConfig.Slot0.kS = 0.07;                                    // Feedforward: Voltage or duty cycle to overcome static friction
+    inRotaryConfig.Slot0.kG = -0.45;                                 // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
     inRotaryConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
-    inRotaryConfig.Slot0.kP = (3.6 * gearRatio) / 2;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    inRotaryConfig.Slot0.kP = 1.5 * gearRatio;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
     inRotaryConfig.Slot0.kI = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per accumulated unit
     inRotaryConfig.Slot0.kD = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
@@ -135,14 +136,13 @@ public final class CTREConfigs6
   public static CANcoderConfiguration intakeRotaryCCConfig( )
   {
     CANcoderConfiguration inRotaryConfig = new CANcoderConfiguration( );
-    double kQuarterRotation = 0.25;
 
     inRotaryConfig.MagnetSensor.SensorDirection =
         (Robot.isComp( )) ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
     inRotaryConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
 
     if (Robot.isReal( ))
-      inRotaryConfig.MagnetSensor.MagnetOffset = (Robot.isComp( )) ? -0.119629 : 0.2771; // TODO: Update for 2026
+      inRotaryConfig.MagnetSensor.MagnetOffset = (Robot.isComp( )) ? -0.140381 : 0.2771;
     else
       inRotaryConfig.MagnetSensor.MagnetOffset = -0.25;                   // Simulated CANcoder default in rotations
 
@@ -213,7 +213,7 @@ public final class CTREConfigs6
    * 
    * @return launcherConfig
    */
-  public static TalonFXConfiguration launcherFXConfig( )      // TODO: needs to be updated for Launcher
+  public static TalonFXConfiguration launcherFXConfig( )
   {
     TalonFXConfiguration launcherConfig = new TalonFXConfiguration( );
 
