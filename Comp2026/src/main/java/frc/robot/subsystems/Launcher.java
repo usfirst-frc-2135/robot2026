@@ -242,16 +242,8 @@ public class Launcher extends SubsystemBase
     SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
     SmartDashboard.putData("LauncherPass", getLauncherPassCommand( ));
     SmartDashboard.putData("LauncherStop", getLauncherStopCommand( ));
-    SmartDashboard.putData("HoodIn", Commands.runOnce(( ) ->
-    {
-      m_hoodLeft.setSpeed(1.0);
-      m_hoodRight.setSpeed(1.0);
-    }));
-    SmartDashboard.putData("HoodOut", Commands.runOnce(( ) ->
-    {
-      m_hoodLeft.setSpeed(-1.0);
-      m_hoodRight.setSpeed(-1.0);
-    }));
+    SmartDashboard.putData("HoodIn", setHoodAngle(1.0));
+    SmartDashboard.putData("HoodOut", setHoodAngle(-1.0));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -264,6 +256,8 @@ public class Launcher extends SubsystemBase
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getSubsystem( )));
     setLauncherMode(LauncherMode.STOP);
+    setHoodAngle(-1.0);
+
   }
 
   /****************************************************************************
@@ -346,6 +340,17 @@ public class Launcher extends SubsystemBase
   {
     m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
   }
+
+  private Command setHoodAngle(double speed){
+    return Commands.runOnce(( ) ->
+    {
+      m_hoodLeft.setSpeed(speed);
+      m_hoodRight.setSpeed(speed);
+    });
+}
+
+  
+
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// PUBLIC HELPERS ///////////////////////////////////
