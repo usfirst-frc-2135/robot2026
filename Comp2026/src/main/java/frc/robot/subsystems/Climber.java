@@ -94,7 +94,7 @@ public class Climber extends SubsystemBase
   }
 
   // Device objects
-  private TalonFX                     m_climbMotor        = null;
+  private TalonFX                     m_climbMotor        = new TalonFX(Ports.kCANID_ClimberRight);
 
   // Alerts
   private final Alert                 m_alert             =
@@ -158,7 +158,7 @@ public class Climber extends SubsystemBase
     kNTPrefix = prefix;
     kNTTableName = "climber" + instanceName;
 
-    m_climbMotor = (instanceName == "Left") ? new TalonFX(Ports.kCANID_ClimberLeft) : new TalonFX(Ports.kCANID_ClimberRight);
+    // m_climbMotor = (instanceName == "Left") ? new TalonFX(Ports.kCANID_ClimberLeft) : new TalonFX(Ports.kCANID_ClimberRight);
 
     // Initialize climber motor objects
     m_climberValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_climbMotor, kSubsystemFullName,
