@@ -15,11 +15,23 @@
           "data": {
             "pathName": "NZ3-L3"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L3-OP"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "OP-L3"
+          }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "3-AutoScore2",
+  "folder": "2-AutoScore2A",
   "choreoAuto": false
 }

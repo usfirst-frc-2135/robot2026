@@ -3,16 +3,17 @@
   "robotLength": 0.838,
   "holonomicMode": true,
   "pathFolders": [
+    "FromLaunch",
     "FromNeutralZone",
     "FromStart",
-    "FromLaunch",
-    "Unused"
+    "FromOutpost"
   ],
   "autoFolders": [
     "0-AutoStop",
-    "2-AutoScore",
-    "3-AutoScore2",
-    "9-AutoTest"
+    "1-AutoScore",
+    "2-AutoScore2A",
+    "9-AutoTest",
+    "3-AutoScore2B"
   ],
   "defaultMaxVel": 3.2,
   "defaultMaxAccel": 3.2,

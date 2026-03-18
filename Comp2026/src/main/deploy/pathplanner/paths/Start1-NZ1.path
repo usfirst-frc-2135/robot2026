@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 6.023,
-        "y": 7.44
+        "y": 7.414
       },
       "prevControl": {
         "x": 5.523,
-        "y": 7.44
+        "y": 7.414
       },
       "nextControl": {
         "x": 8.023,
-        "y": 7.44
+        "y": 7.414
       },
       "isLocked": false,
       "linkedName": "TR1-EX"
