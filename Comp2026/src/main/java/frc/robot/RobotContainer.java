@@ -336,8 +336,8 @@ public class RobotContainer
     m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
     m_operatorPad.b( ).onTrue(new LogCommand("operatorPad", "B"));
 
-    m_operatorPad.x( ).onTrue(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
-    m_operatorPad.x( ).onFalse(m_hopper.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
+    m_operatorPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
+    m_operatorPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
     m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
 
     //

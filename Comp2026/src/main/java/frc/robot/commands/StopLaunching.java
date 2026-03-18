@@ -39,7 +39,6 @@ public class StopLaunching extends SequentialCommandGroup
         new LogCommand(getName(), "Stop Kicker Rollers"), 
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
 
-
         new LogCommand(getName(), "Stop Launcher rollers "),
         launcher.getLauncherStopCommand()
 
