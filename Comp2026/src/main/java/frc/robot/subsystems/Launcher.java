@@ -247,7 +247,6 @@ public class Launcher extends SubsystemBase
       m_hoodLeft.setSpeed(1.0);
       m_hoodRight.setSpeed(1.0);
     }));
-
     SmartDashboard.putData("HoodOut", Commands.runOnce(( ) ->
     {
       m_hoodLeft.setSpeed(-1.0);
@@ -265,12 +264,6 @@ public class Launcher extends SubsystemBase
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getSubsystem( )));
     setLauncherMode(LauncherMode.STOP);
-    Commands.runOnce(( ) ->
-    {
-      m_hoodLeft.setSpeed(-1.0);
-      m_hoodRight.setSpeed(-1.0);
-    });
-
   }
 
   /****************************************************************************
