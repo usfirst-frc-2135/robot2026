@@ -98,6 +98,7 @@ public class Intake extends SubsystemBase
   //      Comp     -124.7  -120.7     5.1       6.1      TODO (fix for 2026)
   //      Practice -121.0  -118.0     15.0      18.0     TODO (fix for 2026)
   private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -115.0;  // Three degrees from hardstops
+   private static final double      kRotaryAngleHalf   = Robot.isComp( ) ? -45.0 : -50.0;  // Three degrees from hardstops
   private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 9.6;      // Three degrees from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
@@ -300,6 +301,7 @@ public class Intake extends SubsystemBase
     SmartDashboard.putData("IntakeHold", getMoveToAngleCommand(INRollerMode.HOLD, this::getCurrentAngle));
 
     SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle));
+    SmartDashboard.putData("IntakeHalf", getMoveToAngleCommand(INRollerMode.HOLD, this::getHalfAngle));
     SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle));
   }
 
@@ -570,6 +572,11 @@ public class Intake extends SubsystemBase
   public double getStowedAngle( )
   {
     return kRotaryAngleStowed;
+  }
+
+  public double getHalfAngle( )
+  {
+    return kRotaryAngleHalf;
   }
 
   /****************************************************************************
