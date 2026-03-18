@@ -3,32 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 1.6,
+        "y": 5.779
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.0,
-        "y": 6.0
+        "x": 2.6,
+        "y": 5.779
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "L2A"
+    },
+    {
+      "anchor": {
+        "x": 0.73,
+        "y": 0.666
+      },
+      "prevControl": {
+        "x": 0.9425000000000003,
+        "y": 0.3407500000000008
+      },
+      "nextControl": {
+        "x": 0.5174999999999996,
+        "y": 0.99125
+      },
+      "isLocked": false,
+      "linkedName": "OP"
     },
     {
       "anchor": {
         "x": 1.6,
-        "y": 6.08
+        "y": 2.291
       },
       "prevControl": {
         "x": 0.6000000000000001,
-        "y": 6.08
+        "y": 2.2910000000000004
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "L1"
+      "linkedName": "L2B"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -35.0
+    "rotation": 29.999999999999996
   },
   "reversed": false,
   "folder": "FromLaunch",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -29.999999999999996
   },
   "useDefaultConstraints": true
 }

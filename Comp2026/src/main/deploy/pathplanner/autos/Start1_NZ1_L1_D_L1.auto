@@ -25,13 +25,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "randoml1"
+            "pathName": "L2A-OP-L2B"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "2-AutoScore2A",
+  "folder": null,
   "choreoAuto": false
 }
