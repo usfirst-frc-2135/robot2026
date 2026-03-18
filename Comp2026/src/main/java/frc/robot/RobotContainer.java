@@ -170,12 +170,12 @@ public class RobotContainer
       Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "STart3_Stop"),
 
       Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1"),
-      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START2.toString( ), "Start2_L2_L2"),
+      Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A"),
       Map.entry(AutoChooser.AUTOSCORE.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L1"),
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START2.toString( ), "Start2_D_L2_N_L2"),
-      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START3.toString( ), "Start3_L3_D_L3"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L2A"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
+      Map.entry(AutoChooser.AUTOSCORE2.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_OP_L2B"),
 
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_T1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_T2"),

@@ -25,13 +25,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "OP-L3"
+            "pathName": null
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "2-AutoScore2A",
+  "folder": null,
   "choreoAuto": false
 }

@@ -19,19 +19,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L1-random"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "randoml1"
+            "pathName": "L1-D-L2A"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "2-AutoScore2A",
+  "folder": null,
   "choreoAuto": false
 }

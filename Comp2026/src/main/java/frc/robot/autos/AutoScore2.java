@@ -61,10 +61,7 @@ public class AutoScore2 extends SequentialCommandGroup
           drivetrain.getPathCommand(ppAuto.get(2)),
           new AcquireFuel(intake,hopper)
           ),
-        new ParallelCommandGroup(
-          drivetrain.getPathCommand(ppAuto.get(3)),
-          launcher.getLauncherScoreCommand()
-          ),
+        launcher.getLauncherScoreCommand(),
         new LaunchFuel(hopper, kicker, launcher, intake)
         
         // @formatter:on
