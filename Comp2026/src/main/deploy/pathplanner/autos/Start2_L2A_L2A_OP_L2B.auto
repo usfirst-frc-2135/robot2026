@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start3-NZ3"
+            "pathName": "Start2-L2A"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NZ3-L3"
+            "pathName": "L2A-L2A"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "1-AutoScore1A",
+  "folder": "3-AutoScore2A",
   "choreoAuto": false
 }

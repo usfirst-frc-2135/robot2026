@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.193,
+        "x": 5.693,
         "y": 4.841
       },
       "isLocked": false,
@@ -16,44 +16,44 @@
     },
     {
       "anchor": {
-        "x": 6.023,
-        "y": 7.414
+        "x": 5.597,
+        "y": 7.427
       },
       "prevControl": {
-        "x": 7.019194698091745,
-        "y": 7.326844257252342
+        "x": 6.597,
+        "y": 7.427
       },
       "nextControl": {
-        "x": 5.325663711335777,
-        "y": 7.475009019923361
+        "x": 4.597,
+        "y": 7.427
       },
       "isLocked": false,
       "linkedName": "TR1-EX"
     },
     {
       "anchor": {
-        "x": 3.6,
-        "y": 7.414
+        "x": 3.603,
+        "y": 7.427
       },
       "prevControl": {
-        "x": 4.6,
-        "y": 7.414
+        "x": 4.603,
+        "y": 7.427
       },
       "nextControl": {
-        "x": 2.6,
-        "y": 7.414
+        "x": 3.353,
+        "y": 7.427
       },
       "isLocked": false,
       "linkedName": "TR1-EN"
     },
     {
       "anchor": {
-        "x": 1.6,
-        "y": 6.08
+        "x": 2.75,
+        "y": 7.08
       },
       "prevControl": {
-        "x": 1.85,
-        "y": 6.51301270189222
+        "x": 2.910696902421635,
+        "y": 7.271511110779745
       },
       "nextControl": null,
       "isLocked": false,
@@ -61,6 +61,10 @@
     }
   ],
   "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    },
     {
       "waypointRelativePos": 2.0,
       "rotationDegrees": 0.0
@@ -70,8 +74,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.2,
-    "maxAcceleration": 3.2,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -79,7 +83,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -35.0
+    "rotation": -59.99999999999999
   },
   "reversed": false,
   "folder": "FromNeutralZone",

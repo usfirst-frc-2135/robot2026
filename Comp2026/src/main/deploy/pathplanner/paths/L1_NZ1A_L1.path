@@ -1,0 +1,167 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.75,
+        "y": 7.08
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.96502798732463,
+        "y": 7.207526329309358
+      },
+      "isLocked": false,
+      "linkedName": "L1"
+    },
+    {
+      "anchor": {
+        "x": 3.603,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 3.353,
+        "y": 7.427
+      },
+      "nextControl": {
+        "x": 3.853,
+        "y": 7.427
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EN"
+    },
+    {
+      "anchor": {
+        "x": 4.6000000000000005,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 4.226500000000001,
+        "y": 7.427
+      },
+      "nextControl": {
+        "x": 4.9735000000000005,
+        "y": 7.427
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 5.347000280747726,
+        "y": 7.427374664891018
+      },
+      "nextControl": {
+        "x": 6.179365000000001,
+        "y": 7.426127232142858
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EX"
+    },
+    {
+      "anchor": {
+        "x": 5.87,
+        "y": 4.689
+      },
+      "prevControl": {
+        "x": 6.12,
+        "y": 4.689
+      },
+      "nextControl": {
+        "x": 5.62,
+        "y": 4.689
+      },
+      "isLocked": false,
+      "linkedName": "NZ1A"
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 6.097,
+        "y": 7.427
+      },
+      "nextControl": {
+        "x": 5.347,
+        "y": 7.427
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EX"
+    },
+    {
+      "anchor": {
+        "x": 3.603,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 4.212,
+        "y": 7.427
+      },
+      "nextControl": {
+        "x": 2.9944309414165784,
+        "y": 7.427
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EN"
+    },
+    {
+      "anchor": {
+        "x": 2.75,
+        "y": 7.08
+      },
+      "prevControl": {
+        "x": 3.616025403784439,
+        "y": 7.58
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "L1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0000245676100632,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.9953444378930816,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 3.8133352987421376,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 5.0,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": "FromLaunch",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "useDefaultConstraints": true
+}
