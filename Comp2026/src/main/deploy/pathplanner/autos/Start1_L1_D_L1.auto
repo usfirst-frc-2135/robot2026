@@ -15,6 +15,18 @@
           "data": {
             "pathName": "NZ1-L1"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L1-random"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "randoml1"
+          }
         }
       ]
     }

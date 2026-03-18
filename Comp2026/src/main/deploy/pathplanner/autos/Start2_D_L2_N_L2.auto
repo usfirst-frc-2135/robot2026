@@ -7,19 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start2-DR"
+            "pathName": "Start2-L2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "DR-DL"
+            "pathName": "L2-L2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "DL-Hub3"
+            "pathName": "L1-random"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "randoml1"
           }
         }
       ]
