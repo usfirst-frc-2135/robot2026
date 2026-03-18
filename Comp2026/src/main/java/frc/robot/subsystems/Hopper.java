@@ -194,7 +194,9 @@ public class Hopper extends SubsystemBase
         default :
           DataLogManager.log(String.format("%s: Roller mode is invalid: %s", getSubsystem( ), mode));
         case STOP :
+          m_pulseMode = false;
           output = 0.0;
+
           break;
         case ACQUIRE :
           output = kRollerSpeedAcquire;
