@@ -71,7 +71,7 @@ public class Intake extends SubsystemBase
   private static final double  kRollerSpeedExpel   = -0.4;
 
   // Intake rotary constants
-  private static final double  kRotaryGearRatio    = Robot.isComp( ) ? 36.0 : 36.0;   // Simulation
+  private static final double  kRotaryGearRatio    = 36.0;   // Simulation
   private static final double  kRotaryLengthMeters = 0.3;       // Simulation
   private static final double  kRotaryWeightKg     = 3.0;       // Simulation
   private static final Voltage kRotaryManualVolts  = Volts.of(3.5); // Motor voltage during manual operation (joystick)
@@ -96,10 +96,10 @@ public class Intake extends SubsystemBase
   //    Measured hardstops and pre-defined positions (0 degrees is horizontal to the floor):
   //               hstop   retracted  deployed  hstop
   //      Comp     -124.7  -120.7     5.1       6.1      TODO (fix for 2026)
-  //      Practice -121.0  -118.0     15.0      18.0     TODO (fix for 2026)
-  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -115.0;  // Three degrees from hardstops
-   private static final double      kRotaryAngleHalf   = Robot.isComp( ) ? -60.0 : -55.0;  // Three degrees from hardstops
-  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 9.6;      // Three degrees from hardstops
+  //      Practice -130.4  -126.4     4.2       5.2     TODO (fix for 2026)
+  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4;  // Three degrees from hardstops
+   private static final double      kRotaryAngleHalf   = Robot.isComp( ) ? -60.0 : -75.0;  // Three degrees from hardstops
+  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;      // Three degrees from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
   private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;
