@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.75,
-        "y": 1.0
+        "x": 2.1025477099236642,
+        "y": 1.1395610687022895
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.75,
-        "y": 0.5
+        "x": 2.1025477099236642,
+        "y": 0.6395610687022895
       },
       "isLocked": false,
       "linkedName": "L3"
     },
     {
       "anchor": {
-        "x": 0.73,
-        "y": 0.666
+        "x": 0.927,
+        "y": 0.633
       },
       "prevControl": {
-        "x": 0.9799434947071168,
-        "y": 0.6713150215044242
+        "x": 1.176943494707119,
+        "y": 0.6383150215044242
       },
       "nextControl": {
-        "x": 0.48005650529288124,
-        "y": 0.6606849784955758
+        "x": 0.6770565052928813,
+        "y": 0.6276849784955758
       },
       "isLocked": false,
       "linkedName": "OP"
@@ -69,7 +69,7 @@
   "folder": "FromLaunch",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 35.0
   },
   "useDefaultConstraints": true
 }

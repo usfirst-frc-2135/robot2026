@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 1.6339217557251913,
-        "y": 5.506
+        "x": 1.6,
+        "y": 5.779
       },
       "prevControl": {
-        "x": 1.8682347328244275,
-        "y": 5.0140935114503815
+        "x": 1.8343129770992364,
+        "y": 5.287093511450381
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "L2L"
+      "linkedName": "L2A"
     }
   ],
   "rotationTargets": [
@@ -83,7 +83,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -35.0
+    "rotation": -29.999999999999996
   },
   "reversed": false,
   "folder": "FromLaunch",
