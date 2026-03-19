@@ -213,8 +213,6 @@ public final class CTREConfigs6
    * 
    * @param inverted
    * 
-   * @param inverted
-   * 
    * @return launcherConfig
    */
   public static TalonFXConfiguration launcherFXConfig(boolean inverted)

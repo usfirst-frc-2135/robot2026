@@ -122,17 +122,10 @@ public class Launcher extends SubsystemBase
     setName("Launcher");
     setSubsystem("Launcher");
 
-<<<<<<< HEAD
-    boolean leftValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left", CTREConfigs6.launcherFXConfig(true ));
-    boolean rightValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.launcherFXConfig(false ));
-=======
     boolean leftValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left",
         CTREConfigs6.launcherFXConfig(false));
     boolean rightValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right",
         CTREConfigs6.launcherFXConfig(true));
->>>>>>> origin/removefollower
     //m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
     m_launcherValid = leftValid && rightValid;
 
