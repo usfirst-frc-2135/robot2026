@@ -40,7 +40,7 @@ public class AutoScore2A extends SequentialCommandGroup
 
         // @formatter:off
 
-        new LogCommand(getName(), "Acquire fuel and score once"),
+        new LogCommand(getName(), "Acquire fuel and score once then acquire fuel again from depot or outpost and score again"),
         new ParallelCommandGroup(
           new LogCommand(getName(),"Path 1"),
           drivetrain.getPathCommand(ppAuto.get(0)),
