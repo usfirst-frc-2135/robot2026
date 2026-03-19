@@ -3,48 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.75,
-        "y": 7.08
+        "x": 4.403,
+        "y": 7.427
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8464809160305347,
-        "y": 7.439837786259542
+        "x": 5.403,
+        "y": 7.427
       },
       "isLocked": false,
-      "linkedName": "L1"
+      "linkedName": "Start1"
     },
     {
       "anchor": {
-        "x": 3.603,
+        "x": 5.597,
         "y": 7.427
       },
       "prevControl": {
-        "x": 3.3166101472108735,
+        "x": 4.873596466526494,
         "y": 7.427
       },
       "nextControl": {
-        "x": 3.97193555189923,
+        "x": 6.2943491324293745,
         "y": 7.427
       },
       "isLocked": false,
-      "linkedName": "TR1-EN"
-    },
-    {
-      "anchor": {
-        "x": 5.87,
-        "y": 7.414
-      },
-      "prevControl": {
-        "x": 5.657832915708297,
-        "y": 7.546231344026888
-      },
-      "nextControl": {
-        "x": 6.0821670842917035,
-        "y": 7.281768655973111
-      },
-      "isLocked": false,
-      "linkedName": null
+      "linkedName": "TR1-EX"
     },
     {
       "anchor": {
@@ -52,26 +36,21 @@
         "y": 4.689
       },
       "prevControl": {
-        "x": 5.87,
-        "y": 4.939
+        "x": 5.863673469387756,
+        "y": 5.535936113575865
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "NZ1A"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 0.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.2,
-    "maxAcceleration": 3.2,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -82,10 +61,10 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "FromLaunch",
+  "folder": "FromStart",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -58.400000000000006
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
