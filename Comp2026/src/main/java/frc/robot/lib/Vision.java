@@ -157,11 +157,7 @@ public class Vision
   {
     double proportionalFactor = -LimelightHelpers.getTX(Constants.kLLFrontName) * kAimingKp;
 
-<<<<<<< Updated upstream
-=======
     proportionalFactor *= 1.0;
-
->>>>>>> Stashed changes
     return maxAngularRate.times(proportionalFactor);
   }
 
