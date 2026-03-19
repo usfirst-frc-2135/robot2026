@@ -56,6 +56,8 @@ public class Launcher extends SubsystemBase
   private static final double kLauncherScoreRPM  = 3100.0;    // RPM to score 
   private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
   private static final double kToleranceRPM      = 60.0;      // Tolerance band around requested RPM
+  private static final double kHoodFullDown      = -1.0;      // Hood actuator servo all the way down
+  private static final double kHoodFullUp        = 1.0;       // Hood actuator servo all the way up
 
   private static final double kLauncherGearRatio = (18.0 / 24.0);
 
@@ -242,16 +244,8 @@ public class Launcher extends SubsystemBase
     SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
     SmartDashboard.putData("LauncherPass", getLauncherPassCommand( ));
     SmartDashboard.putData("LauncherStop", getLauncherStopCommand( ));
-    SmartDashboard.putData("HoodIn", Commands.runOnce(( ) ->
-    {
-      m_hoodLeft.setSpeed(1.0);
-      m_hoodRight.setSpeed(1.0);
-    }));
-    SmartDashboard.putData("HoodOut", Commands.runOnce(( ) ->
-    {
-      m_hoodLeft.setSpeed(-1.0);
-      m_hoodRight.setSpeed(-1.0);
-    }));
+    SmartDashboard.putData("HoodUp", Commands.runOnce(( ) -> setHoodAngle(kHoodFullUp)));
+    SmartDashboard.putData("HoodDown", Commands.runOnce(( ) -> setHoodAngle(kHoodFullDown)));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -264,6 +258,7 @@ public class Launcher extends SubsystemBase
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getSubsystem( )));
     setLauncherMode(LauncherMode.STOP);
+    setHoodAngle(kHoodFullDown);
   }
 
   /****************************************************************************
@@ -345,6 +340,17 @@ public class Launcher extends SubsystemBase
   private void setLauncherStopped( )
   {
     m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
+  }
+
+  /****************************************************************************
+   * 
+   * Set hood actuator position
+   */
+  private void setHoodAngle(double position)
+  {
+    // Linear actuator uses servo speed method for position control
+    m_hoodLeft.setSpeed(position);
+    m_hoodRight.setSpeed(position);
   }
 
   ////////////////////////////////////////////////////////////////////////////
