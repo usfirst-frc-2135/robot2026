@@ -211,20 +211,24 @@ public final class CTREConfigs6
    * 
    * Launcher motors - Kraken X60 (2)
    * 
+   * @param inverted
+   * 
+   * @param inverted
+   * 
    * @return launcherConfig
    */
-  public static TalonFXConfiguration leftlauncherFXConfig( )
+  public static TalonFXConfiguration launcherFXConfig(boolean inverted)
   {
-    TalonFXConfiguration leftlauncherConfig = new TalonFXConfiguration( );
+    TalonFXConfiguration launcherConfig = new TalonFXConfiguration( );
 
     // Closed Loop settings
     // inRotaryConfig.ClosedLoopGeneral.*
     // inRotaryConfig.ClosedLoopRamps.*                             // Seconds to ramp
 
-    leftlauncherConfig.CurrentLimits.SupplyCurrentLimit = 35.0;          // Amps
-    leftlauncherConfig.CurrentLimits.SupplyCurrentLowerLimit = 35.0;     // Amps
-    leftlauncherConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;     // Seconds
-    leftlauncherConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    launcherConfig.CurrentLimits.SupplyCurrentLimit = 35.0;          // Amps
+    launcherConfig.CurrentLimits.SupplyCurrentLowerLimit = 35.0;     // Amps
+    launcherConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;     // Seconds
+    launcherConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
     // launcherConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
     // launcherConfig.CurrentLimits.StatorCurrentLimitEnable = false;
@@ -235,68 +239,25 @@ public final class CTREConfigs6
 
     // Motor output settings
     // launcherConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;
-    leftlauncherConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    leftlauncherConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    launcherConfig.MotorOutput.Inverted = (inverted) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    launcherConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     // Open Loop settings
     // launcherConfig.OpenLoopRamps.*                                  // Seconds to ramp
 
     // Slot settings
     // launcherConfig.Slot0.GravityType = *; 
-    leftlauncherConfig.Slot0.kS = 0.3;                                     // Feedforward: Voltage or duty cycle to overcome static friction
-    leftlauncherConfig.Slot0.kG = 0.0;                                     // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
-    leftlauncherConfig.Slot0.kV = 0.1193;                                  // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
+    launcherConfig.Slot0.kS = 0.3;                                     // Feedforward: Voltage or duty cycle to overcome static friction
+    launcherConfig.Slot0.kG = 0.0;                                     // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
+    launcherConfig.Slot0.kV = 0.1193;                                  // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
-    leftlauncherConfig.Slot0.kP = 0.465;                                    // Voltage or duty cycle per velocity unit (velocity modes)
-    leftlauncherConfig.Slot0.kI = 0.0;                                     // Voltage or duty cycle per accumulated unit
-    leftlauncherConfig.Slot0.kD = 0.0;                                     // Voltage or duty cycle per unit of acceleration unit (velocity modes)
-
-    // launcherConfig.SoftwareLimitSwitch.*
-
-    return leftlauncherConfig;
-  }
-
-  public static TalonFXConfiguration rightlauncherFXConfig( )
-  {
-    TalonFXConfiguration rightlauncherConfig = new TalonFXConfiguration( );
-
-    // Closed Loop settings
-    // inRotaryConfig.ClosedLoopGeneral.*
-    // inRotaryConfig.ClosedLoopRamps.*                             // Seconds to ramp
-
-    rightlauncherConfig.CurrentLimits.SupplyCurrentLimit = 35.0;          // Amps
-    rightlauncherConfig.CurrentLimits.SupplyCurrentLowerLimit = 35.0;     // Amps
-    rightlauncherConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;     // Seconds
-    rightlauncherConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-
-    // launcherConfig.CurrentLimits.StatorCurrentLimit = 200.0;      // Amps
-    // launcherConfig.CurrentLimits.StatorCurrentLimitEnable = false;
-
-    // launcherConfig.Feedback.*
-    // launcherConfig.HardwareLimitSwitch.*
-    // launcherConfig.MotionMagic.*
-
-    // Motor output settings
-    // launcherConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;
-    rightlauncherConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    rightlauncherConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-
-    // Open Loop settings
-    // launcherConfig.OpenLoopRamps.*                                  // Seconds to ramp
-
-    // Slot settings
-    // launcherConfig.Slot0.GravityType = *; 
-    rightlauncherConfig.Slot0.kS = 0.3;                                     // Feedforward: Voltage or duty cycle to overcome static friction
-    rightlauncherConfig.Slot0.kG = 0.0;                                     // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
-    rightlauncherConfig.Slot0.kV = 0.1193;                                  // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
-
-    rightlauncherConfig.Slot0.kP = 0.465;                                    // Voltage or duty cycle per velocity unit (velocity modes)
-    rightlauncherConfig.Slot0.kI = 0.0;                                     // Voltage or duty cycle per accumulated unit
-    rightlauncherConfig.Slot0.kD = 0.0;                                     // Voltage or duty cycle per unit of acceleration unit (velocity modes)
+    launcherConfig.Slot0.kP = 0.465;                                    // Voltage or duty cycle per velocity unit (velocity modes)
+    launcherConfig.Slot0.kI = 0.0;                                     // Voltage or duty cycle per accumulated unit
+    launcherConfig.Slot0.kD = 0.0;                                     // Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
     // launcherConfig.SoftwareLimitSwitch.*
 
-    return rightlauncherConfig;
+    return launcherConfig;
   }
 
   /****************************************************************************
