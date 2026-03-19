@@ -210,9 +210,11 @@ public final class CTREConfigs6
    * 
    * Launcher motors - Kraken X60 (2)
    * 
+   * @param inverted
+   * 
    * @return launcherConfig
    */
-  public static TalonFXConfiguration launcherFXConfig( )
+  public static TalonFXConfiguration launcherFXConfig(boolean inverted)
   {
     TalonFXConfiguration launcherConfig = new TalonFXConfiguration( );
 
@@ -234,7 +236,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     // launcherConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;
-    launcherConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    launcherConfig.MotorOutput.Inverted = (inverted) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     launcherConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     // Open Loop settings
