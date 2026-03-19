@@ -137,12 +137,11 @@ public final class CTREConfigs6
   {
     CANcoderConfiguration inRotaryConfig = new CANcoderConfiguration( );
 
-    inRotaryConfig.MagnetSensor.SensorDirection =
-        (Robot.isComp( )) ? SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
+    inRotaryConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     inRotaryConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
 
     if (Robot.isReal( ))
-      inRotaryConfig.MagnetSensor.MagnetOffset = (Robot.isComp( )) ? -0.140381 : 0.2771;
+      inRotaryConfig.MagnetSensor.MagnetOffset = (Robot.isComp( )) ? -0.140381 : 0.1104;
     else
       inRotaryConfig.MagnetSensor.MagnetOffset = -0.25;                   // Simulated CANcoder default in rotations
 
