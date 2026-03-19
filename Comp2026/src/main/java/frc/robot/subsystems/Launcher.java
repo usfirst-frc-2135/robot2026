@@ -7,11 +7,9 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
@@ -124,10 +122,10 @@ public class Launcher extends SubsystemBase
     setName("Launcher");
     setSubsystem("Launcher");
 
-    boolean leftValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left", CTREConfigs6.leftlauncherFXConfig( ));
-    boolean rightValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.rightlauncherFXConfig( ));
+    boolean leftValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left",
+        CTREConfigs6.launcherFXConfig(false));
+    boolean rightValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right",
+        CTREConfigs6.launcherFXConfig(true));
     //m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
     m_launcherValid = leftValid && rightValid;
 
@@ -346,7 +344,7 @@ public class Launcher extends SubsystemBase
   private void setLauncherStopped( )
   {
     m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
-    m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
+    m_rightMotor.setControl(m_requestVolts.withOutput(0.0));
   }
 
   ////////////////////////////////////////////////////////////////////////////
