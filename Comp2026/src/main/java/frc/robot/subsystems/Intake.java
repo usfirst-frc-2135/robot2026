@@ -72,8 +72,8 @@ public class Intake extends SubsystemBase
 
   // Intake rotary constants
   private static final double  kRotaryGearRatio    = 36.0;   // Simulation
-  private static final double  kRotaryLengthMeters = 0.3;       // Simulation
-  private static final double  kRotaryWeightKg     = 3.0;       // Simulation
+  private static final double  kRotaryLengthMeters = 0.3;    // Simulation
+  private static final double  kRotaryWeightKg     = 3.0;    // Simulation
   private static final Voltage kRotaryManualVolts  = Volts.of(3.5); // Motor voltage during manual operation (joystick)
 
   /** Rotary manual move parameters */
@@ -97,9 +97,9 @@ public class Intake extends SubsystemBase
   //               hstop   retracted  deployed  hstop
   //      Comp     -124.7  -120.7     5.1       6.1      TODO (fix for 2026)
   //      Practice -130.4  -126.4     4.2       5.2     TODO (fix for 2026)
-  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4;  // Three degrees from hardstops
-   private static final double      kRotaryAngleHalf   = Robot.isComp( ) ? -60.0 : -75.0;  // Three degrees from hardstops
-  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;      // Three degrees from hardstops
+  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4; // Four degrees from hardstops
+  private static final double       kRotaryAngleIndexing = -60.0;
+  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
   private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;
@@ -301,7 +301,7 @@ public class Intake extends SubsystemBase
     SmartDashboard.putData("IntakeHold", getMoveToAngleCommand(INRollerMode.HOLD, this::getCurrentAngle));
 
     SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle));
-    SmartDashboard.putData("IntakeHalf", getMoveToAngleCommand(INRollerMode.HOLD, this::getHalfAngle));
+    SmartDashboard.putData("IntakeIndexing", getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle));
     SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle));
   }
 
@@ -565,6 +565,17 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
+   * Return intake angle for indexing state
+   * 
+   * @return indexing state angle
+   */
+  public double getIndexingAngle( )
+  {
+    return kRotaryAngleIndexing;
+  }
+
+  /****************************************************************************
+   * 
    * Return intake angle for stowed state
    * 
    * @return stowed state angle
@@ -572,11 +583,6 @@ public class Intake extends SubsystemBase
   public double getStowedAngle( )
   {
     return kRotaryAngleStowed;
-  }
-
-  public double getHalfAngle( )
-  {
-    return kRotaryAngleHalf;
   }
 
   /****************************************************************************
