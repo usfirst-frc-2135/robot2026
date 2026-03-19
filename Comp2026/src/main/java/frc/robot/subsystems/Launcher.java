@@ -54,8 +54,8 @@ public class Launcher extends SubsystemBase
   private static final double kLauncherScoreRPM  = 3100.0;    // RPM to score 
   private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
   private static final double kToleranceRPM      = 60.0;      // Tolerance band around requested RPM
-  private static final double kHoodFullDown      = -1.0;      // Hood actuator servo all the way down
-  private static final double kHoodFullUp        = 1.0;       // Hood actuator servo all the way up
+  private static final double kHoodFullDown      = 1.0;      // Hood actuator servo all the way down
+  private static final double kHoodFullUp        = -1.0;       // Hood actuator servo all the way up
 
   private static final double kLauncherGearRatio = (18.0 / 24.0);
 
