@@ -1,0 +1,98 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.75,
+        "y": 7.08
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.75,
+        "y": 7.08
+      },
+      "isLocked": false,
+      "linkedName": "L1"
+    },
+    {
+      "anchor": {
+        "x": 3.603,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 3.353,
+        "y": 7.427
+      },
+      "nextControl": {
+        "x": 4.237412559691253,
+        "y": 7.427
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EN"
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 5.269804375160189,
+        "y": 7.395388719012272
+      },
+      "nextControl": {
+        "x": 6.149278273809524,
+        "y": 7.480357142857144
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EX"
+    },
+    {
+      "anchor": {
+        "x": 5.87,
+        "y": 4.689
+      },
+      "prevControl": {
+        "x": 5.839245808919271,
+        "y": 4.387639753069196
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "NZ1A"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "FromLaunch",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -58.400000000000006
+  },
+  "useDefaultConstraints": true
+}

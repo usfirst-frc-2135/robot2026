@@ -15,6 +15,12 @@
           "data": {
             "pathName": "NZ3-L3"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L3_NZ3A_L3"
+          }
         }
       ]
     }
