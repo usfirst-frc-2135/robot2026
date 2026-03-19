@@ -28,7 +28,7 @@ public class LaunchFuel extends SequentialCommandGroup
    * @param intake
    *          intake subsystem
    */
-  public LaunchFuel(Hopper hopper, Kicker kicker, Launcher launcher, Intake intake)
+  public LaunchFuel(Intake intake, Hopper hopper, Kicker kicker, Launcher launcher)
   {
     setName("LaunchFuel");
 
