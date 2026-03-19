@@ -125,10 +125,10 @@ public class Launcher extends SubsystemBase
     setSubsystem("Launcher");
 
     boolean leftValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left", CTREConfigs6.launcherFXConfig( ));
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left", CTREConfigs6.leftlauncherFXConfig( ));
     boolean rightValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.launcherFXConfig( ));
-    m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
+        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.rightlauncherFXConfig( ));
+    //m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
     m_launcherValid = leftValid && rightValid;
 
     m_leftAlert.set(!leftValid);
@@ -336,6 +336,7 @@ public class Launcher extends SubsystemBase
   private void setLauncherVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(rps));
+    m_rightMotor.setControl(m_requestVelocity.withVelocity(rps));
   }
 
   /****************************************************************************
@@ -344,6 +345,7 @@ public class Launcher extends SubsystemBase
    */
   private void setLauncherStopped( )
   {
+    m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
     m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
   }
 
