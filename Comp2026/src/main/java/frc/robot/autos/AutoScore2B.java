@@ -7,12 +7,9 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.INConsts;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
-import frc.robot.commands.StopIntaking;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -22,7 +19,7 @@ import frc.robot.subsystems.Launcher;
 /**
  * Auto command that just leaves the starting zone
  */
-public class AutoScore extends SequentialCommandGroup
+public class AutoScore2B extends SequentialCommandGroup
 {
   /**
    * Autonomous command to:
@@ -33,10 +30,10 @@ public class AutoScore extends SequentialCommandGroup
    * @param drivetrain
    *          swerve drivetrain subsystem
    */
-  public AutoScore(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper, Kicker kicker,
-      Launcher launcher)
+  public AutoScore2B(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper,
+      Kicker kicker, Launcher launcher)
   {
-    setName("AutoScore");
+    setName("AutoScore2B");
 
     addCommands(
         // Add Commands here:
@@ -45,18 +42,24 @@ public class AutoScore extends SequentialCommandGroup
 
         new LogCommand(getName(), "Acquire fuel and score once"),
         new ParallelCommandGroup(
+          new LogCommand(getName(),"Path 1"),
           drivetrain.getPathCommand(ppAuto.get(0)),
-          new AcquireFuel(intake, hopper)
-        ), 
-        new StopIntaking(intake, hopper),
+          new AcquireFuel(intake,hopper)
+          ),
         new ParallelCommandGroup(
+          new LogCommand(getName(),"Path 2"),
           drivetrain.getPathCommand(ppAuto.get(1)),
-          launcher.getLauncherScoreCommand( )
-        ), 
-        new LaunchFuel(hopper, kicker, launcher,intake),
-        new WaitCommand(2.0),
-        intake.runOnce(()-> intake.getMoveToAngleCommand(INConsts.INRollerMode.ACQUIRE, intake::getStowedAngle))
-
+          launcher.getLauncherScoreCommand()
+          ),
+        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(4),
+        new ParallelCommandGroup(
+          new LogCommand(getName(),"Path 3"),
+          drivetrain.getPathCommand(ppAuto.get(2)),
+          new AcquireFuel(intake,hopper)
+          ),
+        launcher.getLauncherScoreCommand(),
+        new LaunchFuel(intake, hopper, kicker, launcher)
+        
         // @formatter:on
     );
   }

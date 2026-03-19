@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 4.403,
-        "y": 0.63
+        "y": 0.642
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.403,
-        "y": 0.6299999999999999
+        "x": 4.903,
+        "y": 0.642
       },
       "isLocked": false,
       "linkedName": "Start3"
     },
     {
       "anchor": {
-        "x": 6.023,
-        "y": 0.63
+        "x": 5.597,
+        "y": 0.642
       },
       "prevControl": {
-        "x": 5.523,
-        "y": 0.6300000000000001
+        "x": 5.097,
+        "y": 0.6420000000000001
       },
       "nextControl": {
-        "x": 8.023,
-        "y": 0.63
+        "x": 7.597,
+        "y": 0.642
       },
       "isLocked": false,
       "linkedName": "TR3-EX"
@@ -37,20 +37,25 @@
       },
       "prevControl": {
         "x": 7.693,
-        "y": 2.228
+        "y": 1.2280000000000002
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "NZ3"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.2,
-    "maxAcceleration": 3.2,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
