@@ -200,7 +200,7 @@ public class Intake extends SubsystemBase
 
     // Simulation object initialization
     m_rotarySim.Orientation = ChassisReference.Clockwise_Positive;
-    m_CANcoderSim.Orientation = ChassisReference.Clockwise_Positive;
+    m_CANcoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
 
     // Status signals
     m_rotaryAngle.setUpdateFrequency(50);
