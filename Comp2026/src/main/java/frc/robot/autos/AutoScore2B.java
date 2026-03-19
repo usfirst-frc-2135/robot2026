@@ -19,7 +19,7 @@ import frc.robot.subsystems.Launcher;
 /**
  * Auto command that just leaves the starting zone
  */
-public class AutoScore2A extends SequentialCommandGroup
+public class AutoScore2B extends SequentialCommandGroup
 {
   /**
    * Autonomous command to:
@@ -30,10 +30,10 @@ public class AutoScore2A extends SequentialCommandGroup
    * @param drivetrain
    *          swerve drivetrain subsystem
    */
-  public AutoScore2A(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper,
+  public AutoScore2B(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper,
       Kicker kicker, Launcher launcher)
   {
-    setName("AutoScore2A");
+    setName("AutoScore2B");
 
     addCommands(
         // Add Commands here:

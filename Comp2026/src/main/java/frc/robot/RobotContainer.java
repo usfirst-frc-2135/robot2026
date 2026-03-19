@@ -41,7 +41,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.autos.AutoScore1A;
+import frc.robot.autos.AutoScore1B;
 import frc.robot.autos.AutoScore2A;
+import frc.robot.autos.AutoScore2B;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.ClimbTower;
@@ -137,8 +139,10 @@ public class RobotContainer
   {
     AUTOSTOP,           // AutoStop - sit still, do nothing
     AUTOTEST,           // Run a selected test auto
-    AUTOSCORE1A,          // One cycle of scoring fuel
-    AUTOSCORE2A          // Two cycles of scoring fuel 
+    AUTOSCORE1A,        // One cycle of scoring fuel - 2 paths (out to neutral zone, back to score)
+    AUTOSCORE1B,        // One cycle of scoring fuel - 1 big looping path that returns to scoring position
+    AUTOSCORE2A,        // Two cycles of scoring fuel - 3 paths (out to neutral zone, back to launch, looping path back to score)
+    AUTOSCORE2B         // 
   }
 
   /**
@@ -173,9 +177,17 @@ public class RobotContainer
       Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A"),
       Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3"),
 
+      Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1"),
+      Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A"),
+      Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3"),
+
       Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L2A"),
       Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
       Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_OP_L2B"),
+
+      Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L2A"),
+      Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
+      Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_OP_L2B"),
 
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_T1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_T2"),
@@ -235,7 +247,9 @@ public class RobotContainer
     // Configure autonomous sendable chooser
     m_autoChooser.setDefaultOption("0 - AutoStop", AutoChooser.AUTOSTOP);
     m_autoChooser.addOption("1 - AutoScore1A", AutoChooser.AUTOSCORE1A);
+    m_autoChooser.addOption("2 - AutoScore1B", AutoChooser.AUTOSCORE1B);
     m_autoChooser.addOption("3 - AutoScore2A", AutoChooser.AUTOSCORE2A);
+    m_autoChooser.addOption("4 - AutoScore2B", AutoChooser.AUTOSCORE2B);
     m_autoChooser.addOption("9 - AutoTest", AutoChooser.AUTOTEST);
     m_autoChooser.onChange(this::updateAutoChooserCallback);
 
@@ -508,8 +522,14 @@ public class RobotContainer
       case AUTOSCORE1A :
         m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
         break;
+      case AUTOSCORE1B :
+        m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+        break;
       case AUTOSCORE2A :
         m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+        break;
+      case AUTOSCORE2B :
+        m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
         break;
     }
 
