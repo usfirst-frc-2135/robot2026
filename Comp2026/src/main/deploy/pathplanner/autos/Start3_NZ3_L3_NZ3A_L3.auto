@@ -26,6 +26,6 @@
     }
   },
   "resetOdom": true,
-  "folder": "4-AutoScore2B",
+  "folder": "3-AutoScore2A",
   "choreoAuto": false
 }
