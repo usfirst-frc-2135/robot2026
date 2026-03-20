@@ -4,9 +4,14 @@
 //
 package frc.robot.lib;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.lib.HID;
+import frc.robot.lib.LED;
+import frc.robot.Constants;
 
 /****************************************************************************
  * 
@@ -17,7 +22,10 @@ public class MatchState
   // Constants
 
   // Member objects
-  private String m_name = new String( );
+  private String  m_name         = new String( );
+  private HID     m_hid;
+  private LED     m_led;
+  private boolean m_rumbleActive = false;
 
   /****************************************************************************
    * 
@@ -28,9 +36,11 @@ public class MatchState
    * @param operator
    *          operator gamepad to initialize
    */
-  public MatchState( )
+  public MatchState(HID hid, LED led)
   {
     setName("MatchState");
+    m_hid = hid;
+    m_led = led;
 
     initDashboard( );
     initialize( );
@@ -68,6 +78,26 @@ public class MatchState
     else
     {
       SmartDashboard.putNumber("ShiftTime", 0.0);
+    }
+
+    if (DriverStation.isTeleop( ))
+    {
+      int shiftTime = timeLeftInShiftSeconds(DriverStation.getMatchTime( ));
+
+      if (shiftTime <= 5)
+      {
+        if (m_rumbleActive == false)
+        {
+          m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity);
+          m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity);
+          m_rumbleActive = true;
+          DataLogManager.log("Turning On Rumble");
+        }
+      }
+      else
+      {
+        m_rumbleActive = false;
+      }
     }
   }
 
