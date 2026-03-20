@@ -67,13 +67,13 @@ public class Intake extends SubsystemBase
   private static final String  kSubsystemName      = "Intake";
 
   // Intake roller constants
-  private static final double  kRollerSpeedAcquire = 0.7;    // Motor direction for positive input
+  private static final double  kRollerSpeedAcquire = 0.8;    // Motor direction for positive input
   private static final double  kRollerSpeedExpel   = -0.4;
 
   // Intake rotary constants
-  private static final double  kRotaryGearRatio    = 25.0;      // Simulation
-  private static final double  kRotaryLengthMeters = 0.3;       // Simulation
-  private static final double  kRotaryWeightKg     = 3.0;       // Simulation
+  private static final double  kRotaryGearRatio    = 36.0;   // Simulation
+  private static final double  kRotaryLengthMeters = 0.3;    // Simulation
+  private static final double  kRotaryWeightKg     = 3.0;    // Simulation
   private static final Voltage kRotaryManualVolts  = Volts.of(3.5); // Motor voltage during manual operation (joystick)
 
   /** Rotary manual move parameters */
@@ -90,15 +90,16 @@ public class Intake extends SubsystemBase
 
   private static final double       kToleranceDegrees    = 3.0;      // PID tolerance in degrees
   private static final double       kMMDebounceTime      = 0.060;    // Seconds to debounce a final position check
-  private static final double       kMMMoveTimeout       = 1.0;      // Seconds allowed for a Motion Magic movement
+  private static final double       kMMMoveTimeout       = 1.3;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
   //    Measured hardstops and pre-defined positions (0 degrees is horizontal to the floor):
   //               hstop   retracted  deployed  hstop
-  //      Comp     -121.0  -118.0     15.0      18.0    TODO (fix for 2026)
-  //      Practice -121.0  -118.0     15.0      18.0    TODO (fix for 2026)
-  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -115.0 : -115.0;  // Three degrees from hardstops
-  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 9.6 : 9.6;      // Three degrees from hardstops
+  //      Comp     -124.7  -120.7     5.1       6.1      TODO (fix for 2026)
+  //      Practice -130.4  -126.4     4.2       5.2     TODO (fix for 2026)
+  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4; // Four degrees from hardstops
+  private static final double       kRotaryAngleIndexing = -60.0;
+  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
   private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;
@@ -199,7 +200,7 @@ public class Intake extends SubsystemBase
 
     // Simulation object initialization
     m_rotarySim.Orientation = ChassisReference.Clockwise_Positive;
-    m_CANcoderSim.Orientation = ChassisReference.Clockwise_Positive;
+    m_CANcoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
 
     // Status signals
     m_rotaryAngle.setUpdateFrequency(50);
@@ -300,6 +301,7 @@ public class Intake extends SubsystemBase
     SmartDashboard.putData("IntakeHold", getMoveToAngleCommand(INRollerMode.HOLD, this::getCurrentAngle));
 
     SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle));
+    SmartDashboard.putData("IntakeIndexing", getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle));
     SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle));
   }
 
@@ -333,7 +335,7 @@ public class Intake extends SubsystemBase
     m_CANcoder.clearStickyFaults( );
   }
 
-  private final static Voltage kManualKG = Volts.of(-0.51);
+  private final static Voltage kManualKG = Volts.of(-0.45);
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// MANUAL MOVEMENT //////////////////////////////////
@@ -559,6 +561,17 @@ public class Intake extends SubsystemBase
   public double getCurrentAngle( )
   {
     return m_currentDegrees;
+  }
+
+  /****************************************************************************
+   * 
+   * Return intake angle for indexing state
+   * 
+   * @return indexing state angle
+   */
+  public double getIndexingAngle( )
+  {
+    return kRotaryAngleIndexing;
   }
 
   /****************************************************************************

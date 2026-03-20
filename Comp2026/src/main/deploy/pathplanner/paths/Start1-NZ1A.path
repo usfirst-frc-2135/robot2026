@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.402999999999999,
+        "x": 5.403,
         "y": 7.427
       },
       "isLocked": false,
@@ -16,16 +16,32 @@
     },
     {
       "anchor": {
-        "x": 5.403,
+        "x": 5.597,
         "y": 7.427
       },
       "prevControl": {
-        "x": 4.403,
+        "x": 4.873596466526494,
         "y": 7.427
+      },
+      "nextControl": {
+        "x": 6.2943491324293745,
+        "y": 7.427
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EX"
+    },
+    {
+      "anchor": {
+        "x": 5.87,
+        "y": 4.689
+      },
+      "prevControl": {
+        "x": 5.863673469387756,
+        "y": 5.535936113575865
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "T1"
+      "linkedName": "NZ1A"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +58,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "FromStart",

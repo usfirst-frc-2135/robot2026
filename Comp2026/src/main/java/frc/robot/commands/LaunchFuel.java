@@ -4,8 +4,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.HPConsts;
+import frc.robot.Constants.INConsts;
 import frc.robot.Constants.KKConsts;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Launcher;
 
@@ -23,8 +25,10 @@ public class LaunchFuel extends SequentialCommandGroup
    *          launcher subsystem
    * @param kicker
    *          kicker subsystem
+   * @param intake
+   *          intake subsystem
    */
-  public LaunchFuel(Hopper hopper, Kicker kicker, Launcher launcher)
+  public LaunchFuel(Intake intake, Hopper hopper, Kicker kicker, Launcher launcher)
   {
     setName("LaunchFuel");
 
@@ -37,13 +41,18 @@ public class LaunchFuel extends SequentialCommandGroup
         launcher.getLauncherScoreCommand(),
 
         new LogCommand(getName(), "Wait until launcher at full speeed "),
-        new WaitUntilCommand(launcher::isAtRequestedRPM).withTimeout(2.0),
+        new WaitUntilCommand(launcher::isAtRequestedRPM).withTimeout(1.2),
 
         new LogCommand(getName(), "Start Hopper Rollers"), 
         hopper.getRollerModeCommand(HPConsts.HPRollerMode.ACQUIRE),
 
         new LogCommand(getName(), "Start Kicker Rollers"), 
-        kicker.getRollerModeCommand(KKConsts.KKRollerMode.ACQUIRE)
+        kicker.getRollerModeCommand(KKConsts.KKRollerMode.ACQUIRE),
+
+        new WaitUntilCommand(1.0),
+        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getStowedAngle)
+
+
     
         // @formatter:on
     );

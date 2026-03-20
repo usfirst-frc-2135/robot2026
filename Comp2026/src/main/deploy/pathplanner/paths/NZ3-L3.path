@@ -1,0 +1,95 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.693,
+        "y": 3.228
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.693,
+        "y": 3.2280000000000006
+      },
+      "isLocked": false,
+      "linkedName": "NZ3"
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 0.642
+      },
+      "prevControl": {
+        "x": 6.597,
+        "y": 0.6420000000000001
+      },
+      "nextControl": {
+        "x": 4.597,
+        "y": 0.6419999999999999
+      },
+      "isLocked": false,
+      "linkedName": "TR3-EX"
+    },
+    {
+      "anchor": {
+        "x": 3.603,
+        "y": 0.642
+      },
+      "prevControl": {
+        "x": 4.603000000000001,
+        "y": 0.6419999999999999
+      },
+      "nextControl": {
+        "x": 3.353,
+        "y": 0.642
+      },
+      "isLocked": false,
+      "linkedName": "TR3-EN"
+    },
+    {
+      "anchor": {
+        "x": 2.75,
+        "y": 1.0
+      },
+      "prevControl": {
+        "x": 2.910696902421635,
+        "y": 0.8084888892202555
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "L3"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.0018308363148467,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 35.0
+  },
+  "reversed": false,
+  "folder": "FromNeutralZone",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

@@ -4,28 +4,44 @@
     {
       "anchor": {
         "x": 4.403,
-        "y": 7.427
+        "y": 0.642
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.402999999999999,
-        "y": 7.427
+        "x": 5.403,
+        "y": 0.6420000000000003
       },
       "isLocked": false,
-      "linkedName": "Start1"
+      "linkedName": "Start3"
     },
     {
       "anchor": {
-        "x": 5.403,
-        "y": 7.427
+        "x": 5.597,
+        "y": 0.642
       },
       "prevControl": {
-        "x": 4.403,
-        "y": 7.427
+        "x": 4.128953402476614,
+        "y": 0.642
+      },
+      "nextControl": {
+        "x": 7.0697032671735025,
+        "y": 0.642
+      },
+      "isLocked": false,
+      "linkedName": "TR3-EX"
+    },
+    {
+      "anchor": {
+        "x": 5.87,
+        "y": 3.381
+      },
+      "prevControl": {
+        "x": 5.868690476190476,
+        "y": 3.056205357142858
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "T1"
+      "linkedName": "nz3a"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +58,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "FromStart",

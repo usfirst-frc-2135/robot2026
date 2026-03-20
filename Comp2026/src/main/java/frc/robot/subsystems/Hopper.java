@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -33,8 +34,9 @@ public class Hopper extends SubsystemBase
   // Constants
   private static final String   kSubsystemName      = "Hopper";
 
-  private static final double   kRollerSpeedAcquire = 0.5;     // Motor direction for positive input
+  private static final double   kRollerSpeedAcquire = 0.6;     // Motor direction for positive input
   private static final double   kRollerSpeedExpel   = -0.4;
+  private static final double   kPulseModeDuration  = 0.5;
 
   // Declare device objects
   private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_HopperRoller);
@@ -45,11 +47,13 @@ public class Hopper extends SubsystemBase
 
   // Simulation objects
   private final TalonFXSimState m_rollerMotorSim    = m_rollerMotor.getSimState( );
-
+  private final Timer           m_pulseTimer        = new Timer( );
   // Declare module variables
 
   // Roller variables
   private boolean               m_rollerValid;        // Health indicator for motor 
+  private HPRollerMode          m_rollerMode        = HPRollerMode.STOP;
+  private boolean               m_pulseMode         = false;
 
   // Network tables publisher objects
   private DoublePublisher       m_rollSpeedPub;
@@ -86,6 +90,17 @@ public class Hopper extends SubsystemBase
     // Update network table publishers
     m_rollSpeedPub.set(m_rollerMotor.get( ));
     m_rollSupCurPub.set(m_rollerMotor.get( ));
+
+    // If rollermode is acquire and m_pulsemode is active
+    if (m_rollerMode == HPRollerMode.ACQUIRE && m_pulseMode)
+    {
+      // If timer is less than 0.5 then acquire else do expel to alternate motor direction
+      m_rollerMotor.set((getMantissa(m_pulseTimer.get( )) < kPulseModeDuration) ? kRollerSpeedAcquire : kRollerSpeedExpel);
+    }
+    if (m_rollerMode == HPRollerMode.ACQUIRE & !m_pulseMode)
+    {
+      m_rollerMotor.set(kRollerSpeedAcquire);
+    }
   }
 
   /****************************************************************************
@@ -173,12 +188,15 @@ public class Hopper extends SubsystemBase
     }
     else
     {
+      m_pulseTimer.restart( );
       switch (mode)
       {
         default :
           DataLogManager.log(String.format("%s: Roller mode is invalid: %s", getSubsystem( ), mode));
         case STOP :
+          m_pulseMode = false;
           output = 0.0;
+
           break;
         case ACQUIRE :
           output = kRollerSpeedAcquire;
@@ -191,11 +209,39 @@ public class Hopper extends SubsystemBase
       DataLogManager.log(String.format("%s: Roller mode is now - %s", getSubsystem( ), mode));
       m_rollerMotor.set(output);
     }
+    m_rollerMode = mode;
+  }
+
+  /****************************************************************************
+   * 
+   * Return the mantissa of a floating point (double) value
+   * 
+   * @param num
+   *          number to return mantissa for
+   * @return decimal mantissa with integer remove
+   */
+  private double getMantissa(double num)
+  {
+    double numInt = Math.floor(num);
+    return num - numInt;
   }
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// PUBLIC HELPERS ///////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
+
+  /****************************************************************************
+   * 
+   * Update the pulse mode value for external control of motor pulsing
+   * 
+   * @param mode
+   *          requested mode
+   */
+  public void setPulseMode(boolean mode)
+  {
+    m_pulseMode = mode;
+    DataLogManager.log(String.format("%s: Set PULSE MODE: %s", getSubsystem( ), mode));
+  }
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// COMMAND FACTORIES ////////////////////////////////

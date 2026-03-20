@@ -63,6 +63,8 @@ public class Vision
   // Constants
   private static final double kAimingKp  = 0.01;
   private static final double kDrivingKp = 0.06;
+  private static final double kTXOffset  = 0.0;
+  private static final double kTYOffset  = 11.7;
 
   // Objects
 
@@ -120,7 +122,7 @@ public class Vision
 
     if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Red)))
     {
-      setPriorityId(4, "RED");
+      setPriorityId(10, "RED");
     }
     else if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Blue)))
     {
@@ -155,9 +157,8 @@ public class Vision
    */
   public AngularVelocity aimProportional(AngularVelocity maxAngularRate)
   {
-    double proportionalFactor = -LimelightHelpers.getTX(Constants.kLLFrontName) * kAimingKp;
+    double proportionalFactor = -(LimelightHelpers.getTX(Constants.kLLFrontName) * kTXOffset) * kAimingKp;
 
-    proportionalFactor *= 1.0;
     return maxAngularRate.times(proportionalFactor);
   }
 
@@ -171,9 +172,7 @@ public class Vision
    */
   public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
   {
-    double proportionalFactor = LimelightHelpers.getTY(Constants.kLLFrontName) * kDrivingKp;
-
-    proportionalFactor *= -1.0;
+    double proportionalFactor = -(LimelightHelpers.getTY(Constants.kLLFrontName) + kTYOffset) * kDrivingKp;
 
     return maxSpeed.times(proportionalFactor);
   }

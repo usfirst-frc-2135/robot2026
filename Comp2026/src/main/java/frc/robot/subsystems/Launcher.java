@@ -7,11 +7,9 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
@@ -29,11 +27,13 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Ports;
@@ -51,9 +51,11 @@ public class Launcher extends SubsystemBase
   private static final String kSubsystemName     = "Launcher";
 
   private static final double kMOI               = 0.005;     // Simulation - Moment of Inertia
-  private static final double kLauncherScoreRPM  = 3200.0;    // RPM to score 
-  private static final double kLauncherPassRPM   = 3000.0;    // RPM to pass 
-  private static final double kToleranceRPM      = 150.0;     // Tolerance band around requested RPM
+  private static final double kLauncherScoreRPM  = 3100.0;    // RPM to score 
+  private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
+  private static final double kToleranceRPM      = 60.0;      // Tolerance band around requested RPM
+  private static final double kHoodFullDown      = -1.0;      // Hood actuator servo all the way down
+  private static final double kHoodFullUp        = 1.0;       // Hood actuator servo all the way up
 
   private static final double kLauncherGearRatio = (18.0 / 24.0);
 
@@ -68,6 +70,8 @@ public class Launcher extends SubsystemBase
   // Devices  objects
   private final TalonFX                       m_leftMotor            = new TalonFX(Ports.kCANID_LauncherLeft);
   private final TalonFX                       m_rightMotor           = new TalonFX(Ports.kCANID_LauncherRight);
+  private final Servo                         m_hoodLeft             = new Servo(0);
+  private final Servo                         m_hoodRight            = new Servo(1);
 
   // Alerts
   private final Alert                         m_leftAlert            =
@@ -120,11 +124,11 @@ public class Launcher extends SubsystemBase
     setName("Launcher");
     setSubsystem("Launcher");
 
-    boolean leftValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left", CTREConfigs6.launcherFXConfig( ));
-    boolean rightValid =
-        PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right", CTREConfigs6.launcherFXConfig( ));
-    m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
+    boolean leftValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left",
+        CTREConfigs6.launcherFXConfig(false));
+    boolean rightValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right",
+        CTREConfigs6.launcherFXConfig(true));
+    //m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
     m_launcherValid = leftValid && rightValid;
 
     m_leftAlert.set(!leftValid);
@@ -140,6 +144,9 @@ public class Launcher extends SubsystemBase
     StatusSignal<Current> m_leftStatorCur = m_leftMotor.getStatorCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightSupplyCur = m_rightMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightStatorCur = m_rightMotor.getStatorCurrent( ); // Default 4Hz (250ms)
+
+    m_hoodLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
+    m_hoodRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
 
     DataLogManager.log(String.format(
         "%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f leftStatorCur: %.1f rightSupplyCur: %.1f rightStatorCur: %.1f",
@@ -235,6 +242,8 @@ public class Launcher extends SubsystemBase
     SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
     SmartDashboard.putData("LauncherPass", getLauncherPassCommand( ));
     SmartDashboard.putData("LauncherStop", getLauncherStopCommand( ));
+    SmartDashboard.putData("HoodUp", Commands.runOnce(( ) -> setHoodAngle(kHoodFullUp)));
+    SmartDashboard.putData("HoodDown", Commands.runOnce(( ) -> setHoodAngle(kHoodFullDown)));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -247,6 +256,7 @@ public class Launcher extends SubsystemBase
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getSubsystem( )));
     setLauncherMode(LauncherMode.STOP);
+    setHoodAngle(kHoodFullDown);
   }
 
   /****************************************************************************
@@ -319,6 +329,7 @@ public class Launcher extends SubsystemBase
   private void setLauncherVelocity(double rps)
   {
     m_leftMotor.setControl(m_requestVelocity.withVelocity(rps));
+    m_rightMotor.setControl(m_requestVelocity.withVelocity(rps));
   }
 
   /****************************************************************************
@@ -328,6 +339,18 @@ public class Launcher extends SubsystemBase
   private void setLauncherStopped( )
   {
     m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
+    m_rightMotor.setControl(m_requestVolts.withOutput(0.0));
+  }
+
+  /****************************************************************************
+   * 
+   * Set hood actuator position
+   */
+  private void setHoodAngle(double position)
+  {
+    // Linear actuator uses servo speed method for position control
+    m_hoodLeft.setSpeed(position);
+    m_hoodRight.setSpeed(position);
   }
 
   ////////////////////////////////////////////////////////////////////////////
