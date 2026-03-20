@@ -362,7 +362,7 @@ public class RobotContainer
     m_operatorPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
     m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
-    m_operatorPad.back( ).toggleOnTrue(new LogCommand("operatorPad", "view"));   // aka View button
+    m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(() -> getClimberAxis()));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
 
     //
