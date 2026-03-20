@@ -73,7 +73,7 @@ public class Intake extends SubsystemBase
   // Intake rotary constants
   private static final double  kRotaryGearRatio    = 36.0;   // Simulation
   private static final double  kRotaryLengthMeters = 0.3;    // Simulation
-  private static final double  kRotaryWeightKg     = 3.0;    // Simulation
+  private static final double  kRotaryWeightKg     = 4.0;    // Simulation
   private static final Voltage kRotaryManualVolts  = Volts.of(3.5); // Motor voltage during manual operation (joystick)
 
   /** Rotary manual move parameters */
