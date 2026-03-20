@@ -518,7 +518,7 @@
           {
             "title": "HoodDown",
             "x": 768.0,
-            "y": 0.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
@@ -532,7 +532,7 @@
           {
             "title": "HoodUp",
             "x": 768.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
