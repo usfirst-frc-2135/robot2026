@@ -519,14 +519,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         else if (useMegaTag2 == true)
         {
-            Pigeon2 pigeon = getPigeon2( );
-            double yawRate = pigeon.getAngularVelocityZWorld( ).getValueAsDouble( );
-            LimelightHelpers.SetRobotOrientation(limelightName, pigeon.getYaw( ).getValueAsDouble( ), yawRate,
-                    pigeon.getPitch( ).getValueAsDouble( ), 0, pigeon.getRoll( ).getValueAsDouble( ), 0);
+            // Pigeon2 pigeon = getPigeon2( );
+            // double yawRate = pigeon.getAngularVelocityZWorld( ).getValueAsDouble( );
+            // LimelightHelpers.SetRobotOrientation(limelightName, pigeon.getYaw( ).getValueAsDouble( ), yawRate,
+            //         pigeon.getPitch( ).getValueAsDouble( ), 0, pigeon.getRoll( ).getValueAsDouble( ), 0);
+            LimelightHelpers.SetRobotOrientation(limelightName, getState( ).Pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
             LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
             // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-            if (Math.abs(getPigeon2( ).getAngularVelocityZWorld( ).getValue( ).in(DegreesPerSecond)) > 720)
+            if (Math.abs(getPigeon2( ).getAngularVelocityZWorld( ).getValue( ).in(DegreesPerSecond)) > 360)
             {
                 doRejectUpdate = true;
             }
