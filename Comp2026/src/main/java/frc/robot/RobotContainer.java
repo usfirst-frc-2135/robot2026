@@ -114,7 +114,7 @@ public class RobotContainer
   private final LED                                   m_led           = new LED( );
   private final HID                                   m_hid           = new HID(m_driverPad.getHID( ), m_operatorPad.getHID( ));
   private final Vision                                m_vision        = new Vision( );
-  private final MatchState                            m_matchState    = new MatchState( );
+  private MatchState                                  m_matchState;
 
   // The robot's shared subsystems
   private final Power                                 m_power         = new Power( );
@@ -205,6 +205,7 @@ public class RobotContainer
     facing.HeadingController = new PhoenixPIDController(kHeadingKp, kHeadingKi, kHeadingKd);    // Swerve steer PID for facing swerve request
     facing.HeadingController.enableContinuousInput(-180.0, 180.0);
 
+    m_matchState = new MatchState(m_hid, m_led);
     addDashboardWidgets( );     // Add some dashboard widgets for commands
     configureBindings( );       // Configure game controller buttons and triggers
     initDefaultCommands( );     // Initialize subsystem default commands
