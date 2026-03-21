@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.Constants;
@@ -88,8 +89,10 @@ public class MatchState
       {
         if (m_rumbleActive == false)
         {
-          m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity);
-          m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity);
+          CommandScheduler.getInstance( )
+              .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
+          CommandScheduler.getInstance( )
+              .schedule(m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
           m_rumbleActive = true;
           DataLogManager.log("Turning On Rumble");
         }
