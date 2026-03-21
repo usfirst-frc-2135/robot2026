@@ -98,7 +98,7 @@ public class Intake extends SubsystemBase
   //      Comp     -124.7  -120.7     5.1       6.1      TODO (fix for 2026)
   //      Practice -130.4  -126.4     4.2       5.2     TODO (fix for 2026)
   private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4; // Four degrees from hardstops
-  private static final double       kRotaryAngleIndexing = -60.0;
+  private static final double       kRotaryAngleIndexing = -90.0;
   private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
