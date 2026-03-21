@@ -7,8 +7,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.INConsts;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
@@ -53,9 +51,7 @@ public class AutoScore1A extends SequentialCommandGroup
           drivetrain.getPathCommand(ppAuto.get(1)),
           launcher.getLauncherScoreCommand( )
         ), 
-        new LaunchFuel(intake, hopper, kicker, launcher),
-        new WaitCommand(2.0),
-        intake.runOnce(()-> intake.getMoveToAngleCommand(INConsts.INRollerMode.ACQUIRE, intake::getStowedAngle))
+        new LaunchFuel(intake, hopper, kicker, launcher)
 
         // @formatter:on
     );

@@ -348,8 +348,8 @@ public class RobotContainer
     //
     // Operator - A, B, X, Y
     //
-    m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
-    m_operatorPad.b( ).onTrue(new LogCommand("operatorPad", "B"));
+    m_operatorPad.a( ).onTrue(Commands.runOnce(( ) -> m_launcher.decrementTeleopRPM( )));
+    m_operatorPad.b( ).onTrue(Commands.runOnce(( ) -> m_launcher.incrementTeleopRPM( )));
 
     m_operatorPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
     m_operatorPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
@@ -619,6 +619,8 @@ public class RobotContainer
   public void autoInit( )
   {
     m_vision.run( );
+
+    m_launcher.initAutonomousRPM( );
   }
 
   /****************************************************************************
@@ -628,6 +630,8 @@ public class RobotContainer
   public void teleopInit( )
   {
     m_vision.run( );
+
+    m_launcher.initTeleopRPM( );
   }
 
   /****************************************************************************

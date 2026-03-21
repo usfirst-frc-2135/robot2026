@@ -43,7 +43,7 @@ public class LaunchFuel extends SequentialCommandGroup
         launcher.getLauncherScoreCommand(),
 
         new LogCommand(getName(), "Wait until launcher at full speeed "),
-        new WaitUntilCommand(launcher::isAtRequestedRPM).withTimeout(1.2),
+        new WaitUntilCommand(launcher::isAtRequestedRPM).withTimeout(1.1),
 
         new LogCommand(getName(), "Start Hopper Rollers"), 
         hopper.getRollerModeCommand(HPConsts.HPRollerMode.ACQUIRE),
