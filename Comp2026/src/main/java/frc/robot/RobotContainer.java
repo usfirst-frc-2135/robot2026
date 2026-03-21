@@ -363,7 +363,7 @@ public class RobotContainer
     m_operatorPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
     m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
-    m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(() -> getClimberAxis()));   // aka View button
+    m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
 
     //
@@ -601,9 +601,15 @@ public class RobotContainer
   {
     m_hid.initialize( );
     m_led.initialize( );
+    m_power.initialize( );
+
     m_vision.initialize( );
 
-    m_power.initialize( );
+    m_intake.initialize( );
+    m_hopper.initialize( );
+    m_kicker.initialize( );
+    m_launcher.initialize( );
+    m_climberRight.initialize( );
   }
 
   /****************************************************************************
@@ -632,5 +638,11 @@ public class RobotContainer
   {
     m_led.printFaults( );
     m_power.printFaults( );
+
+    m_intake.printFaults( );
+    m_hopper.printFaults( );
+    m_kicker.printFaults( );
+    m_launcher.printFaults( );
+    m_climberRight.printFaults( );
   }
 }
