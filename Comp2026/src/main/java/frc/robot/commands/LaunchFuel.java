@@ -1,7 +1,9 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.HPConsts;
 import frc.robot.Constants.INConsts;
@@ -49,10 +51,16 @@ public class LaunchFuel extends SequentialCommandGroup
         new LogCommand(getName(), "Start Kicker Rollers"), 
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.ACQUIRE),
 
-        new WaitUntilCommand(1.0),
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getStowedAngle)
-
-
+        new WaitCommand(1.5),
+        new LogCommand(getName(), "Swing Intake Arm"), 
+        new RepeatCommand(
+          new SequentialCommandGroup(
+            intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getIndexingAngle),
+            new WaitCommand(0.25),
+            intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getDeployedAngle),
+            new WaitCommand(0.25)
+          )
+        )
     
         // @formatter:on
     );
