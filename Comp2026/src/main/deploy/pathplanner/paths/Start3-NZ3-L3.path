@@ -105,7 +105,7 @@
       },
       "nextControl": {
         "x": 3.230717127883762,
-        "y": 0.7582604657705013
+        "y": 0.7582604657705014
       },
       "isLocked": false,
       "linkedName": "TR3-EN"
@@ -146,7 +146,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.2,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -155,7 +155,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": 58.400000000000006
   },
   "reversed": false,
   "folder": "FromStart",
