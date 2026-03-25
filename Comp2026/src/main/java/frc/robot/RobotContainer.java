@@ -621,6 +621,8 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initAutonomousRPM( );
+
+    m_climberRight.getCalibrateCommand( );
   }
 
   /****************************************************************************
@@ -632,6 +634,8 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
+
+    m_climberRight.getCalibrateCommand( );
   }
 
   /****************************************************************************
