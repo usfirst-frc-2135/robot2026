@@ -237,7 +237,7 @@ public class RobotContainer
 
     // Build autonomous chooser objects on dashboard and fill the options
     SmartDashboard.putData("AutoMode", m_autoChooser);
-    SmartDashboard.putData("StartPosition", m_startChooser);
+    SmartDashboard.putData("AutoStart", m_startChooser);
     SmartDashboard.putNumber("AutoDelay", 0.0);
 
     // Configure autonomous sendable chooser
