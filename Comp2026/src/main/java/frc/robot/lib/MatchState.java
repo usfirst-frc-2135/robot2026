@@ -69,32 +69,23 @@ public class MatchState
   {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime( ));
+    double matchTime = DriverStation.getMatchTime( );
+    int shiftTime = timeLeftInShiftSeconds(DriverStation.getMatchTime( ));
 
-    // Manage robot state based on match time
-    if (DriverStation.isAutonomous( ) || DriverStation.isTeleop( ))
-    {
-      SmartDashboard.putNumber("ShiftTime", timeLeftInShiftSeconds(DriverStation.getMatchTime( )));
-    }
-    else
-    {
-      SmartDashboard.putNumber("ShiftTime", 0.0);
-    }
+    SmartDashboard.putNumber("MatchTime", (matchTime));
 
     if (DriverStation.isTeleop( ))
     {
-      int shiftTime = timeLeftInShiftSeconds(DriverStation.getMatchTime( ));
-
       if (shiftTime <= 5)
       {
-        if (m_rumbleActive == false)
+        if (!m_rumbleActive)
         {
+          m_rumbleActive = true;
           CommandScheduler.getInstance( )
               .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
           CommandScheduler.getInstance( )
               .schedule(m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
-          m_rumbleActive = true;
-          DataLogManager.log("Turning On Rumble");
+          DataLogManager.log("End of Shift Rumble");
         }
       }
       else
@@ -102,6 +93,23 @@ public class MatchState
         m_rumbleActive = false;
       }
     }
+    else
+    {
+      shiftTime = 0;
+    }
+    SmartDashboard.putNumber("ShiftTime", shiftTime);
+
+    // TODO: use currentShiftIsOurs() to determine if this is our shift
+    //           if it is our shift
+    //               set the CANdle to GREEN
+    //               else set the candle to RED
+    //           if the remaining shift time is <= 3 seconds
+    //               set the CANdle animation to STROBE at 0.25 sec period
+    //            else if the remaining shift time is <= 6 seconds
+    //                set the CANdle animation to STROBE at 0.5 sec period
+    //            else
+    //                set the CANdle animation to SOLID
+
   }
 
   /****************************************************************************
@@ -253,11 +261,11 @@ public class MatchState
 
   /****************************************************************************
    * 
-   * Create HID set rumble for operator controller command
+   * Return if the current shift is ours
    * 
-   * @return instant command that rumbles the gamepad
+   * @return true if shift has the hub active
    */
-  public static boolean currentShiftIsYours( )
+  public static boolean currentShiftIsOurs( )
   {
     double currentMatchTime = DriverStation.getMatchTime( );
     boolean isBlueShift = isCurrentShiftBlue(currentMatchTime);

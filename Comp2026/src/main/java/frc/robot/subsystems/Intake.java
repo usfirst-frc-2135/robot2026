@@ -156,8 +156,8 @@ public class Intake extends SubsystemBase
   private boolean                   m_mmMoveIsFinished;                         // Movement has completed (within tolerance)
 
   // Network tables publisher objects
-  private DoublePublisher           m_rollSpeedPub;
-  private DoublePublisher           m_rollSupCurPub;
+  // private DoublePublisher           m_rollSpeedPub;
+  // private DoublePublisher           m_rollSupCurPub;
   private DoublePublisher           m_rotDegreesPub;
 
   private DoublePublisher           m_ccDegreesPub;
@@ -206,13 +206,11 @@ public class Intake extends SubsystemBase
     m_rotaryAngle.setUpdateFrequency(50);
 
     StatusSignal<Current> m_rotarySupplyCur = m_rotaryMotor.getSupplyCurrent( );                      // Default 4Hz (250ms)
-    StatusSignal<Current> m_rotaryStatorCur = m_rotaryMotor.getStatorCurrent( );                      // Default 4Hz (250ms)
-    BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur, m_rotaryStatorCur);  // Default 4Hz (250ms)
+    BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur);  // Default 4Hz (250ms)
 
-    DataLogManager
-        .log(String.format("%s: Update (Hz) rotaryAngle: %.1f rotarySupplyCur: %.1f rotaryStatorCur: %.1f canCoderAngle: %.1f",
-            getSubsystem( ), m_rotaryAngle.getAppliedUpdateFrequency( ), m_rotarySupplyCur.getAppliedUpdateFrequency( ),
-            m_rotaryStatorCur.getAppliedUpdateFrequency( ), m_ccAngle.getAppliedUpdateFrequency( )));
+    DataLogManager.log(String.format("%s: Update (Hz) rotaryAngle: %.1f rotarySupplyCur: %.1f canCoderAngle: %.1f",
+        getSubsystem( ), m_rotaryAngle.getAppliedUpdateFrequency( ), m_rotarySupplyCur.getAppliedUpdateFrequency( ),
+        m_ccAngle.getAppliedUpdateFrequency( )));
 
     initDashboard( );
     initialize( );
@@ -232,8 +230,8 @@ public class Intake extends SubsystemBase
     m_ccDegrees = Units.rotationsToDegrees((m_canCoderValid) ? m_ccAngle.getValue( ).in(Rotations) : 0.0);
 
     // Update network table publishers
-    m_rollSpeedPub.set(m_rollerMotor.get( ));
-    m_rollSupCurPub.set(m_rollerMotor.get( ));
+    // m_rollSpeedPub.set(m_rollerMotor.get( ));
+    // m_rollSupCurPub.set(m_rollerMotor.getSupplyCurrent( ).getValueAsDouble( ));
 
     m_ccDegreesPub.set(m_ccDegrees);
     m_rotDegreesPub.set(m_currentDegrees);
@@ -285,8 +283,8 @@ public class Intake extends SubsystemBase
     NetworkTable table = inst.getTable("intake");
 
     // Initialize network tables publishers
-    m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
-    m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
+    // m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
+    // m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
 
     m_ccDegreesPub = table.getDoubleTopic("ccDegrees").publish( );
     m_rotDegreesPub = table.getDoubleTopic("rotDegrees").publish( );

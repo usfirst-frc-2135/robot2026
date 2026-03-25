@@ -210,11 +210,6 @@ public class RobotContainer
     configureBindings( );       // Configure game controller buttons and triggers
     initDefaultCommands( );     // Initialize subsystem default commands
 
-    // Add periodic calls for non-subsystem classes
-    robot.addPeriodic(( ) -> m_hid.periodic( ), Seconds.of(0.020));
-    robot.addPeriodic(( ) -> m_led.periodic( ), Seconds.of(0.020));
-    robot.addPeriodic(( ) -> m_matchState.periodic( ), Seconds.of(0.020));
-
     Robot.timeMarker("robotContainer: after default commands");
   }
 
@@ -276,7 +271,7 @@ public class RobotContainer
 
     // Add main command scheduler to dashboard
 
-    SmartDashboard.putData(CommandScheduler.getInstance( ));
+    // SmartDashboard.putData(CommandScheduler.getInstance( ));
 
     // Add command groups to dashboard
 
@@ -632,6 +627,18 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
+  }
+
+  /****************************************************************************
+   * 
+   * Called during robotPeriodic to call our libraries periodic methods
+   */
+  public void robotPeriodic( )
+  {
+    // Add periodic calls for non-subsystem classes
+    m_hid.periodic( );
+    m_led.periodic( );
+    m_matchState.periodic( );
   }
 
   /****************************************************************************

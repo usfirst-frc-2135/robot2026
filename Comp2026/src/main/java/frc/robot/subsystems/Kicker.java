@@ -52,8 +52,8 @@ public class Kicker extends SubsystemBase
   private boolean               m_rollerValid;        // Health indicator for motor 
 
   // Network tables publisher objects
-  private DoublePublisher       m_rollSpeedPub;
-  private DoublePublisher       m_rollSupCurPub;
+  // private DoublePublisher       m_rollSpeedPub;
+  // private DoublePublisher       m_rollSupCurPub;
 
   /****************************************************************************
    * 
@@ -84,8 +84,8 @@ public class Kicker extends SubsystemBase
     // This method will be called once per scheduler run
 
     // Update network table publishers
-    m_rollSpeedPub.set(m_rollerMotor.get( ));
-    m_rollSupCurPub.set(m_rollerMotor.get( ));
+    // m_rollSpeedPub.set(m_rollerMotor.get( ));
+    // m_rollSupCurPub.set(m_rollerMotor.getSupplyCurrent( ).getValueAsDouble( ));
   }
 
   /****************************************************************************
@@ -121,13 +121,13 @@ public class Kicker extends SubsystemBase
     NetworkTable table = inst.getTable("kicker");
 
     // Initialize network tables publishers
-    m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
-    m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
+    // m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
+    // m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
 
     // Add commands
-    SmartDashboard.putData("KickerStop", getRollerModeCommand(KKRollerMode.STOP));
-    SmartDashboard.putData("KickerAcquire", getRollerModeCommand(KKRollerMode.ACQUIRE));
-    SmartDashboard.putData("KickerExpel", getRollerModeCommand(KKRollerMode.EXPEL));
+    // SmartDashboard.putData("KickerStop", getRollerModeCommand(KKRollerMode.STOP));
+    // SmartDashboard.putData("KickerAcquire", getRollerModeCommand(KKRollerMode.ACQUIRE));
+    // SmartDashboard.putData("KickerExpel", getRollerModeCommand(KKRollerMode.EXPEL));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
