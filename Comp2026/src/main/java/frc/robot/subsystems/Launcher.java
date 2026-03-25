@@ -51,9 +51,11 @@ public class Launcher extends SubsystemBase
   private static final String kSubsystemName     = "Launcher";
 
   private static final double kMOI               = 0.005;     // Simulation - Moment of Inertia
-  private static final double kLauncherScoreRPM  = 3100.0;    // RPM to score 
+  private static final double kLauncherAutoRPM   = 3250.0;    // RPM to score for autonomous
+  private static final double kLauncherTeleopRPM = 3250.0;    // RPM to score for autonomous
   private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
-  private static final double kToleranceRPM      = 60.0;      // Tolerance band around requested RPM
+  private static final double kRPMStepSize       = 50.0;      // RPM step size for increment/decrement
+  private static final double kToleranceRPM      = 50.0;      // Tolerance band around requested RPM
   private static final double kHoodFullDown      = -1.0;      // Hood actuator servo all the way down
   private static final double kHoodFullUp        = 1.0;       // Hood actuator servo all the way up
 
@@ -103,8 +105,8 @@ public class Launcher extends SubsystemBase
 
   private VelocityVoltage                     m_requestVelocity      = new VelocityVoltage(0.0).withEnableFOC(true);
   private VoltageOut                          m_requestVolts         = new VoltageOut(0.0);
-  private LinearFilter                        m_leftVelocityFilter   = LinearFilter.singlePoleIIR(0.060, 0.020);
-  private LinearFilter                        m_rightVelocityFilter  = LinearFilter.singlePoleIIR(0.060, 0.020);
+  private LinearFilter                        m_leftVelocityFilter   = LinearFilter.singlePoleIIR(0.080, 0.020);
+  private LinearFilter                        m_rightVelocityFilter  = LinearFilter.singlePoleIIR(0.080, 0.020);
 
   // Network tables publisher objects
   private DoublePublisher                     m_leftSpeedPub;
@@ -236,7 +238,7 @@ public class Launcher extends SubsystemBase
     m_motorRPMPub = table.getDoubleTopic("motorRPM").publish( );
     m_launcherRPMPub = table.getDoubleTopic("launcherRPM").publish( );
     m_ScoreRPMEntry = table.getDoubleTopic("scoreRPM").getEntry(0.0);
-    m_ScoreRPMEntry.set(kLauncherScoreRPM);
+    m_ScoreRPMEntry.set(kLauncherAutoRPM);
 
     // Add commands
     SmartDashboard.putData("LauncherScore", getLauncherScoreCommand( ));
@@ -366,6 +368,42 @@ public class Launcher extends SubsystemBase
   public boolean isAtRequestedRPM( )
   {
     return m_isAtRequestedRPM;
+  }
+
+  /****************************************************************************
+   * 
+   * Initialize widget with launcher RPM for autonomous
+   */
+  public void initAutonomousRPM( )
+  {
+    m_ScoreRPMEntry.set(kLauncherAutoRPM);
+  }
+
+  /****************************************************************************
+   * 
+   * Initialize widget with launcher RPM for teleop
+   */
+  public void initTeleopRPM( )
+  {
+    m_ScoreRPMEntry.set(kLauncherTeleopRPM);
+  }
+
+  /****************************************************************************
+   * 
+   * Decrement launcher RPM by a fixed step size
+   */
+  public void decrementTeleopRPM( )
+  {
+    m_ScoreRPMEntry.set(m_ScoreRPMEntry.get( ) - kRPMStepSize);
+  }
+
+  /****************************************************************************
+   * 
+   * Increment launcher RPM by a fixed step size
+   */
+  public void incrementTeleopRPM( )
+  {
+    m_ScoreRPMEntry.set(m_ScoreRPMEntry.get( ) + kRPMStepSize);
   }
 
   ////////////////////////////////////////////////////////////////////////////

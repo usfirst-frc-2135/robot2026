@@ -88,8 +88,8 @@
         "y": 7.000656610470275
       },
       "nextControl": {
-        "x": 5.3802709783240825,
-        "y": 7.551613527208722
+        "x": 5.380270978324082,
+        "y": 7.551613527208723
       },
       "isLocked": false,
       "linkedName": "TR1-EX"
@@ -104,7 +104,7 @@
         "y": 7.435244010647738
       },
       "nextControl": {
-        "x": 3.353128782035388,
+        "x": 3.3531287820353874,
         "y": 7.418976632073691
       },
       "isLocked": false,
@@ -157,7 +157,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 3.2,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

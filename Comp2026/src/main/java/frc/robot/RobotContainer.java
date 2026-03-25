@@ -348,8 +348,8 @@ public class RobotContainer
     //
     // Operator - A, B, X, Y
     //
-    m_operatorPad.a( ).onTrue(new LogCommand("operatorPad", "A"));
-    m_operatorPad.b( ).onTrue(new LogCommand("operatorPad", "B"));
+    m_operatorPad.a( ).onTrue(Commands.runOnce(( ) -> m_launcher.decrementTeleopRPM( )));
+    m_operatorPad.b( ).onTrue(Commands.runOnce(( ) -> m_launcher.incrementTeleopRPM( )));
 
     m_operatorPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
     m_operatorPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
@@ -363,7 +363,7 @@ public class RobotContainer
     m_operatorPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
     m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
-    m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(() -> getClimberAxis()));   // aka View button
+    m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
 
     //
@@ -601,9 +601,15 @@ public class RobotContainer
   {
     m_hid.initialize( );
     m_led.initialize( );
+    m_power.initialize( );
+
     m_vision.initialize( );
 
-    m_power.initialize( );
+    m_intake.initialize( );
+    m_hopper.initialize( );
+    m_kicker.initialize( );
+    m_launcher.initialize( );
+    m_climberRight.initialize( );
   }
 
   /****************************************************************************
@@ -613,6 +619,8 @@ public class RobotContainer
   public void autoInit( )
   {
     m_vision.run( );
+
+    m_launcher.initAutonomousRPM( );
   }
 
   /****************************************************************************
@@ -622,6 +630,8 @@ public class RobotContainer
   public void teleopInit( )
   {
     m_vision.run( );
+
+    m_launcher.initTeleopRPM( );
   }
 
   /****************************************************************************
@@ -632,5 +642,11 @@ public class RobotContainer
   {
     m_led.printFaults( );
     m_power.printFaults( );
+
+    m_intake.printFaults( );
+    m_hopper.printFaults( );
+    m_kicker.printFaults( );
+    m_launcher.printFaults( );
+    m_climberRight.printFaults( );
   }
 }

@@ -374,13 +374,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        if (m_useLimelight) {
             double front = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
             m_frontUpdate.set(m_frontFilter.calculate(front) > 0.5);
 
             double back = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
             m_backUpdate.set(m_backFilter.calculate(back) > 0.5);
-        }
+        
     }
 
     private void startSimThread() {
@@ -513,8 +512,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 };
                 poseArray.set(array);
 
-                setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-                addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+                if (m_useLimelight)
+                {
+                    setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+                    addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+                }
             }
         }
         else if (useMegaTag2 == true)
@@ -545,7 +547,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             if (!doRejectUpdate)
             {
                 final double kBase = 0.5;
-                final double kProportional = 0.9;
+                final double kProportional = 2.0;
                 double[ ] array =
                 {
                         mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ).getDegrees( )
@@ -553,11 +555,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 poseArray.set(array);
 
                 // Code used by some teams to scale std devs by distance (below) and used by several teams
-                setVisionMeasurementStdDevs(VecBuilder.fill( //
-                        Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
-                        Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
-                        Double.POSITIVE_INFINITY));
-                addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+
+                if (m_useLimelight)
+                {
+                    setVisionMeasurementStdDevs(VecBuilder.fill( //
+                            Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
+                            Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
+                            Double.POSITIVE_INFINITY));
+                    addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+                }
             }
         }
 
