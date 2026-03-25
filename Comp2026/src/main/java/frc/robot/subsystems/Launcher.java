@@ -53,6 +53,7 @@ public class Launcher extends SubsystemBase
   private static final double kMOI               = 0.005;     // Simulation - Moment of Inertia
   private static final double kLauncherAutoRPM   = 3250.0;    // RPM to score for autonomous
   private static final double kLauncherTeleopRPM = 3250.0;    // RPM to score for autonomous
+  private static final double kLauncherPrimedRPM = 3000.0;    // RPM to score for autonomous
   private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
   private static final double kRPMStepSize       = 50.0;      // RPM step size for increment/decrement
   private static final double kToleranceRPM      = 50.0;      // Tolerance band around requested RPM
@@ -257,8 +258,9 @@ public class Launcher extends SubsystemBase
   public void initialize( )
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getSubsystem( )));
-    setLauncherMode(LauncherMode.STOP);
+    //setLauncherMode(LauncherMode.STOP);
     setHoodAngle(kHoodFullDown);
+    setLauncherVelocity(kLauncherPrimedRPM);
   }
 
   /****************************************************************************
