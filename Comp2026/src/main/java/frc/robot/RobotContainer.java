@@ -609,6 +609,7 @@ public class RobotContainer
     m_hopper.initialize( );
     m_kicker.initialize( );
     m_launcher.initialize( );
+
     m_climberRight.initialize( );
   }
 
@@ -621,6 +622,8 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initAutonomousRPM( );
+
+    CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
   /****************************************************************************
@@ -632,6 +635,8 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
+
+    CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
   /****************************************************************************
