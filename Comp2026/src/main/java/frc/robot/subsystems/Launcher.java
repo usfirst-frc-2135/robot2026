@@ -381,7 +381,7 @@ public class Launcher extends SubsystemBase
    */
   public void initAutonomousRPM( )
   {
-    m_ScoreRPMEntry.set(kLauncherAutoRPM);
+    m_ScoreRPMEntry.set(kLauncherPrimedRPM);
   }
 
   /****************************************************************************
@@ -390,7 +390,7 @@ public class Launcher extends SubsystemBase
    */
   public void initTeleopRPM( )
   {
-    m_ScoreRPMEntry.set(kLauncherTeleopRPM);
+    m_ScoreRPMEntry.set(kLauncherPrimedRPM);
   }
 
   /****************************************************************************
