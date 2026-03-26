@@ -260,7 +260,7 @@ public class Climber extends SubsystemBase
 
     // Add commands
     SmartDashboard.putData(kSubsystemFullName + "Extend", getMoveToPositionCommand(this::getClimberFullyExtended));
-    SmartDashboard.putData(kSubsystemFullName + "Lift", getMoveToPositionCommand(this::getClimberClimbed));
+    SmartDashboard.putData(kSubsystemFullName + "Climb", getMoveToPositionCommand(this::getClimberClimbed));
     SmartDashboard.putData(kSubsystemFullName + "Calibrate", getCalibrateCommand( ));
   }
 

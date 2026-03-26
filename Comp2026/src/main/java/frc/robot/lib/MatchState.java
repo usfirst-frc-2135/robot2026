@@ -6,12 +6,11 @@ package frc.robot.lib;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.lib.HID;
-import frc.robot.lib.LED;
 import frc.robot.Constants;
 
 /****************************************************************************
@@ -23,10 +22,13 @@ public class MatchState
   // Constants
 
   // Member objects
-  private String  m_name         = new String( );
-  private HID     m_hid;
-  private LED     m_led;
-  private boolean m_rumbleActive = false;
+  private String            m_name         = new String( );
+  private HID               m_hid;
+  private LED               m_led;
+  private boolean           m_rumbleActive = false;
+
+  private NetworkTableEntry m_matchTime    = SmartDashboard.getEntry("MatchTime");
+  private NetworkTableEntry m_shiftTime    = SmartDashboard.getEntry("ShiftTime");
 
   /****************************************************************************
    * 
@@ -72,7 +74,7 @@ public class MatchState
     double matchTime = DriverStation.getMatchTime( );
     int shiftTime = timeLeftInShiftSeconds(DriverStation.getMatchTime( ));
 
-    SmartDashboard.putNumber("MatchTime", (matchTime));
+    m_matchTime.setNumber(matchTime);
 
     if (DriverStation.isTeleop( ))
     {
@@ -97,7 +99,7 @@ public class MatchState
     {
       shiftTime = 0;
     }
-    SmartDashboard.putNumber("ShiftTime", shiftTime);
+    m_shiftTime.setNumber(shiftTime);
 
     // TODO: use currentShiftIsOurs() to determine if this is our shift
     //           if it is our shift
@@ -129,7 +131,7 @@ public class MatchState
   {
     // Initialize dashboard widgets
 
-    SmartDashboard.putNumber("ShiftTime", 0.0);
+    m_shiftTime.setNumber(0.0);
   }
 
   // Put methods for controlling this class here. Call these from Commands.
