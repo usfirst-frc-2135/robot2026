@@ -395,7 +395,7 @@ public class RobotContainer
    */
   private void initDefaultCommands( )
   {
-    m_launcher.setDefaultCommand(m_launcher.getLauncherPrimedCommand());
+    //m_launcher.setDefaultCommand(m_launcher.getLauncherPrimedCommand());
 
     if (!m_macOSXSim)
     {
