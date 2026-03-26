@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start1-NZ1-L1"
+            "pathName": "Start3-NZ3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "L1-L1"
+            "pathName": "NZ3-NZ3B-L3"
           }
         }
       ]
