@@ -93,8 +93,6 @@ public final class Constants
     public static final int    kCANID_ClimberLeft    = 25; // Kraken X60 (Climber telescope)
     public static final int    kCANID_ClimberRight   = 26; // Kraken X60 (Climber telescope)
 
-    public static final int    kDIO0_FuelDetected    = 28; // CANrange (Hopper). // TODO: Do we need one?
-
     public static final int    kCANID_CANdle         = 0;
   }
 

@@ -143,18 +143,15 @@ public class Launcher extends SubsystemBase
     BaseStatusSignal.setUpdateFrequencyForAll(50, m_leftVelocity, m_rightVelocity);
 
     StatusSignal<Current> m_leftSupplyCur = m_leftMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
-    StatusSignal<Current> m_leftStatorCur = m_leftMotor.getStatorCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightSupplyCur = m_rightMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
-    StatusSignal<Current> m_rightStatorCur = m_rightMotor.getStatorCurrent( ); // Default 4Hz (250ms)
 
     m_hoodLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
     m_hoodRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
 
-    DataLogManager.log(String.format(
-        "%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f leftStatorCur: %.1f rightSupplyCur: %.1f rightStatorCur: %.1f",
-        getSubsystem( ), m_leftVelocity.getAppliedUpdateFrequency( ), m_rightVelocity.getAppliedUpdateFrequency( ),
-        m_leftSupplyCur.getAppliedUpdateFrequency( ), m_leftStatorCur.getAppliedUpdateFrequency( ),
-        m_rightSupplyCur.getAppliedUpdateFrequency( ), m_rightStatorCur.getAppliedUpdateFrequency( )));
+    DataLogManager
+        .log(String.format("%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f rightSupplyCur: %.1f",
+            getSubsystem( ), m_leftVelocity.getAppliedUpdateFrequency( ), m_rightVelocity.getAppliedUpdateFrequency( ),
+            m_leftSupplyCur.getAppliedUpdateFrequency( ), m_rightSupplyCur.getAppliedUpdateFrequency( )));
 
     initDashboard( );
     initialize( );

@@ -6,7 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -210,11 +209,6 @@ public class RobotContainer
     configureBindings( );       // Configure game controller buttons and triggers
     initDefaultCommands( );     // Initialize subsystem default commands
 
-    // Add periodic calls for non-subsystem classes
-    robot.addPeriodic(( ) -> m_hid.periodic( ), Seconds.of(0.020));
-    robot.addPeriodic(( ) -> m_led.periodic( ), Seconds.of(0.020));
-    robot.addPeriodic(( ) -> m_matchState.periodic( ), Seconds.of(0.020));
-
     Robot.timeMarker("robotContainer: after default commands");
   }
 
@@ -242,7 +236,7 @@ public class RobotContainer
 
     // Build autonomous chooser objects on dashboard and fill the options
     SmartDashboard.putData("AutoMode", m_autoChooser);
-    SmartDashboard.putData("StartPosition", m_startChooser);
+    SmartDashboard.putData("AutoStart", m_startChooser);
     SmartDashboard.putNumber("AutoDelay", 0.0);
 
     // Configure autonomous sendable chooser
@@ -276,7 +270,7 @@ public class RobotContainer
 
     // Add main command scheduler to dashboard
 
-    SmartDashboard.putData(CommandScheduler.getInstance( ));
+    // SmartDashboard.putData(CommandScheduler.getInstance( ));
 
     // Add command groups to dashboard
 
@@ -637,6 +631,18 @@ public class RobotContainer
     m_launcher.initTeleopRPM( );
 
     CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
+  }
+
+  /****************************************************************************
+   * 
+   * Called during robotPeriodic to call our libraries periodic methods
+   */
+  public void robotPeriodic( )
+  {
+    // Add periodic calls for non-subsystem classes
+    m_hid.periodic( );
+    m_led.periodic( );
+    m_matchState.periodic( );
   }
 
   /****************************************************************************
