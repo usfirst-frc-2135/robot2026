@@ -381,7 +381,7 @@ public class Launcher extends SubsystemBase
    */
   public void initAutonomousRPM( )
   {
-    m_ScoreRPMEntry.set(kLauncherPrimedRPM);
+    //m_ScoreRPMEntry.set(kLauncherPrimedRPM);
   }
 
   /****************************************************************************
@@ -390,7 +390,7 @@ public class Launcher extends SubsystemBase
    */
   public void initTeleopRPM( )
   {
-    m_ScoreRPMEntry.set(kLauncherPrimedRPM);
+    //m_ScoreRPMEntry.set(kLauncherPrimedRPM);
   }
 
   /****************************************************************************
@@ -462,6 +462,11 @@ public class Launcher extends SubsystemBase
   public Command getLauncherStopCommand( )
   {
     return getLauncherCommand(LauncherMode.STOP).withName("LauncherStop");
+  }
+
+  public Command getLauncherPrimedCommand( )
+  {
+    return getLauncherCommand(LauncherMode.PRIMED).withName("LauncherPrimed");
   }
 
 }
