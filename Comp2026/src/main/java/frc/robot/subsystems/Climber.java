@@ -68,9 +68,9 @@ public class Climber extends SubsystemBase
   private static final double  kRolloutRatio        = kDrumDiameterInches * Math.PI / kGearRatio; // inches per shaft rotation
   private static final Voltage kCalibrateSpeedVolts = Volts.of(-1.0);           // Motor voltage during calibration
   private static final Voltage kManualSpeedVolts    = Volts.of(3.0);  // Motor voltage during manual operation (joystick)
-  private static final double  kCalibrateStallAmps  = 20.0;    // Motor amps during calibration stall
+  private static final double  kCalibrateStallAmps  = 2.0;    // Motor amps during calibration stall
   private static final double  kCalibrateStallTime  = 0.100;   // Seconds of stall before calibrating
-  private static final double  kCalibrationTimeout  = 1.5;     // Max calibration time
+  private static final double  kCalibrationTimeout  = 2.0;     // Max calibration time
 
   private static final double  kToleranceInches     = 0.5;     // Climber PID tolerance in inches
   private static final double  kMMDebounceTime      = 0.060;   // Seconds to debounce a final position check
