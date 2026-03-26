@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -288,7 +287,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this::resetPose,         // Consumer for seeding pose against auto
                 () -> getState().Speeds, // Supplier of current robot speeds
                 // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                // (speeds) -> driveRobotRelative(speeds),      // TODO:  swerve setpoint generator testing
+                // (speeds) -> driveRobotRelative(speeds),      // TODO: swerve setpoint generator sample code
                 (speeds, feedforwards) -> setControl(
                     m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
                         .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())

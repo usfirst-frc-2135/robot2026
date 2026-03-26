@@ -324,7 +324,7 @@ public final class CTREConfigs6
 
   /****************************************************************************
    * 
-   * XXX CANRange detector
+   * TBD CANRange detector
    */
   public static CANrangeConfiguration xxxCANRangeConfig( )
   {

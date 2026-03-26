@@ -8,14 +8,12 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -117,8 +115,8 @@ public class Kicker extends SubsystemBase
   private void initDashboard( )
   {
     // Get the default instance of NetworkTables that was created automatically when the robot program starts
-    NetworkTableInstance inst = NetworkTableInstance.getDefault( );
-    NetworkTable table = inst.getTable("kicker");
+    // NetworkTableInstance inst = NetworkTableInstance.getDefault( );
+    // NetworkTable table = inst.getTable("kicker");
 
     // Initialize network tables publishers
     // m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
