@@ -395,8 +395,6 @@ public class RobotContainer
    */
   private void initDefaultCommands( )
   {
-    //m_launcher.setDefaultCommand(m_launcher.getLauncherPrimedCommand());
-
     if (!m_macOSXSim)
     {
       m_drivetrain.setDefaultCommand(                                                                 // Drivetrain will execute this command periodically
@@ -427,8 +425,6 @@ public class RobotContainer
 
     m_drivetrain.registerTelemetry(logger::telemeterize);
   }
-
-  
 
   /****************************************************************************
    * 
@@ -625,8 +621,6 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initAutonomousRPM( );
-
-    
   }
 
   /****************************************************************************
@@ -638,8 +632,6 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
-
-    
   }
 
   /****************************************************************************
