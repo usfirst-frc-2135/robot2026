@@ -617,6 +617,7 @@ public class RobotContainer
 
     m_launcher.initAutonomousRPM( );
 
+    CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
     CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
@@ -630,6 +631,7 @@ public class RobotContainer
 
     m_launcher.initTeleopRPM( );
 
+    CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
     CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
