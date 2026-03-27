@@ -4,8 +4,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.HPConsts;
 import frc.robot.Constants.INConsts;
+import frc.robot.Constants.KKConsts;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Kicker;
 
 /**
  * Command to expel a fuel to the floor
@@ -19,8 +21,10 @@ public class ExpelFuel extends SequentialCommandGroup
    *          intake subsystem
    * @param hopper
    *          hopper subsystem
+   * @param kicker
+   *          kicker subsystem
    */
-  public ExpelFuel(Intake intake, Hopper hopper)
+  public ExpelFuel(Intake intake, Hopper hopper, Kicker kicker)
   {
     setName("ExpelFuel");
 
@@ -36,7 +40,10 @@ public class ExpelFuel extends SequentialCommandGroup
         intake.getMoveToAngleCommand(INConsts.INRollerMode.EXPEL, intake::getCurrentAngle),
 
         new LogCommand(getName(), "Run Hopper Rollers"), 
-        hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL)
+        hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL),
+
+        new LogCommand(getName(), "Run Kicker Rollers"), 
+        kicker.getRollerModeCommand(KKConsts.KKRollerMode.EXPEL)
         
         // @formatter:on
     );

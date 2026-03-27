@@ -301,10 +301,10 @@ public class RobotContainer
     //
     // Driver - Bumpers, start, back
     //
-    m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper));
-    m_driverPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
+    m_driverPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
     m_driverPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
-    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
     m_driverPad.start( ).onTrue(m_drivetrain.runOnce(( ) -> m_drivetrain.seedFieldCentric( )));         // aka Menu button
@@ -329,7 +329,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
@@ -352,10 +352,10 @@ public class RobotContainer
     //
     // Operator - Bumpers, start, back
     //
-    m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper));
-    m_operatorPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
+    m_operatorPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
     m_operatorPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
-    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
 
     m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
@@ -375,7 +375,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
