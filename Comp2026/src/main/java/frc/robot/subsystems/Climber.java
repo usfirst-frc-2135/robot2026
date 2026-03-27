@@ -68,9 +68,13 @@ public class Climber extends SubsystemBase
   private static final double  kRolloutRatio        = kDrumDiameterInches * Math.PI / kGearRatio; // inches per shaft rotation
   private static final Voltage kCalibrateSpeedVolts = Volts.of(-1.0);           // Motor voltage during calibration
   private static final Voltage kManualSpeedVolts    = Volts.of(3.0);  // Motor voltage during manual operation (joystick)
-  private static final double  kCalibrateStallAmps  = 20.0;    // Motor amps during calibration stall
+<<<<<<< reduce_loop_overruns
+  private static final double  kCalibrateStallAmps  = 10.0;    // Motor supply current amps during calibration stall
+=======
+  private static final double  kCalibrateStallAmps  = 2.0;    // Motor amps during calibration stall
+>>>>>>> main
   private static final double  kCalibrateStallTime  = 0.100;   // Seconds of stall before calibrating
-  private static final double  kCalibrationTimeout  = 1.5;     // Max calibration time
+  private static final double  kCalibrationTimeout  = 2.0;     // Max calibration time
 
   private static final double  kToleranceInches     = 0.5;     // Climber PID tolerance in inches
   private static final double  kMMDebounceTime      = 0.060;   // Seconds to debounce a final position check
@@ -79,7 +83,7 @@ public class Climber extends SubsystemBase
   // Climber lengths - Motion Magic config parameters
   private static final double  kLengthClimbed       = 0.0;     // By definition - Climber fully climbed
   private static final double  kLengthStowed        = 0.0;     // Climber fully down/back
-  private static final double  kLengthFull          = 10.5;    // TODO: 9.25;    // From Mech Design height needed to reach max extension
+  private static final double  kLengthFull          = 10.5;
 
   private static final double  kLengthMin           = 0.0;     // Climber minimum allowable length
   private static final double  kLengthMax           = 10.5;    // Climber maximum allowable length (2" beyond high length)
@@ -113,7 +117,6 @@ public class Climber extends SubsystemBase
   // CTRE Status signals for sensors
   private final StatusSignal<Angle>   m_position;    // Default 4Hz (250ms)
   private final StatusSignal<Current> m_supplyCur;   // Default 4Hz (250ms)
-  private final StatusSignal<Current> m_statorCur;   // Default 4Hz (250ms)
 
   // Declare module variables
   private String                      kSubsystemFullName  = kSubsystemName;
@@ -169,7 +172,6 @@ public class Climber extends SubsystemBase
     // Initialize status signal objects
     m_position = m_climbMotor.getRotorPosition( );
     m_supplyCur = m_climbMotor.getSupplyCurrent( );
-    m_statorCur = m_climbMotor.getStatorCurrent( );
 
     // Initialize the climber status signals
     if (m_climberValid)
@@ -179,9 +181,8 @@ public class Climber extends SubsystemBase
       // Status signals
       BaseStatusSignal.setUpdateFrequencyForAll(50, m_position);
 
-      DataLogManager.log(String.format("%s: Update (Hz) position: %.1f supplyCur: %.1f statorCur: %.1f", getSubsystem( ),
-          m_position.getAppliedUpdateFrequency( ), m_supplyCur.getAppliedUpdateFrequency( ),
-          m_statorCur.getAppliedUpdateFrequency( )));
+      DataLogManager.log(String.format("%s: Update (Hz) position: %.1f supplyCur: %.1f", getSubsystem( ),
+          m_position.getAppliedUpdateFrequency( ), m_supplyCur.getAppliedUpdateFrequency( )));
     }
 
     DataLogManager.log(String.format("%s: Initial position L %.1f inches", getSubsystem( ), m_curLength));
@@ -263,7 +264,7 @@ public class Climber extends SubsystemBase
 
     // Add commands
     SmartDashboard.putData(kSubsystemFullName + "Extend", getMoveToPositionCommand(this::getClimberFullyExtended));
-    SmartDashboard.putData(kSubsystemFullName + "Lift", getMoveToPositionCommand(this::getClimberClimbed));
+    SmartDashboard.putData(kSubsystemFullName + "Climb", getMoveToPositionCommand(this::getClimberClimbed));
     SmartDashboard.putData(kSubsystemFullName + "Calibrate", getCalibrateCommand( ));
   }
 
@@ -487,7 +488,7 @@ public class Climber extends SubsystemBase
    */
   private boolean calibrateIsFinished( )
   {
-    boolean calibrated = m_stalled.calculate(m_statorCur.getValue( ).in(Amps) > kCalibrateStallAmps);
+    boolean calibrated = m_stalled.calculate(m_supplyCur.getValue( ).in(Amps) > kCalibrateStallAmps);
 
     if (calibrated && !m_calibrated)
       DataLogManager.log(String.format("%s: Stalled %s", getSubsystem( ), calibrated));
