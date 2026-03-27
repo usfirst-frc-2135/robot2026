@@ -382,7 +382,7 @@ public class Launcher extends SubsystemBase
    */
   public void initAutonomousRPM( )
   {
-    CommandScheduler.getInstance( ).schedule(getLauncherPrimedCommand( ));  
+    m_ScoreRPMEntry.set(kLauncherAutoRPM);  
   }
 
   /****************************************************************************
@@ -391,7 +391,7 @@ public class Launcher extends SubsystemBase
    */
   public void initTeleopRPM( )
   {
-    CommandScheduler.getInstance( ).schedule(getLauncherPrimedCommand( ));
+    m_ScoreRPMEntry.set(kLauncherTeleopRPM);
   }
 
   /****************************************************************************

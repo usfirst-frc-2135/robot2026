@@ -621,6 +621,8 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initAutonomousRPM( );
+
+    CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
   }
 
   /****************************************************************************
@@ -632,6 +634,8 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
+
+    CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
   }
 
   /****************************************************************************
