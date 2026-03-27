@@ -382,8 +382,7 @@ public class Launcher extends SubsystemBase
    */
   public void initAutonomousRPM( )
   {
-    CommandScheduler.getInstance( ).schedule(getLauncherPrimedCommand( ));
-    
+    CommandScheduler.getInstance( ).schedule(getLauncherPrimedCommand( ));  
   }
 
   /****************************************************************************
