@@ -3,64 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.693,
-        "y": 3.228
+        "x": 4.403,
+        "y": 0.642
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.4430695731195335,
-        "y": 3.233897602847594
-      },
-      "isLocked": true,
-      "linkedName": "NZ3"
-    },
-    {
-      "anchor": {
-        "x": 6.76265625,
-        "y": 3.4607738095238094
-      },
-      "prevControl": {
-        "x": 7.7927893467169485,
-        "y": 3.4929654687962133
-      },
-      "nextControl": {
-        "x": 6.512778230978229,
-        "y": 3.4529651214293793
+        "x": 4.903,
+        "y": 0.642
       },
       "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.888,
-        "y": 3.0169387755102037
-      },
-      "prevControl": {
-        "x": 5.887621781953552,
-        "y": 3.2669384894122584
-      },
-      "nextControl": {
-        "x": 5.888378218046448,
-        "y": 2.7669390616081486
-      },
-      "isLocked": false,
-      "linkedName": "NZ1B-EN"
-    },
-    {
-      "anchor": {
-        "x": 5.887817213842059,
-        "y": 1.697
-      },
-      "prevControl": {
-        "x": 5.887173063905515,
-        "y": 1.9469991701403417
-      },
-      "nextControl": {
-        "x": 5.888461363778602,
-        "y": 1.4470008298596584
-      },
-      "isLocked": false,
-      "linkedName": "NZ3B-EX"
+      "linkedName": "Start3"
     },
     {
       "anchor": {
@@ -68,11 +20,75 @@
         "y": 0.642
       },
       "prevControl": {
-        "x": 5.912414023552685,
-        "y": 0.642
+        "x": 5.097,
+        "y": 0.6420000000000001
       },
       "nextControl": {
-        "x": 4.8220243404082455,
+        "x": 7.597,
+        "y": 0.642
+      },
+      "isLocked": false,
+      "linkedName": "TR3-EX"
+    },
+    {
+      "anchor": {
+        "x": 7.693,
+        "y": 2.528
+      },
+      "prevControl": {
+        "x": 7.693,
+        "y": 0.528
+      },
+      "nextControl": {
+        "x": 7.693,
+        "y": 3.028
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.943,
+        "y": 3.428
+      },
+      "prevControl": {
+        "x": 7.443,
+        "y": 3.428
+      },
+      "nextControl": {
+        "x": 6.443,
+        "y": 3.428
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.193,
+        "y": 2.728
+      },
+      "prevControl": {
+        "x": 6.193,
+        "y": 3.228
+      },
+      "nextControl": {
+        "x": 6.193,
+        "y": 2.228
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 0.642
+      },
+      "prevControl": {
+        "x": 6.347,
+        "y": 0.6419999999999999
+      },
+      "nextControl": {
+        "x": 4.597,
         "y": 0.6420000000000001
       },
       "isLocked": false,
@@ -84,12 +100,12 @@
         "y": 0.642
       },
       "prevControl": {
-        "x": 3.9821941081522003,
-        "y": 0.5892945874001776
+        "x": 4.603,
+        "y": 0.6419999999999998
       },
       "nextControl": {
-        "x": 3.2238058918478,
-        "y": 0.6947054125998224
+        "x": 3.353,
+        "y": 0.642
       },
       "isLocked": false,
       "linkedName": "TR3-EN"
@@ -100,33 +116,37 @@
         "y": 1.0
       },
       "prevControl": {
-        "x": 3.2320053238686772,
-        "y": 0.8037622005323861
+        "x": 2.910696902421635,
+        "y": 0.8084888892202554
       },
       "nextControl": null,
-      "isLocked": true,
+      "isLocked": false,
       "linkedName": "L3"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.0,
-      "rotationDegrees": 180.0
+      "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 1.9,
+      "rotationDegrees": 90.0
     },
     {
       "waypointRelativePos": 3.0,
-      "rotationDegrees": -90.0
-    },
-    {
-      "waypointRelativePos": 4.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 5.0,
+      "waypointRelativePos": 4.2,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 5,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 6.0,
       "rotationDegrees": 180.0
     }
   ],
@@ -146,10 +166,10 @@
     "rotation": 35.0
   },
   "reversed": false,
-  "folder": "FromNeutralZone",
+  "folder": "FromStart",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

@@ -40,7 +40,7 @@ public class AutoScore2B extends SequentialCommandGroup
 
         // @formatter:off
 
-        new LogCommand(getName(), "Acquire fuel, score once, acquire fuel from NZA and score"),
+        new LogCommand(getName(), "Acquire fuel, score once, acquire fuel with NZ path and score"),
         new ParallelCommandGroup(
           new LogCommand(getName(),"Path 1"),
           drivetrain.getPathCommand(ppAuto.get(0)),
@@ -52,13 +52,14 @@ public class AutoScore2B extends SequentialCommandGroup
           launcher.getLauncherScoreCommand()
           ),
         new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(4),
+        new AcquireFuel(intake,hopper),
         new ParallelCommandGroup(
           new LogCommand(getName(),"Path 3"),
           drivetrain.getPathCommand(ppAuto.get(2)),
           new AcquireFuel(intake,hopper)
           ),
         launcher.getLauncherScoreCommand(),
-        new LaunchFuel(intake, hopper, kicker, launcher)
+        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(4)
         
         // @formatter:on
     );

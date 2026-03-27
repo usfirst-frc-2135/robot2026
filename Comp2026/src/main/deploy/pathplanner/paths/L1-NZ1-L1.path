@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.403,
-        "y": 7.427
+        "x": 2.75,
+        "y": 7.08
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.903,
+        "x": 2.9267766952966365,
+        "y": 7.256776695296637
+      },
+      "isLocked": false,
+      "linkedName": "L1"
+    },
+    {
+      "anchor": {
+        "x": 3.603,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 3.353,
+        "y": 7.427
+      },
+      "nextControl": {
+        "x": 4.603,
         "y": 7.427
       },
       "isLocked": false,
-      "linkedName": "Start1"
+      "linkedName": "TR1-EN"
     },
     {
       "anchor": {
@@ -20,7 +36,7 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 5.097,
+        "x": 4.597,
         "y": 7.427
       },
       "nextControl": {
@@ -116,8 +132,8 @@
         "y": 7.08
       },
       "prevControl": {
-        "x": 2.910696902421635,
-        "y": 7.271511110779745
+        "x": 2.9446004043974994,
+        "y": 7.274600404397499
       },
       "nextControl": null,
       "isLocked": false,
@@ -126,27 +142,31 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 1,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.9,
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.9,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 3.0,
+      "waypointRelativePos": 4.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 4.2,
+      "waypointRelativePos": 5.2,
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 5.0,
+      "waypointRelativePos": 6.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 6.0,
+      "waypointRelativePos": 7.0,
       "rotationDegrees": 180.0
     }
   ],
@@ -166,10 +186,10 @@
     "rotation": -58.400000000000006
   },
   "reversed": false,
-  "folder": "FromStart",
+  "folder": "FromLaunch",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -58.400000000000006
   },
   "useDefaultConstraints": true
 }
