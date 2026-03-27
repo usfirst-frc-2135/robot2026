@@ -625,6 +625,8 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initAutonomousRPM( );
+
+    
   }
 
   /****************************************************************************
@@ -636,6 +638,8 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
+
+    
   }
 
   /****************************************************************************

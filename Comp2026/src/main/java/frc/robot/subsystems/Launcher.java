@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -381,7 +382,8 @@ public class Launcher extends SubsystemBase
    */
   public void initAutonomousRPM( )
   {
-    //m_ScoreRPMEntry.set(kLauncherPrimedRPM);
+    CommandScheduler.getInstance( ).schedule(getLauncherPrimedCommand( ));
+    
   }
 
   /****************************************************************************
@@ -390,7 +392,7 @@ public class Launcher extends SubsystemBase
    */
   public void initTeleopRPM( )
   {
-    //m_ScoreRPMEntry.set(kLauncherPrimedRPM);
+    CommandScheduler.getInstance( ).schedule(getLauncherPrimedCommand( ));
   }
 
   /****************************************************************************
