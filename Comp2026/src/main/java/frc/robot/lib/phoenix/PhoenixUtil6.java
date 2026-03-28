@@ -6,6 +6,7 @@ package frc.robot.lib.phoenix;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -230,6 +231,60 @@ public class PhoenixUtil6
         fwvMinor, fwvBugfix, fwvBuild, (pigeon2Valid) ? "VALID" : "error: UNRESPONSIVE!"));
 
     return pigeon2Valid;
+  }
+
+  /****************************************************************************
+   * 
+   * Initialize a CANdle and display the result
+   * 
+   * @param candle
+   *          reference to a candle
+   * @param config
+   *          the candle configuration to be programmed
+   * @return true if successfully initialized
+   */
+  public boolean candleInitialize6(CANdle candle, CANdleConfiguration config)
+  {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    int deviceID = 0;
+    int fwvMajor = 0;
+    int fwvMinor = 0;
+    int fwvBugfix = 0;
+    int fwvBuild = 0;
+    boolean candleValid = false;
+
+    // Display Talon firmware versions
+    deviceID = candle.getDeviceID( );
+
+    Timer.delay(0.250);
+
+    // This can take multiple attempts before ready
+    for (int i = 0; i < kRetries && fwvMajor == 0; i++)
+    {
+      StatusSignal<Integer> statusSignal = candle.getVersion( );
+      status = statusSignal.getStatus( );
+      if (status.isOK( ))
+      {
+        fwvMajor = (statusSignal.getValue( ) >> 24) & 0xff;
+        fwvMinor = (statusSignal.getValue( ) >> 16) & 0xff;
+        fwvBugfix = (statusSignal.getValue( ) >> 8) & 0xff;
+        fwvBuild = (statusSignal.getValue( ) >> 0) & 0xff;
+      }
+      else
+        Timer.delay(0.100);
+    }
+
+    candleValid = (fwvMajor >= Constants.kPhoenix6MajorVersion);
+
+    if (config != null)
+      if ((status = candle.getConfigurator( ).apply(config, kCANTimeout)) != StatusCode.OK)
+        DataLogManager.log(String.format("%s: ID %2d - candle:      getConfigurator.apply - %s!", kClassName, deviceID,
+            status.getDescription( )));
+
+    DataLogManager.log(String.format("%s: ID %2d - candle:      ver: %d.%d.%d.%d is %s!", kClassName, deviceID, fwvMajor,
+        fwvMinor, fwvBugfix, fwvBuild, (candleValid) ? "VALID" : "error: UNRESPONSIVE!"));
+
+    return candleValid;
   }
 
   /****************************************************************************

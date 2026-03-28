@@ -3,6 +3,7 @@
 //
 package frc.robot.lib;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.ColorFlowAnimation;
 import com.ctre.phoenix6.controls.ControlRequest;
@@ -22,6 +23,7 @@ import com.ctre.phoenix6.signals.RGBWColor;
 import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
 import com.ctre.phoenix6.signals.StripTypeValue;
 import com.ctre.phoenix6.signals.VBatOutputModeValue;
+import com.ctre.phoenix6.sim.CANdleSimState;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -85,11 +87,12 @@ public class LED
 
   // Member objects
   private final CANdle                     m_candle           = new CANdle(Ports.kCANID_CANdle);
-  // private final CANdleSimState             m_candleSim        = new CANdleSimState(m_candle);
+  private final CANdleSimState             m_candleSim        = new CANdleSimState(m_candle);
   private final SendableChooser<COLOR>     m_colorChooser     = new SendableChooser<COLOR>( );
   private final SendableChooser<ANIMATION> m_animationChooser = new SendableChooser<ANIMATION>( );
 
   private String                           m_name             = new String( );
+  private boolean                          m_candleValid      = false;
   private LEDRequest                       m_request          = new LEDRequest(COLOR.OFF, ANIMATION.SOLID);
   private LEDRequest                       m_active           = new LEDRequest(COLOR.OFF, ANIMATION.SOLID);
 
@@ -112,12 +115,15 @@ public class LED
     cfg.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Disabled;
     cfg.CANdleFeatures.VBatOutputMode = VBatOutputModeValue.Off;
 
-    m_candle.getConfigurator( ).apply(cfg);
+    m_candleValid = PhoenixUtil6.getInstance( ).candleInitialize6(m_candle, cfg);
 
     /* clear all previous animations */
-    for (int i = 0; i < 8; ++i)
+    if (m_candleValid)
     {
-      m_candle.setControl(new EmptyAnimation(i));
+      for (int i = 0; i < 8; ++i)
+      {
+        m_candle.setControl(new EmptyAnimation(i));
+      }
     }
 
     initDashboard( );
@@ -157,7 +163,10 @@ public class LED
   {
     // This method will be called once per scheduler run during simulation
 
-    // StatusCode m_status = m_candleSim.getLastStatusCode( );
+    if (m_candleValid)
+    {
+      StatusCode m_status = m_candleSim.getLastStatusCode( );
+    }
   }
 
   /****************************************************************************
@@ -328,7 +337,10 @@ public class LED
       }
 
       DataLogManager.log(String.format("%s: CANdle active now %s, %s", getName( ), m_request.color, m_request.animation));
-      m_candle.setControl(animation);
+      if (m_candleValid)
+      {
+        m_candle.setControl(animation);
+      }
 
       m_active.color = m_request.color;
       m_active.animation = m_request.animation;
