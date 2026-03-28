@@ -724,40 +724,67 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         ).withName("AlignToPosePPFind");
     }
 
+    /****************************************************************************
+     * 
+     * Auto-aiming control using current robot pose from odometry
+     * 
+     * @param diffAngle
+     *            difference between robot rotation and rotation to hub
+     * @param maxAngularRate
+     *            max angular rate to scale against
+     * @return desired proportional angular velocity to rotate the chassis
+     */
     public AngularVelocity aimPoseProportional(double diffAngle, AngularVelocity maxAngularRate)
     {
         double proportionalFactor = diffAngle * kAimingKp;
+
         return maxAngularRate.times(proportionalFactor);
     }
 
+    /****************************************************************************
+     * 
+     * Auto-aiming control using current robot pose from odometry
+     * 
+     * @param distanceToHub
+     *            distance to the hub in meters
+     * @param maxSpeed
+     *            max speed to scale against
+     * @return desired proportional linear velocity in chassis forward direction
+     */
     public LinearVelocity rangePoseProportional(double distanceToHub, LinearVelocity maxSpeed)
     {
         double proportionalFactor = -(optimalDistance - distanceToHub) * kDrivingKp;
+
         return maxSpeed.times(proportionalFactor);
     }
 
+    /****************************************************************************
+     * 
+     * Limelight auto-ranging control for distance velocity. Only aligns the front Limelight.
+     * 
+     * @return auto-align to hub command
+     */
     public Command GetAutoAligntoHub( )
     {
         return this.applyRequest(( ) ->
         {
             Pose2d robotPose = m_driveStatePose.get( );
 
-            //subtracts hub pose from current robot pose
+            // subtracts hub pose from current robot pose
             Translation2d translation = kHubCenter.minus(robotPose.getTranslation( ));
 
             Rotation2d hubrotation = translation.getAngle( );
 
-            //gets difference in current robot rotation and that of the hub
+            // gets difference in current robot rotation and that of the hub
             double diffAngle = hubrotation.minus(robotPose.getRotation( )).getDegrees( );
 
-            //gets distance from current robot position and that of the hub
+            // gets distance from current robot position and that of the hub
             double distanceToHub = kHubCenter.getDistance(robotPose.getTranslation( ));
 
             DataLogManager.log(String.format("Range %.2f Aim: %.1f", distanceToHub, diffAngle));
 
             return new SwerveRequest.RobotCentric( ).withVelocityX(this.rangePoseProportional(distanceToHub, kMaxSpeed))
                     .withVelocityY(0).withRotationalRate(this.aimPoseProportional(diffAngle, kMaxAngularRate));
-
         });
     }
 
