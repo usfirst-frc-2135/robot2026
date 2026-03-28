@@ -48,8 +48,10 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.INConsts;
 import frc.robot.Constants.INConsts.INRollerMode;
 import frc.robot.Constants.Ports;
 import frc.robot.Robot;
@@ -99,6 +101,7 @@ public class Intake extends SubsystemBase
   //      Practice -130.4  -126.4     4.2       5.2
   private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4; // Four degrees from hardstops
   private static final double       kRotaryAngleIndexing = -90.0;
+  private static final double       kRotaryAngleProtected = -15.0;
   private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
@@ -300,6 +303,7 @@ public class Intake extends SubsystemBase
 
     SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle));
     SmartDashboard.putData("IntakeIndexing", getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle));
+    SmartDashboard.putData("IntakeProtect", getMoveToAngleCommand(INRollerMode.HOLD, this::getProtectedAngle));
     SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle));
   }
 
@@ -574,6 +578,17 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
+   * Return intake angle for protected state
+   * 
+   * @return protected state angle
+   */
+  public double getProtectedAngle( )
+  {
+    return kRotaryAngleProtected;
+  }
+
+  /****************************************************************************
+   * 
    * Return intake angle for stowed state
    * 
    * @return stowed state angle
@@ -626,7 +641,7 @@ public class Intake extends SubsystemBase
    *          boolen to indicate whether the command ever finishes
    * @return continuous command that runs intake motors
    */
-  private Command getMMAngleCommand(INRollerMode mode, DoubleSupplier angle, boolean holdAngle)
+  public Command getMMAngleCommand(INRollerMode mode, DoubleSupplier angle, boolean holdAngle)
   {
     return new FunctionalCommand(                                       // Command with all phases declared
         ( ) -> moveToAngleInit(mode, angle.getAsDouble( ), holdAngle),  // Init method
@@ -651,6 +666,17 @@ public class Intake extends SubsystemBase
   {
     return getMMAngleCommand(mode, angle, false).withName(kSubsystemName + "MMMoveToAngle");
   }
+
+  public Command getIndexingCommand(INRollerMode mode, DoubleSupplier angle, DoubleSupplier angle1, DoubleSupplier angle2, DoubleSupplier angle3) {
+  return new SequentialCommandGroup(
+      getMoveToAngleCommand(mode, angle),
+      getMoveToAngleCommand(mode, angle1),
+      getMoveToAngleCommand(mode, angle2),
+      getMoveToAngleCommand(mode, angle3)
+  ).withName(kSubsystemName + "IndexingCommand");
+}
+
+  
 
   /****************************************************************************
    * 

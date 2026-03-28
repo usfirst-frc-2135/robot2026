@@ -60,7 +60,9 @@ public class LaunchFuel extends SequentialCommandGroup
             intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getDeployedAngle),
             new WaitCommand(0.25)
           )
-        )
+        ),
+
+        intake.getIndexingCommand(INConsts.INRollerMode.STOP, intake::getDeployedAngle, intake::getProtectedAngle, intake::getIndexingAngle, intake::getStowedAngle)
     
         // @formatter:on
     );
