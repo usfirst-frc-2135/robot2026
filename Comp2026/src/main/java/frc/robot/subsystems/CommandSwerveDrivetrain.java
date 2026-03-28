@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +63,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.commands.LogCommand;
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.lib.LimelightHelpers;
 import frc.robot.lib.Vision;
@@ -87,8 +89,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
     private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
 
-    private final Pose2d                kHubPose             = new Pose2d(new Translation2d(Inches.of(182.11), Inches.of(158.84)), new Rotation2d(0));
-
+    private final Translation2d         kHubCenter           = new Translation2d(Inches.of(182.11), Inches.of(158.84));
+    private static final double         kAimingKp            = 0.1;
+    private static final double         kDrivingKp           = 0.6;
+    private static final double         optimalDistance      = Units.inchesToMeters(138.0);
+    private static final LinearVelocity kMaxSpeed            = TunerConstants.kSpeedAt12Volts; //max top speed
+    private static final AngularVelocity kMaxAngularRate     = RotationsPerSecond.of(1.0);
     private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
     private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
 
@@ -710,16 +716,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         ).withName("AlignToPosePPFind");
     }
 
-    public AngularVelocity aimOdometryProportional(AngularVelocity maxAngularRate)
+    public AngularVelocity aimPoseProportional(double diffAngle, AngularVelocity maxAngularRate)
     {
-        double poseDistance = Pose2d.goalPose - Pose2d.currentPose;
-        return maxAngularRate.times(poseDistance);
+        double proportionalFactor = diffAngle * kAimingKp;
+        return maxAngularRate.times(proportionalFactor);
     }
 
-    public LinearVelocity rangeOdometryProportional(LinearVelocity maxSpeed)
+    public LinearVelocity rangePoseProportional(double distanceToHub, LinearVelocity maxSpeed)
     {
-        double poseDistance = Pose2d.goalPose - Pose2d.currentPose;
-        return maxSpeed.times(poseDistance);
+        double proportionalFactor = -(optimalDistance - distanceToHub) * kDrivingKp;
+        return maxSpeed.times(proportionalFactor);
+    }
+
+    public Command GetAutoAligntoHub( )
+    {
+        return this.applyRequest(( ) ->
+        {
+            Pose2d robotPose = m_driveStatePose.get( );
+
+            //subtracts hub pose from current robot pose
+            Translation2d translation = kHubCenter.minus(robotPose.getTranslation( ));
+
+            Rotation2d hubrotation = translation.getAngle( );
+
+            //gets difference in current robot rotation and that of the hub
+            double diffAngle = hubrotation.minus(robotPose.getRotation( )).getDegrees( );
+
+            //gets distance from current robot position and that of the hub
+            double distanceToHub = kHubCenter.getDistance(robotPose.getTranslation( ));
+
+            DataLogManager.log(String.format("Range %.2f Aim: %.1f", distanceToHub, diffAngle));
+
+            return new SwerveRequest.RobotCentric( ).withVelocityX(this.rangePoseProportional(distanceToHub, kMaxSpeed))
+                    .withVelocityY(0).withRotationalRate(this.aimPoseProportional(diffAngle, kMaxAngularRate));
+
+        });
     }
 
 }
