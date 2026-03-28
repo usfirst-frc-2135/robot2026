@@ -4,10 +4,10 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +78,7 @@ import frc.robot.lib.Vision;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final boolean        m_useLimelight       = false;
+    private static final boolean        m_useLimelight       = true;
 
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
@@ -89,7 +89,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
     private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
 
-    private final Translation2d         kHubCenter           = new Translation2d(Inches.of(182.11), Inches.of(158.84));
+    // private final Translation2d         kHubCenter           = new Translation2d(Inches.of(182.11), Inches.of(158.84));
+    private final Translation2d         kHubCenter           = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.84));
     private static final double         kAimingKp            = 0.1;
     private static final double         kDrivingKp           = 0.6;
     private static final double         optimalDistance      = Units.inchesToMeters(138.0);
