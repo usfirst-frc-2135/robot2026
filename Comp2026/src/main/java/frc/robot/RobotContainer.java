@@ -288,11 +288,11 @@ public class RobotContainer
     //
     // Driver - A, B, X, Y
     // 
-    m_driverPad.a( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim       //
+    m_driverPad.a( ).whileTrue(m_drivetrain.GetAutoAligntoHub( ));
+    m_driverPad.b( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim       //
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
         .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
-    m_driverPad.b( ).onTrue(new LogCommand("driverPad", "B"));
 
     m_driverPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
     m_driverPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
@@ -347,7 +347,7 @@ public class RobotContainer
 
     m_operatorPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
     m_operatorPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
-    m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
+    m_operatorPad.y( ).onTrue(m_launcher.getLauncherStopCommand( ));
 
     //
     // Operator - Bumpers, start, back

@@ -99,6 +99,7 @@ public class Intake extends SubsystemBase
   //      Practice -130.4  -126.4     4.2       5.2
   private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4; // Four degrees from hardstops
   private static final double       kRotaryAngleIndexing = -90.0;
+  private static final double       kRotaryAngleProtected = -15.0;
   private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
   private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
@@ -300,6 +301,7 @@ public class Intake extends SubsystemBase
 
     SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle));
     SmartDashboard.putData("IntakeIndexing", getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle));
+    SmartDashboard.putData("IntakeProtect", getMoveToAngleCommand(INRollerMode.HOLD, this::getProtectedAngle));
     SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle));
   }
 
@@ -570,6 +572,17 @@ public class Intake extends SubsystemBase
   public double getIndexingAngle( )
   {
     return kRotaryAngleIndexing;
+  }
+
+  /****************************************************************************
+   * 
+   * Return intake angle for protected state
+   * 
+   * @return protected state angle
+   */
+  public double getProtectedAngle( )
+  {
+    return kRotaryAngleProtected;
   }
 
   /****************************************************************************
