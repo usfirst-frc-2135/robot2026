@@ -347,7 +347,7 @@ public class RobotContainer
 
     m_operatorPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
     m_operatorPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
-    m_operatorPad.y( ).onTrue(new LogCommand("operatorPad", "Y"));
+    m_operatorPad.y( ).onTrue(m_launcher.getLauncherStopCommand());
 
     //
     // Operator - Bumpers, start, back
