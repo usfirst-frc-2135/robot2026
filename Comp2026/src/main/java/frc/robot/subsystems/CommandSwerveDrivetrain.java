@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Inches;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,8 @@ import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructSubscriber;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -83,6 +86,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
     private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
+
+    private final Pose2d                kHubPose             = new Pose2d(new Translation2d(Inches.of(182.11), Inches.of(158.84)), new Rotation2d(0));
 
     private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
     private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
@@ -380,6 +385,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             double right = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
             m_rightUpdate.set(m_rightFilter.calculate(right) > 0.5);
         }
+
+        
     }
 
     private void startSimThread() {
@@ -702,4 +709,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 AutoBuilder.pathfindToPose(goalPose, kPathFindConstraints, 0.0) //
         ).withName("AlignToPosePPFind");
     }
+
+    public AngularVelocity aimOdometryProportional(AngularVelocity maxAngularRate)
+    {
+        double poseDistance = Pose2d.goalPose - Pose2d.currentPose;
+        return maxAngularRate.times(poseDistance);
+    }
+
+    public LinearVelocity rangeOdometryProportional(LinearVelocity maxSpeed)
+    {
+        double poseDistance = Pose2d.goalPose - Pose2d.currentPose;
+        return maxSpeed.times(poseDistance);
+    }
+
 }
