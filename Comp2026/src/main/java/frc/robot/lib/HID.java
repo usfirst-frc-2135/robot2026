@@ -11,10 +11,8 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.Constants;
 
 /****************************************************************************
  * 
@@ -106,10 +104,10 @@ public class HID
     // Initialize dashboard widgets
 
     // Add buttons for testing HID rumble features to dashboard
-    SmartDashboard.putData("HIDRumbleDriver",
-        getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
-    SmartDashboard.putData("HIDRumbleOperator",
-        getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
+    // SmartDashboard.putData("HIDRumbleDriver",
+    //     getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
+    // SmartDashboard.putData("HIDRumbleOperator",
+    //     getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
 
   }
 

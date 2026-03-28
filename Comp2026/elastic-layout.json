@@ -33,19 +33,6 @@
             }
           },
           {
-            "title": "StartPosition",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/StartPosition",
-              "period": 0.06,
-              "sort_options": false
-            }
-          },
-          {
             "title": "AutoDelay",
             "x": 768.0,
             "y": 256.0,
@@ -158,6 +145,50 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "CR-calibrated",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/climberRight/CR-calibrated",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "scoreRPM",
+            "x": 128.0,
+            "y": 384.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/launcher/scoreRPM",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "AutoStart",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/AutoStart",
+              "period": 0.06,
+              "sort_options": false
             }
           }
         ]
@@ -553,7 +584,7 @@
         "containers": [
           {
             "title": "ClimberRightCalibrate",
-            "x": 512.0,
+            "x": 0.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -567,7 +598,7 @@
           },
           {
             "title": "ClimberRightExtend",
-            "x": 512.0,
+            "x": 0.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -581,7 +612,7 @@
           },
           {
             "title": "ClimberRightLift",
-            "x": 512.0,
+            "x": 0.0,
             "y": 256.0,
             "width": 256.0,
             "height": 128.0,
@@ -595,7 +626,7 @@
           },
           {
             "title": "CR-calibrated",
-            "x": 768.0,
+            "x": 256.0,
             "y": 0.0,
             "width": 128.0,
             "height": 128.0,
@@ -612,7 +643,7 @@
           },
           {
             "title": "CR-currentInches",
-            "x": 768.0,
+            "x": 256.0,
             "y": 128.0,
             "width": 128.0,
             "height": 128.0,
@@ -626,7 +657,7 @@
           },
           {
             "title": "CR-targetInches",
-            "x": 768.0,
+            "x": 256.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,

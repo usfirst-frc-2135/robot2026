@@ -8,15 +8,11 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -56,8 +52,8 @@ public class Hopper extends SubsystemBase
   private boolean               m_pulseMode         = false;
 
   // Network tables publisher objects
-  private DoublePublisher       m_rollSpeedPub;
-  private DoublePublisher       m_rollSupCurPub;
+  // private DoublePublisher       m_rollSpeedPub;
+  // private DoublePublisher       m_rollSupCurPub;
 
   /****************************************************************************
    * 
@@ -88,8 +84,8 @@ public class Hopper extends SubsystemBase
     // This method will be called once per scheduler run
 
     // Update network table publishers
-    m_rollSpeedPub.set(m_rollerMotor.get( ));
-    m_rollSupCurPub.set(m_rollerMotor.get( ));
+    // m_rollSpeedPub.set(m_rollerMotor.get( ));
+    // m_rollSupCurPub.set(m_rollerMotor.getSupplyCurrent( ).getValueAsDouble( ));
 
     // If rollermode is acquire and m_pulsemode is active
     if (m_rollerMode == HPRollerMode.ACQUIRE && m_pulseMode)
@@ -132,17 +128,17 @@ public class Hopper extends SubsystemBase
   private void initDashboard( )
   {
     // Get the default instance of NetworkTables that was created automatically when the robot program starts
-    NetworkTableInstance inst = NetworkTableInstance.getDefault( );
-    NetworkTable table = inst.getTable("hopper");
+    // NetworkTableInstance inst = NetworkTableInstance.getDefault( );
+    // NetworkTable table = inst.getTable("hopper");
 
     // Initialize network tables publishers
-    m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
-    m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
+    // m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
+    // m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
 
     // Add commands
-    SmartDashboard.putData("HopperStop", getRollerModeCommand(HPRollerMode.STOP));
-    SmartDashboard.putData("HopperAcquire", getRollerModeCommand(HPRollerMode.ACQUIRE));
-    SmartDashboard.putData("HopperExpel", getRollerModeCommand(HPRollerMode.EXPEL));
+    // SmartDashboard.putData("HopperStop", getRollerModeCommand(HPRollerMode.STOP));
+    // SmartDashboard.putData("HopperAcquire", getRollerModeCommand(HPRollerMode.ACQUIRE));
+    // SmartDashboard.putData("HopperExpel", getRollerModeCommand(HPRollerMode.EXPEL));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.

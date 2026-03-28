@@ -46,7 +46,7 @@ public class AutoScore1A extends SequentialCommandGroup
           drivetrain.getPathCommand(ppAuto.get(0)),
           new AcquireFuel(intake, hopper)
         ), 
-        new StopIntaking(intake, hopper),
+        new StopIntaking(intake, hopper, kicker),
         new ParallelCommandGroup(
           drivetrain.getPathCommand(ppAuto.get(1)),
           launcher.getLauncherScoreCommand( )

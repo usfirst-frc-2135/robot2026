@@ -2,7 +2,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.HPConsts;
 import frc.robot.Constants.KKConsts;
 import frc.robot.subsystems.Hopper;
@@ -40,7 +39,7 @@ public class StopLaunching extends SequentialCommandGroup
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
 
         new LogCommand(getName(), "Stop Launcher rollers "),
-        launcher.getLauncherStopCommand()
+        launcher.getLauncherPrimedCommand()
 
         // @formatter:on
     );

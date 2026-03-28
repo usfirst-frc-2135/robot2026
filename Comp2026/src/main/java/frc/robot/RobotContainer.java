@@ -6,7 +6,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -210,11 +209,6 @@ public class RobotContainer
     configureBindings( );       // Configure game controller buttons and triggers
     initDefaultCommands( );     // Initialize subsystem default commands
 
-    // Add periodic calls for non-subsystem classes
-    robot.addPeriodic(( ) -> m_hid.periodic( ), Seconds.of(0.020));
-    robot.addPeriodic(( ) -> m_led.periodic( ), Seconds.of(0.020));
-    robot.addPeriodic(( ) -> m_matchState.periodic( ), Seconds.of(0.020));
-
     Robot.timeMarker("robotContainer: after default commands");
   }
 
@@ -242,7 +236,7 @@ public class RobotContainer
 
     // Build autonomous chooser objects on dashboard and fill the options
     SmartDashboard.putData("AutoMode", m_autoChooser);
-    SmartDashboard.putData("StartPosition", m_startChooser);
+    SmartDashboard.putData("AutoStart", m_startChooser);
     SmartDashboard.putNumber("AutoDelay", 0.0);
 
     // Configure autonomous sendable chooser
@@ -276,7 +270,7 @@ public class RobotContainer
 
     // Add main command scheduler to dashboard
 
-    SmartDashboard.putData(CommandScheduler.getInstance( ));
+    // SmartDashboard.putData(CommandScheduler.getInstance( ));
 
     // Add command groups to dashboard
 
@@ -307,10 +301,10 @@ public class RobotContainer
     //
     // Driver - Bumpers, start, back
     //
-    m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper));
-    m_driverPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
+    m_driverPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
     m_driverPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
-    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
     m_driverPad.start( ).onTrue(m_drivetrain.runOnce(( ) -> m_drivetrain.seedFieldCentric( )));         // aka Menu button
@@ -335,7 +329,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
@@ -358,10 +352,10 @@ public class RobotContainer
     //
     // Operator - Bumpers, start, back
     //
-    m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper));
-    m_operatorPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
+    m_operatorPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
     m_operatorPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
-    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
 
     m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
@@ -381,7 +375,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
+    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_hopper, m_kicker, m_launcher));
 
@@ -609,6 +603,7 @@ public class RobotContainer
     m_hopper.initialize( );
     m_kicker.initialize( );
     m_launcher.initialize( );
+
     m_climberRight.initialize( );
   }
 
@@ -621,6 +616,9 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initAutonomousRPM( );
+
+    CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
+    CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
   /****************************************************************************
@@ -632,6 +630,21 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
+
+    CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
+    CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
+  }
+
+  /****************************************************************************
+   * 
+   * Called during robotPeriodic to call our libraries periodic methods
+   */
+  public void robotPeriodic( )
+  {
+    // Add periodic calls for non-subsystem classes
+    m_hid.periodic( );
+    m_led.periodic( );
+    m_matchState.periodic( );
   }
 
   /****************************************************************************

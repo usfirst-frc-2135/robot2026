@@ -54,6 +54,7 @@ public class Launcher extends SubsystemBase
   private static final double kLauncherAutoRPM   = 3250.0;    // RPM to score for autonomous
   private static final double kLauncherTeleopRPM = 3250.0;    // RPM to score for autonomous
   private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
+  private static final double kLauncherPrimedRPM = 2400.0;    // RPM to pass 
   private static final double kRPMStepSize       = 50.0;      // RPM step size for increment/decrement
   private static final double kToleranceRPM      = 50.0;      // Tolerance band around requested RPM
   private static final double kHoodFullDown      = -1.0;      // Hood actuator servo all the way down
@@ -66,7 +67,8 @@ public class Launcher extends SubsystemBase
   {
     STOP,       // Launcher is stopped
     SCORE,      // Launcher RPM needed to score fuel
-    PASS        // Launcher RPM needed for passing
+    PASS,        // Launcher RPM needed for passing
+    PRIMED
   }
 
   // Devices  objects
@@ -143,18 +145,15 @@ public class Launcher extends SubsystemBase
     BaseStatusSignal.setUpdateFrequencyForAll(50, m_leftVelocity, m_rightVelocity);
 
     StatusSignal<Current> m_leftSupplyCur = m_leftMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
-    StatusSignal<Current> m_leftStatorCur = m_leftMotor.getStatorCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightSupplyCur = m_rightMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
-    StatusSignal<Current> m_rightStatorCur = m_rightMotor.getStatorCurrent( ); // Default 4Hz (250ms)
 
     m_hoodLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
     m_hoodRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
 
-    DataLogManager.log(String.format(
-        "%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f leftStatorCur: %.1f rightSupplyCur: %.1f rightStatorCur: %.1f",
-        getSubsystem( ), m_leftVelocity.getAppliedUpdateFrequency( ), m_rightVelocity.getAppliedUpdateFrequency( ),
-        m_leftSupplyCur.getAppliedUpdateFrequency( ), m_leftStatorCur.getAppliedUpdateFrequency( ),
-        m_rightSupplyCur.getAppliedUpdateFrequency( ), m_rightStatorCur.getAppliedUpdateFrequency( )));
+    DataLogManager
+        .log(String.format("%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f rightSupplyCur: %.1f",
+            getSubsystem( ), m_leftVelocity.getAppliedUpdateFrequency( ), m_rightVelocity.getAppliedUpdateFrequency( ),
+            m_leftSupplyCur.getAppliedUpdateFrequency( ), m_rightSupplyCur.getAppliedUpdateFrequency( )));
 
     initDashboard( );
     initialize( );
@@ -301,6 +300,9 @@ public class Launcher extends SubsystemBase
         break;
       case PASS :
         m_launcherRPM = kLauncherPassRPM;
+        break;
+      case PRIMED :
+        m_launcherRPM = kLauncherPrimedRPM;
         break;
     }
 
@@ -457,6 +459,11 @@ public class Launcher extends SubsystemBase
   public Command getLauncherStopCommand( )
   {
     return getLauncherCommand(LauncherMode.STOP).withName("LauncherStop");
+  }
+
+  public Command getLauncherPrimedCommand( )
+  {
+    return getLauncherCommand(LauncherMode.PRIMED).withName("LauncherPrimed");
   }
 
 }
