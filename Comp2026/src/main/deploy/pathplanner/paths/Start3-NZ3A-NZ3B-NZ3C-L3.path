@@ -65,15 +65,15 @@
     {
       "anchor": {
         "x": 6.193,
-        "y": 2.728
+        "y": 2.528
       },
       "prevControl": {
         "x": 6.193,
-        "y": 3.228
+        "y": 3.028
       },
       "nextControl": {
         "x": 6.193,
-        "y": 2.228
+        "y": 2.028
       },
       "isLocked": false,
       "linkedName": "NZ3C"
