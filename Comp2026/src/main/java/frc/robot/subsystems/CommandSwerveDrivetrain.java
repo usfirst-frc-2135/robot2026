@@ -78,7 +78,7 @@ import frc.robot.lib.Vision;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final boolean        m_useLimelight       = true;
+    private static final boolean        m_useLimelight       = false;
 
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
@@ -103,11 +103,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final DoubleArrayPublisher  m_setPosePub         = kSwerveTable.getDoubleArrayTopic("setPose").publish();
     private final DoubleArraySubscriber m_setPoseSub         = kSwerveTable.getDoubleArrayTopic("setPose").subscribe(new double[3]);
 
-    private MedianFilter                m_leftFilter         = new MedianFilter(5);
-    private MedianFilter                m_rightFilter        = new MedianFilter(5);
+    private MedianFilter                m_frontFilter        = new MedianFilter(5);
+    private MedianFilter                m_backFilter         = new MedianFilter(5);
 
-    private BooleanPublisher            m_leftUpdate         = kSwerveTable.getBooleanTopic("LeftUpdate").publish();
-    private BooleanPublisher            m_rightUpdate        = kSwerveTable.getBooleanTopic("RightUpdate").publish();
+    private BooleanPublisher            m_frontUpdate        = kSwerveTable.getBooleanTopic("FrontCam").publish();
+    private BooleanPublisher            m_backUpdate         = kSwerveTable.getBooleanTopic("BackCam").publish();
 
     private double []                   m_moduleDistances    = {0, 0, 0, 0};
 
@@ -298,7 +298,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this::resetPose,         // Consumer for seeding pose against auto
                 () -> getState().Speeds, // Supplier of current robot speeds
                 // Consumer of ChassisSpeeds and feedforwards to drive the robot
-                // (speeds) -> driveRobotRelative(speeds),      // TODO:  swerve setpoint generator testing
+                // (speeds) -> driveRobotRelative(speeds),      // TODO: swerve setpoint generator sample code
                 (speeds, feedforwards) -> setControl(
                     m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
                         .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
@@ -384,14 +384,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        if (m_useLimelight) {
-            double left = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
-            m_leftUpdate.set(m_leftFilter.calculate(left) > 0.5);
+            double front = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
+            m_frontUpdate.set(m_frontFilter.calculate(front) > 0.5);
 
-            double right = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
-            m_rightUpdate.set(m_rightFilter.calculate(right) > 0.5);
-        }
-
+            double back = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
+            m_backUpdate.set(m_backFilter.calculate(back) > 0.5);
         
     }
 
@@ -521,21 +518,28 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             {
                 double[ ] array =
                 {
-                        mt1.pose.getX( ), mt1.pose.getY( ), mt1.pose.getRotation( ).getRotations( )
+                        mt1.pose.getX( ), mt1.pose.getY( ), mt1.pose.getRotation( ).getDegrees( )
                 };
                 poseArray.set(array);
 
-                setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-                addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+                if (m_useLimelight)
+                {
+                    setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+                    addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+                }
             }
         }
         else if (useMegaTag2 == true)
         {
+            // Pigeon2 pigeon = getPigeon2( );
+            // double yawRate = pigeon.getAngularVelocityZWorld( ).getValueAsDouble( );
+            // LimelightHelpers.SetRobotOrientation(limelightName, pigeon.getYaw( ).getValueAsDouble( ), yawRate,
+            //         pigeon.getPitch( ).getValueAsDouble( ), 0, pigeon.getRoll( ).getValueAsDouble( ), 0);
             LimelightHelpers.SetRobotOrientation(limelightName, getState( ).Pose.getRotation( ).getDegrees( ), 0, 0, 0, 0, 0);
             LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
             // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-            if (Math.abs(getPigeon2( ).getAngularVelocityZWorld( ).getValue( ).in(DegreesPerSecond)) > 720)
+            if (Math.abs(getPigeon2( ).getAngularVelocityZWorld( ).getValue( ).in(DegreesPerSecond)) > 360)
             {
                 doRejectUpdate = true;
             }
@@ -553,19 +557,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             if (!doRejectUpdate)
             {
                 final double kBase = 0.5;
-                final double kProportional = 0.9;
+                final double kProportional = 2.0;
                 double[ ] array =
                 {
-                        mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ).getRotations( )
+                        mt2.pose.getX( ), mt2.pose.getY( ), mt2.pose.getRotation( ).getDegrees( )
                 };
                 poseArray.set(array);
 
                 // Code used by some teams to scale std devs by distance (below) and used by several teams
-                setVisionMeasurementStdDevs(VecBuilder.fill( //
-                        Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
-                        Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
-                        Double.POSITIVE_INFINITY));
-                addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+
+                if (m_useLimelight)
+                {
+                    setVisionMeasurementStdDevs(VecBuilder.fill( //
+                            Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
+                            Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
+                            Double.POSITIVE_INFINITY));
+                    addVisionMeasurement(mt2.pose, mt2.timestampSeconds);
+                }
             }
         }
 

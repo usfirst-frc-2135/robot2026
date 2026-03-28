@@ -20,7 +20,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants
 {
   // bot serial nums
-  public static final String  kCompSN               = "03220587";
+  public static final String  kCompSN               = "03320587";
   public static final String  kPracticeSN           = "032B1F7E";
 
   // Game controller definitions
@@ -92,8 +92,6 @@ public final class Constants
 
     public static final int    kCANID_ClimberLeft    = 25; // Kraken X60 (Climber telescope)
     public static final int    kCANID_ClimberRight   = 26; // Kraken X60 (Climber telescope)
-
-    public static final int    kDIO0_FuelDetected    = 28; // CANrange (Hopper). // TODO: Do we need one?
 
     public static final int    kCANID_CANdle         = 0;
   }

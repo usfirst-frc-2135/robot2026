@@ -4,9 +4,14 @@
 //
 package frc.robot.lib;
 
+import static edu.wpi.first.units.Units.Seconds;
+
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants;
 
 /****************************************************************************
  * 
@@ -17,7 +22,13 @@ public class MatchState
   // Constants
 
   // Member objects
-  private String m_name = new String( );
+  private String            m_name         = new String( );
+  private HID               m_hid;
+  private LED               m_led;
+  private boolean           m_rumbleActive = false;
+
+  private NetworkTableEntry m_matchTime    = SmartDashboard.getEntry("MatchTime");
+  private NetworkTableEntry m_shiftTime    = SmartDashboard.getEntry("ShiftTime");
 
   /****************************************************************************
    * 
@@ -28,9 +39,11 @@ public class MatchState
    * @param operator
    *          operator gamepad to initialize
    */
-  public MatchState( )
+  public MatchState(HID hid, LED led)
   {
     setName("MatchState");
+    m_hid = hid;
+    m_led = led;
 
     initDashboard( );
     initialize( );
@@ -58,17 +71,47 @@ public class MatchState
   {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("MatchTime", DriverStation.getMatchTime( ));
+    double matchTime = DriverStation.getMatchTime( );
+    int shiftTime = timeLeftInShiftSeconds(DriverStation.getMatchTime( ));
 
-    // Manage robot state based on match time
-    if (DriverStation.isAutonomous( ) || DriverStation.isTeleop( ))
+    m_matchTime.setNumber(matchTime);
+
+    if (DriverStation.isTeleop( ))
     {
-      SmartDashboard.putNumber("ShiftTime", timeLeftInShiftSeconds(DriverStation.getMatchTime( )));
+      if (shiftTime <= 5)
+      {
+        if (!m_rumbleActive)
+        {
+          m_rumbleActive = true;
+          CommandScheduler.getInstance( )
+              .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
+          CommandScheduler.getInstance( )
+              .schedule(m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
+          DataLogManager.log("End of Shift Rumble");
+        }
+      }
+      else
+      {
+        m_rumbleActive = false;
+      }
     }
     else
     {
-      SmartDashboard.putNumber("ShiftTime", 0.0);
+      shiftTime = 0;
     }
+    m_shiftTime.setNumber(shiftTime);
+
+    // TODO: use currentShiftIsOurs() to determine if this is our shift
+    //           if it is our shift
+    //               set the CANdle to GREEN
+    //               else set the candle to RED
+    //           if the remaining shift time is <= 3 seconds
+    //               set the CANdle animation to STROBE at 0.25 sec period
+    //            else if the remaining shift time is <= 6 seconds
+    //                set the CANdle animation to STROBE at 0.5 sec period
+    //            else
+    //                set the CANdle animation to SOLID
+
   }
 
   /****************************************************************************
@@ -88,7 +131,7 @@ public class MatchState
   {
     // Initialize dashboard widgets
 
-    SmartDashboard.putNumber("ShiftTime", 0.0);
+    m_shiftTime.setNumber(0.0);
   }
 
   // Put methods for controlling this class here. Call these from Commands.
@@ -220,11 +263,11 @@ public class MatchState
 
   /****************************************************************************
    * 
-   * Create HID set rumble for operator controller command
+   * Return if the current shift is ours
    * 
-   * @return instant command that rumbles the gamepad
+   * @return true if shift has the hub active
    */
-  public static boolean currentShiftIsYours( )
+  public static boolean currentShiftIsOurs( )
   {
     double currentMatchTime = DriverStation.getMatchTime( );
     boolean isBlueShift = isCurrentShiftBlue(currentMatchTime);

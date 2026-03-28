@@ -1,0 +1,195 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.403,
+        "y": 7.427
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.403,
+        "y": 7.427
+      },
+      "isLocked": false,
+      "linkedName": "Start1"
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 4.868955019860202,
+        "y": 7.401796249877542
+      },
+      "nextControl": {
+        "x": 6.765039929015085,
+        "y": 7.467435669920142
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EX"
+    },
+    {
+      "anchor": {
+        "x": 7.693,
+        "y": 6.702883762200532
+      },
+      "prevControl": {
+        "x": 7.634122453718256,
+        "y": 7.036794920011881
+      },
+      "nextControl": {
+        "x": 7.751877546281743,
+        "y": 6.368972604389183
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.693,
+        "y": 4.841
+      },
+      "prevControl": {
+        "x": 7.63413326777091,
+        "y": 5.174849828271139
+      },
+      "nextControl": {
+        "x": 7.7518667322290895,
+        "y": 4.507150171728862
+      },
+      "isLocked": false,
+      "linkedName": "NZ1"
+    },
+    {
+      "anchor": {
+        "x": 6.743080357142857,
+        "y": 3.4411979166666673
+      },
+      "prevControl": {
+        "x": 6.98561598217919,
+        "y": 3.5018318229257503
+      },
+      "nextControl": {
+        "x": 6.500544732106523,
+        "y": 3.380564010407584
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.328150945719997,
+        "y": 3.3765339272413897
+      },
+      "prevControl": {
+        "x": 6.572450118245698,
+        "y": 3.3234498966553647
+      },
+      "nextControl": {
+        "x": 5.94046875,
+        "y": 3.4607738095238094
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.731659226190476,
+        "y": 5.157684117125111
+      },
+      "prevControl": {
+        "x": 5.740799421398993,
+        "y": 4.867959183673469
+      },
+      "nextControl": {
+        "x": 5.7128352191531455,
+        "y": 5.754365485713568
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 5.968297032355832,
+        "y": 7.433725236238978
+      },
+      "nextControl": {
+        "x": 5.1635048802129555,
+        "y": 7.419148181011535
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EX"
+    },
+    {
+      "anchor": {
+        "x": 3.603,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 4.176514229910714,
+        "y": 7.392928664434523
+      },
+      "nextControl": {
+        "x": 3.0294857700892863,
+        "y": 7.461071335565476
+      },
+      "isLocked": false,
+      "linkedName": "TR1-EN"
+    },
+    {
+      "anchor": {
+        "x": 2.75,
+        "y": 7.08
+      },
+      "prevControl": {
+        "x": 3.0638686779059454,
+        "y": 7.337533274179236
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "L1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -80.0
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": -100.0
+    },
+    {
+      "waypointRelativePos": 6.0,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.2,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -58.400000000000006
+  },
+  "reversed": false,
+  "folder": "FromStart",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

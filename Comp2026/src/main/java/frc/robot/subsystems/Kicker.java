@@ -8,14 +8,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,7 +29,7 @@ public class Kicker extends SubsystemBase
   // Constants
   private static final String   kSubsystemName      = "Kicker";
 
-  private static final double   kRollerSpeedAcquire = 0.5;     // Motor direction for positive input
+  private static final double   kRollerSpeedAcquire = 0.8;     // Motor direction for positive input
   private static final double   kRollerSpeedExpel   = -0.4;
 
   // Declare device objects
@@ -52,8 +48,8 @@ public class Kicker extends SubsystemBase
   private boolean               m_rollerValid;        // Health indicator for motor 
 
   // Network tables publisher objects
-  private DoublePublisher       m_rollSpeedPub;
-  private DoublePublisher       m_rollSupCurPub;
+  // private DoublePublisher       m_rollSpeedPub;
+  // private DoublePublisher       m_rollSupCurPub;
 
   /****************************************************************************
    * 
@@ -84,8 +80,8 @@ public class Kicker extends SubsystemBase
     // This method will be called once per scheduler run
 
     // Update network table publishers
-    m_rollSpeedPub.set(m_rollerMotor.get( ));
-    m_rollSupCurPub.set(m_rollerMotor.get( ));
+    // m_rollSpeedPub.set(m_rollerMotor.get( ));
+    // m_rollSupCurPub.set(m_rollerMotor.getSupplyCurrent( ).getValueAsDouble( ));
   }
 
   /****************************************************************************
@@ -117,17 +113,17 @@ public class Kicker extends SubsystemBase
   private void initDashboard( )
   {
     // Get the default instance of NetworkTables that was created automatically when the robot program starts
-    NetworkTableInstance inst = NetworkTableInstance.getDefault( );
-    NetworkTable table = inst.getTable("kicker");
+    // NetworkTableInstance inst = NetworkTableInstance.getDefault( );
+    // NetworkTable table = inst.getTable("kicker");
 
     // Initialize network tables publishers
-    m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
-    m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
+    // m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
+    // m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
 
     // Add commands
-    SmartDashboard.putData("KickerStop", getRollerModeCommand(KKRollerMode.STOP));
-    SmartDashboard.putData("KickerAcquire", getRollerModeCommand(KKRollerMode.ACQUIRE));
-    SmartDashboard.putData("KickerExpel", getRollerModeCommand(KKRollerMode.EXPEL));
+    // SmartDashboard.putData("KickerStop", getRollerModeCommand(KKRollerMode.STOP));
+    // SmartDashboard.putData("KickerAcquire", getRollerModeCommand(KKRollerMode.ACQUIRE));
+    // SmartDashboard.putData("KickerExpel", getRollerModeCommand(KKRollerMode.EXPEL));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.

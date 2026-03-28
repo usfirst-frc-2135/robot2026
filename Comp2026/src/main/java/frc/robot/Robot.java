@@ -84,6 +84,8 @@ public class Robot extends TimedRobot
     // for anything in the Command-based framework to work.
     //
     CommandScheduler.getInstance( ).run( );
+
+    m_robotContainer.robotPeriodic( );
   }
 
   /****************************************************************************
