@@ -141,7 +141,7 @@ public final class CTREConfigs6
     inRotaryConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
 
     if (Robot.isReal( ))
-      inRotaryConfig.MagnetSensor.MagnetOffset = (Robot.isComp( )) ? -0.140381 : 0.1104;
+      inRotaryConfig.MagnetSensor.MagnetOffset = (Robot.isComp( )) ? 0.35961914 : 0.1104;
     else
       inRotaryConfig.MagnetSensor.MagnetOffset = -0.25;                   // Simulated CANcoder default in rotations
 
