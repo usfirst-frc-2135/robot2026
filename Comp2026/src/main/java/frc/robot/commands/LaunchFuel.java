@@ -53,16 +53,17 @@ public class LaunchFuel extends SequentialCommandGroup
 
         new WaitCommand(1.75),
         new LogCommand(getName(), "Swing Intake Arm"), 
-        new RepeatCommand(
-          new SequentialCommandGroup(
-            intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getIndexingAngle),
-            new WaitCommand(0.25),
-            intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getDeployedAngle),
-            new WaitCommand(0.25)
-          )
-        ),
+        intake.getIndexingCommand()
+        // new RepeatCommand(
+        //   new SequentialCommandGroup(
+        //     intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getIndexingAngle),
+        //     new WaitCommand(0.25),
+        //     intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getDeployedAngle),
+        //     new WaitCommand(0.25)
+        //   )
+        // ),
 
-        intake.getIndexingCommand(INConsts.INRollerMode.STOP, intake::getDeployedAngle, intake::getProtectedAngle, intake::getIndexingAngle, intake::getStowedAngle)
+        
     
         // @formatter:on
     );

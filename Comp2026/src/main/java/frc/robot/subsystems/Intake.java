@@ -50,6 +50,8 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.INConsts;
 import frc.robot.Constants.INConsts.INRollerMode;
@@ -667,12 +669,15 @@ public class Intake extends SubsystemBase
     return getMMAngleCommand(mode, angle, false).withName(kSubsystemName + "MMMoveToAngle");
   }
 
-  public Command getIndexingCommand(INRollerMode mode, DoubleSupplier angle, DoubleSupplier angle1, DoubleSupplier angle2, DoubleSupplier angle3) {
+  public Command getIndexingCommand() {
   return new SequentialCommandGroup(
-      getMoveToAngleCommand(mode, angle),
-      getMoveToAngleCommand(mode, angle1),
-      getMoveToAngleCommand(mode, angle2),
-      getMoveToAngleCommand(mode, angle3)
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle),
+      new WaitCommand(0.25),
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle),
+      new WaitCommand(0.25),
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getProtectedAngle),
+      new WaitCommand(0.25),
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle)
   ).withName(kSubsystemName + "IndexingCommand");
 }
 
