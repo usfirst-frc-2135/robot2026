@@ -89,9 +89,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
     private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
 
-    // private final Translation2d         kHubCenter           = new Translation2d(Inches.of(182.11), Inches.of(158.84));
-    private final Translation2d         kHubCenter           = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.84));
-    private static final double         kAimingKp            = 0.1;
+    private final Translation2d         kHubCenterBlue        = new Translation2d(Inches.of(182.11), Inches.of(158.32));
+    private final Translation2d         kHubCenterRed       = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.32));
+    private static final double         kAimingKp            = 0.01;
     private static final double         kDrivingKp           = 0.6;
     private static final double         optimalDistance      = Units.inchesToMeters(138.0);
     private static final LinearVelocity kMaxSpeed            = TunerConstants.kSpeedAt12Volts; //max top speed
@@ -114,6 +114,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private SwerveSetpointGenerator     m_setpointGenerator;
     private SwerveSetpoint              m_previousSetpoint;
+
+    private Translation2d               m_hubCenter          = new Translation2d();
 
     /* Robot pathToPose constraints */
     private final PathConstraints       kPathFindConstraints = new PathConstraints( // 
@@ -389,8 +391,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             m_frontUpdate.set(m_frontFilter.calculate(front) > 0.5);
 
             double back = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
-            m_backUpdate.set(m_backFilter.calculate(back) > 0.5);
-        
+            m_backUpdate.set(m_backFilter.calculate(back) > 0.5);        
     }
 
     private void startSimThread() {
@@ -767,12 +768,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command GetAutoAligntoHub( )
     {
+
         return this.applyRequest(( ) ->
         {
+            Optional<Alliance> alliance = DriverStation.getAlliance( );
+            //sets hub center depending on whether alliance is red, blue, or missing
+            m_hubCenter = (alliance.equals(Optional.of(DriverStation.Alliance.Red))) ? kHubCenterRed : kHubCenterBlue;
+
             Pose2d robotPose = m_driveStatePose.get( );
 
             // subtracts hub pose from current robot pose
-            Translation2d translation = kHubCenter.minus(robotPose.getTranslation( ));
+            Translation2d translation = m_hubCenter.minus(robotPose.getTranslation( ));
 
             Rotation2d hubrotation = translation.getAngle( );
 
@@ -780,7 +786,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             double diffAngle = hubrotation.minus(robotPose.getRotation( )).getDegrees( );
 
             // gets distance from current robot position and that of the hub
-            double distanceToHub = kHubCenter.getDistance(robotPose.getTranslation( ));
+            double distanceToHub = m_hubCenter.getDistance(robotPose.getTranslation( ));
 
             DataLogManager.log(String.format("Range %.2f Aim: %.1f", distanceToHub, diffAngle));
 
