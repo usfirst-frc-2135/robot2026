@@ -49,15 +49,15 @@
     {
       "anchor": {
         "x": 6.943,
-        "y": 4.641
+        "y": 4.541
       },
       "prevControl": {
         "x": 7.443,
-        "y": 4.641
+        "y": 4.541
       },
       "nextControl": {
         "x": 6.443,
-        "y": 4.641
+        "y": 4.541
       },
       "isLocked": false,
       "linkedName": "NZ1B"

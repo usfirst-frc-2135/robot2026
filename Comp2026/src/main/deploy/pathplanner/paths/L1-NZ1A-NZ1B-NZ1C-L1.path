@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9267766952966365,
+        "x": 2.926776695296637,
         "y": 7.256776695296637
       },
       "isLocked": false,
@@ -65,15 +65,15 @@
     {
       "anchor": {
         "x": 6.943,
-        "y": 4.641
+        "y": 4.541
       },
       "prevControl": {
         "x": 7.443,
-        "y": 4.641
+        "y": 4.541
       },
       "nextControl": {
         "x": 6.443,
-        "y": 4.641
+        "y": 4.541
       },
       "isLocked": false,
       "linkedName": "NZ1B"

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
+import frc.robot.commands.StopIntaking;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -40,26 +41,27 @@ public class AutoScore2B extends SequentialCommandGroup
 
         // @formatter:off
 
-        new LogCommand(getName(), "Acquire fuel, score once, acquire fuel with NZ path and score"),
+        new LogCommand(getName(), "Acquire fuel, score once, acquire fuel from depot or outpost and score"),
         new ParallelCommandGroup(
           new LogCommand(getName(),"Path 1"),
           drivetrain.getPathCommand(ppAuto.get(0)),
           new AcquireFuel(intake,hopper)
           ),
+        new StopIntaking(intake, hopper, kicker),
         new ParallelCommandGroup(
           new LogCommand(getName(),"Path 2"),
           drivetrain.getPathCommand(ppAuto.get(1)),
           launcher.getLauncherScoreCommand()
           ),
         new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(4),
-        new AcquireFuel(intake,hopper),
         new ParallelCommandGroup(
           new LogCommand(getName(),"Path 3"),
           drivetrain.getPathCommand(ppAuto.get(2)),
           new AcquireFuel(intake,hopper)
           ),
+        new StopIntaking(intake, hopper, kicker),
         launcher.getLauncherScoreCommand(),
-        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(4)
+        new LaunchFuel(intake, hopper, kicker, launcher)
         
         // @formatter:on
     );
