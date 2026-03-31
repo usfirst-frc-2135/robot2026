@@ -697,8 +697,6 @@ public class Intake extends SubsystemBase
   ).withName(kSubsystemName + "IndexingCommand");
 }
 
-  
-
   /****************************************************************************
    * 
    * Create motion magic hold angle command
