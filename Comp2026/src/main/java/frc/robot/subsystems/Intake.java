@@ -48,8 +48,12 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
+import frc.robot.Constants.INConsts;
 import frc.robot.Constants.INConsts.INRollerMode;
 import frc.robot.Constants.Ports;
 import frc.robot.Robot;
@@ -99,6 +103,8 @@ public class Intake extends SubsystemBase
   //      Practice -130.4  -126.4     4.2       5.2
   private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4; // Four degrees from hardstops
   private static final double       kRotaryAngleIndexing = -90.0;
+  private static final double       kRotaryAngleSixty = -60.0;
+  private static final double       kRotaryAngleThirty = -30.0;
   private static final double       kRotaryAngleProtected = -15.0;
   private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
@@ -596,6 +602,16 @@ public class Intake extends SubsystemBase
     return kRotaryAngleStowed;
   }
 
+  public double getThirtyAngle( )
+  {
+    return kRotaryAngleThirty;
+  }
+
+  public double getSixtyAngle( )
+  {
+    return kRotaryAngleSixty;
+  }
+
   /****************************************************************************
    * 
    * Return intake angle for deployed state
@@ -639,7 +655,7 @@ public class Intake extends SubsystemBase
    *          boolen to indicate whether the command ever finishes
    * @return continuous command that runs intake motors
    */
-  private Command getMMAngleCommand(INRollerMode mode, DoubleSupplier angle, boolean holdAngle)
+  public Command getMMAngleCommand(INRollerMode mode, DoubleSupplier angle, boolean holdAngle)
   {
     return new FunctionalCommand(                                       // Command with all phases declared
         ( ) -> moveToAngleInit(mode, angle.getAsDouble( ), holdAngle),  // Init method
@@ -664,6 +680,20 @@ public class Intake extends SubsystemBase
   {
     return getMMAngleCommand(mode, angle, false).withName(kSubsystemName + "MMMoveToAngle");
   }
+
+  public Command getIndexingCommand() {
+  return new SequentialCommandGroup(
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getProtectedAngle),
+      new WaitCommand(0.25),
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),
+      new WaitCommand(0.25),
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getSixtyAngle),
+      new WaitCommand(0.25),
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle),
+      new WaitCommand(0.25),
+      getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)
+  ).withName(kSubsystemName + "IndexingCommand");
+}
 
   /****************************************************************************
    * 
