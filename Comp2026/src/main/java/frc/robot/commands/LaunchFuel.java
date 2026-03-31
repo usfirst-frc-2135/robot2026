@@ -57,8 +57,6 @@ public class LaunchFuel extends SequentialCommandGroup
           intake.getIndexingCommand()
         )
 
-        
-    
         // @formatter:on
     );
   }

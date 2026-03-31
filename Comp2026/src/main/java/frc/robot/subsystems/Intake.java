@@ -612,8 +612,6 @@ public class Intake extends SubsystemBase
     return kRotaryAngleSixty;
   }
 
-
-
   /****************************************************************************
    * 
    * Return intake angle for deployed state
