@@ -89,8 +89,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
     private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
 
-    private final Translation2d         kHubCenterBlue        = new Translation2d(Inches.of(182.11), Inches.of(158.32));
-    private final Translation2d         kHubCenterRed       = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.32));
+    private final Translation2d         kHubCenterBlue       = new Translation2d(Inches.of(182.11), Inches.of(158.84));
+    private final Translation2d         kHubCenterRed        = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.84));
     private static final double         kAimingKp            = 0.01;
     private static final double         kDrivingKp           = 0.6;
     private static final double         optimalDistance      = Units.inchesToMeters(138.0);
@@ -771,21 +771,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         return this.applyRequest(( ) ->
         {
+            // Sets hub center depending on whether alliance is red, blue, or missing
             Optional<Alliance> alliance = DriverStation.getAlliance( );
-            //sets hub center depending on whether alliance is red, blue, or missing
             m_hubCenter = (alliance.equals(Optional.of(DriverStation.Alliance.Red))) ? kHubCenterRed : kHubCenterBlue;
 
             Pose2d robotPose = m_driveStatePose.get( );
 
-            // subtracts hub pose from current robot pose
+            // Subtracts current robot pose from hub pose
             Translation2d translation = m_hubCenter.minus(robotPose.getTranslation( ));
 
             Rotation2d hubrotation = translation.getAngle( );
 
-            // gets difference in current robot rotation and that of the hub
+            // Gets difference in current robot rotation and that of the hub
             double diffAngle = hubrotation.minus(robotPose.getRotation( )).getDegrees( );
 
-            // gets distance from current robot position and that of the hub
+            // Gets distance from current robot position and that of the hub
             double distanceToHub = m_hubCenter.getDistance(robotPose.getTranslation( ));
 
             DataLogManager.log(String.format("Range %.2f Aim: %.1f", distanceToHub, diffAngle));
