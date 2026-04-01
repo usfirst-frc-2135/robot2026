@@ -534,11 +534,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 poseArray.set(array);
 
                 if (m_limelightSub.get( ))
-                    if (false)
-                    {
-                        setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-                        addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
-                    }
+                {
+                    setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+                    addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+                }
             }
         }
         else if (useMegaTag2 == true)
@@ -578,8 +577,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
                 // Code used by some teams to scale std devs by distance (below) and used by several teams
 
-                // if (m_limelightSub.get( ))
-                if (false)
+                if (m_limelightSub.get( ))
                 {
                     setVisionMeasurementStdDevs(VecBuilder.fill( //
                             Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
