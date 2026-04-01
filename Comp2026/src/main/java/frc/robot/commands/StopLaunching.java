@@ -27,7 +27,7 @@ public class StopLaunching extends SequentialCommandGroup
    * @param intake
    *          intake subsystem
    */
-  public StopLaunching(Hopper hopper, Kicker kicker, Launcher launcher, Intake intake)
+  public StopLaunching(Intake intake, Hopper hopper, Kicker kicker, Launcher launcher)
   {
     setName("StopLaunching");
 
