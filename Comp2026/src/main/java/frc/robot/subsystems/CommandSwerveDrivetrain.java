@@ -14,8 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import javax.naming.ldap.BasicControl;
-
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -94,7 +92,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private final Translation2d         kHubCenterBlue       = new Translation2d(Inches.of(182.11), Inches.of(158.84));
     private final Translation2d         kHubCenterRed        = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.84));
-    private static final double         kAimingKp            = 0.01;
+    private static final double         kAimingKp            = 0.012;
     private static final double         kDrivingKp           = 0.6;
     private static final double         optimalDistance      = Units.inchesToMeters(138.0);
     private static final LinearVelocity kMaxSpeed            = TunerConstants.kSpeedAt12Volts; //max top speed
@@ -107,7 +105,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final DoubleArrayPublisher  m_setPosePub         = kSwerveTable.getDoubleArrayTopic("setPose").publish();
     private final DoubleArraySubscriber m_setPoseSub         = kSwerveTable.getDoubleArrayTopic("setPose").subscribe(new double[3]);
     private final BooleanPublisher      m_limelightPub       = kSwerveTable.getBooleanTopic("useLimelight").publish();
-    private final BooleanSubscriber     m_limelightSub       = kSwerveTable.getBooleanTopic("useLimelight").subscribe(true);
+    private final BooleanSubscriber     m_limelightSub       = kSwerveTable.getBooleanTopic("useLimelight").subscribe(false);
 
 
     private MedianFilter                m_frontFilter        = new MedianFilter(5);
@@ -481,6 +479,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // SmartDashboard.putData("AlignToPosePID", getAlignToPosePIDCommand( ));
         SmartDashboard.putData("AlignToPosePPFollow", new DeferredCommand(( ) -> getPoseAlignPPFollowCommand( ), Set.of(this)));
         SmartDashboard.putData("AlignToPosePPFind", new DeferredCommand(( ) -> getAlignToPosePPFindCommand( ), Set.of(this)));
+        m_limelightPub.set(false);
     }
 
     /****************************************************************************
