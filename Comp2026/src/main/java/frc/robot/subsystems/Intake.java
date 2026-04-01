@@ -47,13 +47,12 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
-import frc.robot.Constants.INConsts;
 import frc.robot.Constants.INConsts.INRollerMode;
 import frc.robot.Constants.Ports;
 import frc.robot.Robot;
@@ -92,48 +91,48 @@ public class Intake extends SubsystemBase
 
   /** Rotary Motion Magic movement parameters */
 
-  private static final double       kToleranceDegrees    = 3.0;      // PID tolerance in degrees
-  private static final double       kMMDebounceTime      = 0.060;    // Seconds to debounce a final position check
-  private static final double       kMMMoveTimeout       = 1.3;      // Seconds allowed for a Motion Magic movement
+  private static final double       kToleranceDegrees     = 3.0;      // PID tolerance in degrees
+  private static final double       kMMDebounceTime       = 0.060;    // Seconds to debounce a final position check
+  private static final double       kMMMoveTimeout        = 1.3;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
   //    Measured hardstops and pre-defined positions (0 degrees is horizontal to the floor):
   //               hstop   retracted  deployed  hstop
   //      Comp     -124.7  -120.7     5.1       6.1
   //      Practice -130.4  -126.4     4.2       5.2
-  private static final double       kRotaryAngleStowed   = Robot.isComp( ) ? -114.7 : -126.4; // Four degrees from hardstops
-  private static final double       kRotaryAngleIndexing = -90.0;
-  private static final double       kRotaryAngleSixty = -60.0;
-  private static final double       kRotaryAngleThirty = -30.0;
+  private static final double       kRotaryAngleStowed    = Robot.isComp( ) ? -114.7 : -126.4; // Four degrees from hardstops
+  private static final double       kRotaryAngleIndexing  = -75.0;
+  private static final double       kRotaryAngleSixty     = -60.0;
+  private static final double       kRotaryAngleThirty    = -30.0;
   private static final double       kRotaryAngleProtected = -15.0;
-  private static final double       kRotaryAngleDeployed = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
+  private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
-  private static final double       kRotaryAngleMin      = kRotaryAngleStowed - 3.0;
-  private static final double       kRotaryAngleMax      = kRotaryAngleDeployed + 3.0;
+  private static final double       kRotaryAngleMin       = kRotaryAngleStowed - 3.0;
+  private static final double       kRotaryAngleMax       = kRotaryAngleDeployed + 3.0;
 
   // Declare device objects
-  private final TalonFX             m_rollerMotor        = new TalonFX(Ports.kCANID_IntakeRoller);
-  private final TalonFX             m_rotaryMotor        = new TalonFX(Ports.kCANID_IntakeRotary);
-  private final CANcoder            m_CANcoder           = new CANcoder(Ports.kCANID_IntakeCANcoder);
+  private final TalonFX             m_rollerMotor         = new TalonFX(Ports.kCANID_IntakeRoller);
+  private final TalonFX             m_rotaryMotor         = new TalonFX(Ports.kCANID_IntakeRotary);
+  private final CANcoder            m_CANcoder            = new CANcoder(Ports.kCANID_IntakeCANcoder);
 
   // Alerts
-  private final Alert               m_rollerAlert        =
+  private final Alert               m_rollerAlert         =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert               m_rotaryAlert        =
+  private final Alert               m_rotaryAlert         =
       new Alert(String.format("%s: Rotary motor init failed!", getSubsystem( )), AlertType.kError);
-  private final Alert               m_canCoderAlert      =
+  private final Alert               m_canCoderAlert       =
       new Alert(String.format("%s: CANcoder init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
-  private final TalonFXSimState     m_rollerMotorSim     = m_rollerMotor.getSimState( );
-  private final TalonFXSimState     m_rotarySim          = m_rotaryMotor.getSimState( );
-  private final CANcoderSimState    m_CANcoderSim        = m_CANcoder.getSimState( );
-  private final SingleJointedArmSim m_armSim             = new SingleJointedArmSim(DCMotor.getKrakenX60(1), kRotaryGearRatio,
+  private final TalonFXSimState     m_rollerMotorSim      = m_rollerMotor.getSimState( );
+  private final TalonFXSimState     m_rotarySim           = m_rotaryMotor.getSimState( );
+  private final CANcoderSimState    m_CANcoderSim         = m_CANcoder.getSimState( );
+  private final SingleJointedArmSim m_armSim              = new SingleJointedArmSim(DCMotor.getKrakenX60(1), kRotaryGearRatio,
       SingleJointedArmSim.estimateMOI(kRotaryLengthMeters, kRotaryWeightKg), kRotaryLengthMeters, -Math.PI, Math.PI, false, 0.0);
 
   // Mechanism2d
-  private final Mechanism2d         m_rotaryMech         = new Mechanism2d(1.0, 1.0);
-  private final MechanismLigament2d m_mechLigament       = m_rotaryMech.getRoot("Rotary", 0.5, 0.5)
+  private final Mechanism2d         m_rotaryMech          = new Mechanism2d(1.0, 1.0);
+  private final MechanismLigament2d m_mechLigament        = m_rotaryMech.getRoot("Rotary", 0.5, 0.5)
       .append(new MechanismLigament2d(kSubsystemName, 0.5, 0.0, 6, new Color8Bit(Color.kPurple)));
 
   // Status signals
@@ -148,18 +147,18 @@ public class Intake extends SubsystemBase
   // Rotary variables
   private boolean                   m_rotaryValid;                // Health indicator for motor 
   private boolean                   m_canCoderValid;              // Health indicator for CANcoder 
-  private double                    m_currentDegrees     = 0.0;  // Current angle in degrees
-  private double                    m_goalDegrees        = 0.0;  // Goal angle in degrees
-  private double                    m_ccDegrees          = 0.0;  // CANcoder angle in degrees
+  private double                    m_currentDegrees      = 0.0;  // Current angle in degrees
+  private double                    m_goalDegrees         = 0.0;  // Goal angle in degrees
+  private double                    m_ccDegrees           = 0.0;  // CANcoder angle in degrees
 
   // Manual mode config parameters
-  private VoltageOut                m_requestVolts       = new VoltageOut(Volts.of(0)).withEnableFOC(false);
-  private RotaryMode                m_rotaryMode         = RotaryMode.INIT;    // Manual movement mode with joysticks
+  private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0)).withEnableFOC(false);
+  private RotaryMode                m_rotaryMode          = RotaryMode.INIT;    // Manual movement mode with joysticks
 
   // Motion Magic config parameters    // Manual movement mode with joysticks
-  private MotionMagicVoltage        m_mmRequestVolts     = new MotionMagicVoltage(0).withSlot(0).withEnableFOC(false);
-  private Debouncer                 m_mmWithinTolerance  = new Debouncer(kMMDebounceTime, DebounceType.kRising);
-  private Timer                     m_mmMoveTimer        = new Timer( );       // Movement timer
+  private MotionMagicVoltage        m_mmRequestVolts      = new MotionMagicVoltage(0).withSlot(0).withEnableFOC(false);
+  private Debouncer                 m_mmWithinTolerance   = new Debouncer(kMMDebounceTime, DebounceType.kRising);
+  private Timer                     m_mmMoveTimer         = new Timer( );       // Movement timer
   private boolean                   m_mmMoveIsFinished;                         // Movement has completed (within tolerance)
 
   // Network tables publisher objects
@@ -306,9 +305,8 @@ public class Intake extends SubsystemBase
     SmartDashboard.putData("IntakeHold", getMoveToAngleCommand(INRollerMode.HOLD, this::getCurrentAngle));
 
     SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle));
-    SmartDashboard.putData("IntakeIndexing", getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle));
-    SmartDashboard.putData("IntakeProtect", getMoveToAngleCommand(INRollerMode.HOLD, this::getProtectedAngle));
     SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle));
+    SmartDashboard.putData("IntakeIndexing", getIndexingCommand( ));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -571,7 +569,18 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Return intake angle for indexing state
+   * Return intake angle for stowed state - fully retracted into stowed position
+   * 
+   * @return stowed state angle
+   */
+  public double getStowedAngle( )
+  {
+    return kRotaryAngleStowed;
+  }
+
+  /****************************************************************************
+   * 
+   * Return intake angle for indexing states
    * 
    * @return indexing state angle
    */
@@ -580,9 +589,19 @@ public class Intake extends SubsystemBase
     return kRotaryAngleIndexing;
   }
 
+  public double getSixtyAngle( )
+  {
+    return kRotaryAngleSixty;
+  }
+
+  public double getThirtyAngle( )
+  {
+    return kRotaryAngleThirty;
+  }
+
   /****************************************************************************
    * 
-   * Return intake angle for protected state
+   * Return intake angle for protected state - slightly raised to protect hopper and intake
    * 
    * @return protected state angle
    */
@@ -593,28 +612,7 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Return intake angle for stowed state
-   * 
-   * @return stowed state angle
-   */
-  public double getStowedAngle( )
-  {
-    return kRotaryAngleStowed;
-  }
-
-  public double getThirtyAngle( )
-  {
-    return kRotaryAngleThirty;
-  }
-
-  public double getSixtyAngle( )
-  {
-    return kRotaryAngleSixty;
-  }
-
-  /****************************************************************************
-   * 
-   * Return intake angle for deployed state
+   * Return intake angle for deployed state - ready for intaking fuel
    * 
    * @return deployed state angle
    */
@@ -655,7 +653,7 @@ public class Intake extends SubsystemBase
    *          boolen to indicate whether the command ever finishes
    * @return continuous command that runs intake motors
    */
-  public Command getMMAngleCommand(INRollerMode mode, DoubleSupplier angle, boolean holdAngle)
+  private Command getMMAngleCommand(INRollerMode mode, DoubleSupplier angle, boolean holdAngle)
   {
     return new FunctionalCommand(                                       // Command with all phases declared
         ( ) -> moveToAngleInit(mode, angle.getAsDouble( ), holdAngle),  // Init method
@@ -681,20 +679,6 @@ public class Intake extends SubsystemBase
     return getMMAngleCommand(mode, angle, false).withName(kSubsystemName + "MMMoveToAngle");
   }
 
-  public Command getIndexingCommand() {
-  return new SequentialCommandGroup(
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getProtectedAngle),
-      new WaitCommand(0.25),
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),
-      new WaitCommand(0.25),
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getSixtyAngle),
-      new WaitCommand(0.25),
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle),
-      new WaitCommand(0.25),
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)
-  ).withName(kSubsystemName + "IndexingCommand");
-}
-
   /****************************************************************************
    * 
    * Create motion magic hold angle command
@@ -710,4 +694,27 @@ public class Intake extends SubsystemBase
     return getMMAngleCommand(mode, angle, true).withName(kSubsystemName + "MMHoldAngle");
   }
 
+  /****************************************************************************
+   * 
+   * Create indexing sequence for pushing fuel to launcher
+   * 
+   * @return command that runs moves intake arm while intaking
+   */
+  public Command getIndexingCommand( )
+  {
+    return new SequentialCommandGroup( //
+        getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),     //
+        new WaitCommand(0.25),                                            //
+        getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),           //
+        new WaitCommand(0.25),                                            //
+        new RepeatCommand(                                                        //
+            new SequentialCommandGroup(                                           //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getSixtyAngle),    //
+                new WaitCommand(0.25),                                    //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle), //
+                new WaitCommand(0.25),                                    //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)    //
+            )                                                                     //
+        )).withName(kSubsystemName + "IndexingCommand");
+  }
 }

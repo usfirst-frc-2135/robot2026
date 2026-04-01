@@ -62,9 +62,9 @@ public class Vision
 
   // Constants
   private static final double kAimingKp  = 0.01;
-  private static final double kDrivingKp = 0.06;
+  private static final double kDrivingKp = 0.08;
   private static final double kTXOffset  = 0.0;
-  private static final double kTYOffset  = 4.0;
+  private static final double kTYOffset  = 8.0;
 
   // Objects
 
@@ -157,7 +157,9 @@ public class Vision
    */
   public AngularVelocity aimProportional(AngularVelocity maxAngularRate)
   {
-    double proportionalFactor = -(LimelightHelpers.getTX(Constants.kLLFrontName) * kTXOffset) * kAimingKp;
+    double tx =
+        LimelightHelpers.getTV(Constants.kLLFrontName) ? (LimelightHelpers.getTX(Constants.kLLFrontName) + kTXOffset) : 0.0;
+    double proportionalFactor = -tx * kAimingKp;
 
     return maxAngularRate.times(proportionalFactor);
   }
@@ -172,7 +174,9 @@ public class Vision
    */
   public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
   {
-    double proportionalFactor = -(LimelightHelpers.getTY(Constants.kLLFrontName) + kTYOffset) * kDrivingKp;
+    double ty =
+        LimelightHelpers.getTV(Constants.kLLFrontName) ? (LimelightHelpers.getTY(Constants.kLLFrontName) + kTYOffset) : 0.0;
+    double proportionalFactor = -ty * kDrivingKp;
 
     return maxSpeed.times(proportionalFactor);
   }

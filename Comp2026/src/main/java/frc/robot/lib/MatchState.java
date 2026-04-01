@@ -6,12 +6,17 @@ package frc.robot.lib;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import com.ctre.phoenix6.Utils;
+
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
+import frc.robot.Constants.LEDConsts.ANIMATION;
+import frc.robot.Constants.LEDConsts.COLOR;
 
 /****************************************************************************
  * 
@@ -22,13 +27,13 @@ public class MatchState
   // Constants
 
   // Member objects
-  private String            m_name         = new String( );
+  private String            m_name          = new String( );
   private HID               m_hid;
   private LED               m_led;
-  private boolean           m_rumbleActive = false;
+  private int               m_prevShiftTime = 0;
 
-  private NetworkTableEntry m_matchTime    = SmartDashboard.getEntry("MatchTime");
-  private NetworkTableEntry m_shiftTime    = SmartDashboard.getEntry("ShiftTime");
+  private NetworkTableEntry m_matchTime     = SmartDashboard.getEntry("MatchTime");
+  private NetworkTableEntry m_shiftTime     = SmartDashboard.getEntry("ShiftTime");
 
   /****************************************************************************
    * 
@@ -63,6 +68,19 @@ public class MatchState
     return m_name;
   }
 
+  /**
+   * Use currentShiftIsOurs() to determine if this is our shift
+   * 
+   * @param animation
+   *          LED animation to apply
+   */
+
+  private void setLEDForCurrentShift(ANIMATION animation, double rate)
+  {
+    COLOR color = (currentShiftIsOurs( )) ? COLOR.GREEN : COLOR.ORANGE;
+    CommandScheduler.getInstance( ).schedule(m_led.getLEDCommand(color, animation, rate));
+  }
+
   /****************************************************************************
    * 
    * Periodic actions that run every scheduler loop time (20 msec)
@@ -72,27 +90,54 @@ public class MatchState
     // This method will be called once per scheduler run
 
     double matchTime = DriverStation.getMatchTime( );
-    int shiftTime = timeLeftInShiftSeconds(DriverStation.getMatchTime( ));
+
+    // Simulate counting when no driver station attached
+
+    if (Utils.isSimulation( ))
+    {
+      matchTime = 160 - Timer.getFPGATimestamp( );
+    }
+
+    int shiftTime = timeLeftInShiftSeconds(matchTime);
 
     m_matchTime.setNumber(matchTime);
 
+    // If in Teleop and shift time has ticked down one count
+
     if (DriverStation.isTeleop( ))
     {
-      if (shiftTime <= 5)
+      // shiftTime counts down as an integer
+
+      if (shiftTime != m_prevShiftTime)
       {
-        if (!m_rumbleActive)
+
+        // Do the correct action based on the remaining time in the shift
+        switch (shiftTime)
         {
-          m_rumbleActive = true;
-          CommandScheduler.getInstance( )
-              .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
-          CommandScheduler.getInstance( )
-              .schedule(m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
-          DataLogManager.log("End of Shift Rumble");
+          case 5 :  // At 5 seconds remaining
+          case 4 :
+            DataLogManager.log("End of Shift Warning");
+            // Start rumble
+            CommandScheduler.getInstance( )
+                .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
+            CommandScheduler.getInstance( )
+                .schedule(m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
+            // Set LEDs to first warning - slow flashing @ 0.5 cycle
+            setLEDForCurrentShift(ANIMATION.STROBE, 0.5);
+            break;
+          case 3 :  // At 3 seconds remaining
+          case 2 :
+          case 1 :
+            DataLogManager.log("End of Shift Fast Warning");
+            // Set LEDs to final warning - fast flashing at 0.25 cycle
+            setLEDForCurrentShift(ANIMATION.STROBE, 0.25);
+            break;
+          default :
+            // Set LEDs to solid color for current cycle
+            setLEDForCurrentShift(ANIMATION.SOLID, 0.0);
+            break;
         }
-      }
-      else
-      {
-        m_rumbleActive = false;
+        m_prevShiftTime = shiftTime;  // Update saved value, so this code only runs when the ticks change
       }
     }
     else
@@ -100,17 +145,6 @@ public class MatchState
       shiftTime = 0;
     }
     m_shiftTime.setNumber(shiftTime);
-
-    // TODO: use currentShiftIsOurs() to determine if this is our shift
-    //           if it is our shift
-    //               set the CANdle to GREEN
-    //               else set the candle to RED
-    //           if the remaining shift time is <= 3 seconds
-    //               set the CANdle animation to STROBE at 0.25 sec period
-    //            else if the remaining shift time is <= 6 seconds
-    //                set the CANdle animation to STROBE at 0.5 sec period
-    //            else
-    //                set the CANdle animation to SOLID
 
   }
 

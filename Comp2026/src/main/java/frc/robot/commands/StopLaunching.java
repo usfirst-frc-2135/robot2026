@@ -3,8 +3,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.HPConsts;
+import frc.robot.Constants.INConsts.INRollerMode;
 import frc.robot.Constants.KKConsts;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kicker;
 import frc.robot.subsystems.Launcher;
 
@@ -22,8 +24,10 @@ public class StopLaunching extends SequentialCommandGroup
    *          launcher subsystem
    * @param kicker
    *          kicker subsystem
+   * @param intake
+   *          intake subsystem
    */
-  public StopLaunching(Hopper hopper, Kicker kicker, Launcher launcher)
+  public StopLaunching(Intake intake, Hopper hopper, Kicker kicker, Launcher launcher)
   {
     setName("StopLaunching");
 
@@ -39,7 +43,10 @@ public class StopLaunching extends SequentialCommandGroup
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
 
         new LogCommand(getName(), "Stop Launcher rollers "),
-        launcher.getLauncherPrimedCommand()
+        launcher.getLauncherPrimedCommand(),
+
+        new LogCommand(getName(), "Move Intake -45 degrees"),
+        intake.getMoveToAngleCommand(INRollerMode.HOLD, intake::getThirtyAngle)
 
         // @formatter:on
     );
