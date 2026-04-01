@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import javax.naming.ldap.BasicControl;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -43,8 +45,10 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructSubscriber;
@@ -78,7 +82,6 @@ import frc.robot.lib.Vision;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-    private static final boolean        m_useLimelight       = false;
 
     /* What to publish over networktables for telemetry */
     private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
@@ -103,12 +106,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final NetworkTable          kSwerveTable         = kNTInst.getTable("swerve");
     private final DoubleArrayPublisher  m_setPosePub         = kSwerveTable.getDoubleArrayTopic("setPose").publish();
     private final DoubleArraySubscriber m_setPoseSub         = kSwerveTable.getDoubleArrayTopic("setPose").subscribe(new double[3]);
+    private final BooleanPublisher      m_limelightPub       = kSwerveTable.getBooleanTopic("useLimelight").publish();
+    private final BooleanSubscriber     m_limelightSub       = kSwerveTable.getBooleanTopic("useLimelight").subscribe(true);
+
 
     private MedianFilter                m_frontFilter        = new MedianFilter(5);
     private MedianFilter                m_backFilter         = new MedianFilter(5);
 
     private BooleanPublisher            m_frontUpdate        = kSwerveTable.getBooleanTopic("FrontCam").publish();
     private BooleanPublisher            m_backUpdate         = kSwerveTable.getBooleanTopic("BackCam").publish();
+
+    private DoublePublisher             m_rangePub           = kSwerveTable.getDoubleTopic("AlignRange").publish();
+    private DoublePublisher             m_aimPub             = kSwerveTable.getDoubleTopic("AlignAim").publish();
 
     private double []                   m_moduleDistances    = {0, 0, 0, 0};
 
@@ -524,11 +533,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 };
                 poseArray.set(array);
 
-                if (m_useLimelight)
-                {
-                    setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-                    addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
-                }
+                if (m_limelightSub.get( ))
+                    if (false)
+                    {
+                        setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+                        addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
+                    }
             }
         }
         else if (useMegaTag2 == true)
@@ -568,7 +578,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
                 // Code used by some teams to scale std devs by distance (below) and used by several teams
 
-                if (m_useLimelight)
+                // if (m_limelightSub.get( ))
+                if (false)
                 {
                     setVisionMeasurementStdDevs(VecBuilder.fill( //
                             Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
@@ -766,7 +777,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * 
      * @return auto-align to hub command
      */
-    public Command GetAutoAligntoHub( )
+    public Command GetAutoAlignToHub( )
     {
 
         return this.applyRequest(( ) ->
@@ -788,7 +799,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             // Gets distance from current robot position and that of the hub
             double distanceToHub = m_hubCenter.getDistance(robotPose.getTranslation( ));
 
-            DataLogManager.log(String.format("Range %.2f Aim: %.1f", distanceToHub, diffAngle));
+            m_aimPub.set(diffAngle);
+            m_rangePub.set(distanceToHub);
 
             return new SwerveRequest.RobotCentric( ).withVelocityX(this.rangePoseProportional(distanceToHub, kMaxSpeed))
                     .withVelocityY(0).withRotationalRate(this.aimPoseProportional(diffAngle, kMaxAngularRate));
