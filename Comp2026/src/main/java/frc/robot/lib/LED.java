@@ -210,12 +210,12 @@ public class LED
    */
   private void updateColorChooserCallback(COLOR option)
   {
-    setLEDs(option, m_animationChooser.getSelected( ));
+    setLEDs(option, m_animationChooser.getSelected( ), kFrameRate);
   }
 
   private void updateAnimationChooserCallback(ANIMATION option)
   {
-    setLEDs(m_colorChooser.getSelected( ), option);
+    setLEDs(m_colorChooser.getSelected( ), option, kFrameRate);
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -227,7 +227,7 @@ public class LED
   public void initialize( )
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getName( )));
-    setLEDs(COLOR.OFF, ANIMATION.SOLID);
+    setLEDs(COLOR.OFF, ANIMATION.SOLID, 0.0);
   }
 
   /****************************************************************************
@@ -351,11 +351,11 @@ public class LED
    * 
    * Set LED requests based on the requested color and animation
    */
-  private void setLEDs(COLOR color, ANIMATION animation)
+  private void setLEDs(COLOR color, ANIMATION animation, double rate)
   {
     m_request.color = color;
     m_request.animation = animation;
-    DataLogManager.log(String.format("%s: CANdle request is %s, %s", getName( ), color, animation));
+    DataLogManager.log(String.format("%s: CANdle request is %s, %s, %.3f", getName( ), color, animation, rate));
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -372,10 +372,10 @@ public class LED
    *          LED animation pattern to use
    * @return instant command that changes LEDs
    */
-  public Command getLEDCommand(COLOR color, ANIMATION animation)
+  public Command getLEDCommand(COLOR color, ANIMATION animation, double rate)
   {
     return new InstantCommand(            // Command that runs exactly once
-        ( ) -> setLEDs(color, animation) // Method to call
+        ( ) -> setLEDs(color, animation, rate) // Method to call
     )                                     //
         .withName("LEDSet")          //
         .ignoringDisable(true);
