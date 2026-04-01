@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.HPConsts;
-import frc.robot.Constants.INConsts;
 import frc.robot.Constants.KKConsts;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -52,10 +51,8 @@ public class LaunchFuel extends SequentialCommandGroup
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.ACQUIRE),
 
         new WaitCommand(1.75),
-        new LogCommand(getName(), "Swing Intake Arm"), 
-        new RepeatCommand(
-          intake.getIndexingCommand()
-        )
+        new LogCommand(getName(), "Swing Intake Arm to index fuel"), 
+        intake.getIndexingCommand()
 
         // @formatter:on
     );
