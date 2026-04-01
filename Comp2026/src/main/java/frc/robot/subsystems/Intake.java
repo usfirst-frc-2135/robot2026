@@ -690,15 +690,15 @@ public class Intake extends SubsystemBase
 
   public Command getIndexingCommand() {
   return new SequentialCommandGroup(
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getProtectedAngle),
+      getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),
       new WaitCommand(0.25),
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),
+      getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getThirtyAngle),
       new WaitCommand(0.25),
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getSixtyAngle),
+      getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getSixtyAngle),
       new WaitCommand(0.25),
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle),
+      getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getIndexingAngle),
       new WaitCommand(0.25),
-      getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)
+      getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getStowedAngle)
   ).withName(kSubsystemName + "IndexingCommand");
 }
 
