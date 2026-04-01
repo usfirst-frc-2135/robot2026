@@ -36,9 +36,6 @@ public class StopLaunching extends SequentialCommandGroup
 
         // @formatter:off
 
-        new LogCommand(getName(), "Move Intake -45 degrees"),
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getHalfwayAngle),
-
         new LogCommand(getName(), "Stop Hopper Rollers"), 
         hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP),
 
@@ -46,7 +43,10 @@ public class StopLaunching extends SequentialCommandGroup
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
 
         new LogCommand(getName(), "Stop Launcher rollers "),
-        launcher.getLauncherPrimedCommand()
+        launcher.getLauncherPrimedCommand(),
+
+        new LogCommand(getName(), "Move Intake -45 degrees"),
+        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getHalfwayAngle)
 
         // @formatter:on
     );
