@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.312484472049689,
-        "y": 7.346716947648624
+        "x": 3.175863467071524,
+        "y": 7.34199295298504
       },
       "isLocked": false,
       "linkedName": "L1"
@@ -20,11 +20,11 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 3.353,
+        "x": 3.103,
         "y": 7.427
       },
       "nextControl": {
-        "x": 4.237412559691253,
+        "x": 4.103,
         "y": 7.427
       },
       "isLocked": false,
@@ -36,47 +36,47 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 5.269804375160189,
-        "y": 7.395388719012272
+        "x": 4.597000000000016,
+        "y": 7.427
       },
       "nextControl": {
-        "x": 6.149278273809524,
-        "y": 7.480357142857144
+        "x": 6.597,
+        "y": 7.427
       },
       "isLocked": false,
       "linkedName": "TR1-EX"
     },
     {
       "anchor": {
-        "x": 6.411,
-        "y": 7.194
+        "x": 6.193,
+        "y": 5.541
       },
       "prevControl": {
-        "x": 6.202593544812629,
-        "y": 7.332082400892492
+        "x": 6.193,
+        "y": 6.541
       },
       "nextControl": {
-        "x": 7.006477373558118,
-        "y": 6.799458740017746
+        "x": 6.193,
+        "y": 4.291
       },
       "isLocked": false,
-      "linkedName": "NZ1B"
+      "linkedName": "NZ1C"
     },
     {
       "anchor": {
-        "x": 5.87,
-        "y": 4.689
+        "x": 6.193,
+        "y": 5.541
       },
       "prevControl": {
-        "x": 6.119377660600502,
-        "y": 4.671370978659582
+        "x": 6.183164615484703,
+        "y": 5.29119354449607
       },
       "nextControl": {
-        "x": 5.501517302573203,
-        "y": 4.715048802129547
+        "x": 6.202835384515296,
+        "y": 5.790806455503929
       },
       "isLocked": false,
-      "linkedName": "NZ1A"
+      "linkedName": "NZ1C"
     },
     {
       "anchor": {
@@ -84,12 +84,12 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 6.3385004436557235,
-        "y": 7.000656610470275
+        "x": 6.597,
+        "y": 7.427
       },
       "nextControl": {
-        "x": 5.380270978324082,
-        "y": 7.551613527208723
+        "x": 4.597,
+        "y": 7.427
       },
       "isLocked": false,
       "linkedName": "TR1-EX"
@@ -100,12 +100,12 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 3.8597426796805676,
-        "y": 7.435244010647738
+        "x": 4.003473493303572,
+        "y": 7.4660337611607135
       },
       "nextControl": {
-        "x": 3.3531287820353874,
-        "y": 7.418976632073691
+        "x": 3.2025265066964286,
+        "y": 7.387966238839286
       },
       "isLocked": false,
       "linkedName": "TR1-EN"
@@ -116,8 +116,8 @@
         "y": 7.08
       },
       "prevControl": {
-        "x": 2.719245808919271,
-        "y": 6.778639753069196
+        "x": 3.0390790470550204,
+        "y": 7.2578426163316
       },
       "nextControl": null,
       "isLocked": false,
@@ -130,32 +130,25 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 3.0,
-      "rotationDegrees": -93.0
+      "waypointRelativePos": 3,
+      "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 4.0,
+      "waypointRelativePos": 3.5,
       "rotationDegrees": -90.0
     },
     {
       "waypointRelativePos": 5.0,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
     },
     {
       "waypointRelativePos": 6.0,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.2,
     "maxAcceleration": 3.5,
@@ -165,11 +158,11 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": -58.400000000000006
   },
   "reversed": false,
-  "folder": "FromLaunch",
+  "folder": "FromStart",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -58.400000000000006

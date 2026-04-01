@@ -3,12 +3,28 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.403,
-        "y": 7.427
+        "x": 2.75,
+        "y": 7.08
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.403,
+        "x": 2.67781994047619,
+        "y": 7.643489583333334
+      },
+      "isLocked": false,
+      "linkedName": "L1"
+    },
+    {
+      "anchor": {
+        "x": 4.403,
+        "y": 7.427
+      },
+      "prevControl": {
+        "x": 4.153,
+        "y": 7.427
+      },
+      "nextControl": {
+        "x": 4.653,
         "y": 7.427
       },
       "isLocked": false,
@@ -20,11 +36,11 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 4.873596466526494,
+        "x": 5.097,
         "y": 7.427
       },
       "nextControl": {
-        "x": 6.2943491324293745,
+        "x": 7.597,
         "y": 7.427
       },
       "isLocked": false,
@@ -32,24 +48,29 @@
     },
     {
       "anchor": {
-        "x": 5.87,
-        "y": 4.689
+        "x": 7.693,
+        "y": 4.841
       },
       "prevControl": {
-        "x": 5.863673469387756,
-        "y": 5.535936113575865
+        "x": 7.693,
+        "y": 6.841
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "NZ1A"
+      "linkedName": "NZ1"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.2,
+    "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -61,10 +82,10 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "FromStart",
+  "folder": "FromLaunch",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -58.400000000000006
   },
   "useDefaultConstraints": true
 }

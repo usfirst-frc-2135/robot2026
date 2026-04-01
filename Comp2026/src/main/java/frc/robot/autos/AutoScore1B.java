@@ -43,7 +43,7 @@ public class AutoScore1B extends SequentialCommandGroup
 
         // @formatter:off
 
-        new LogCommand(getName(), "Acquire fuel and score once"),
+        new LogCommand(getName(), "Acquire fuel with NZ path and score"),
         new ParallelCommandGroup(
           drivetrain.getPathCommand(ppAuto.get(0)),
           new AcquireFuel(intake, hopper)
@@ -51,13 +51,9 @@ public class AutoScore1B extends SequentialCommandGroup
         new StopIntaking(intake, hopper, kicker),
         new ParallelCommandGroup(
           drivetrain.getPathCommand(ppAuto.get(1)),
-          launcher.getLauncherScoreCommand( )
+          launcher.getLauncherScoreCommand()
         ), 
-        new LaunchFuel(intake, hopper, kicker, launcher),
-        new WaitCommand(2.0),
-        intake.runOnce(()-> intake.getMoveToAngleCommand(INConsts.INRollerMode.ACQUIRE, intake::getStowedAngle))
-
-        // @formatter:on
+        new LaunchFuel(intake, hopper, kicker, launcher)
     );
   }
 
