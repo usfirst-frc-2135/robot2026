@@ -24,7 +24,7 @@
         "y": 7.427
       },
       "nextControl": {
-        "x": 7.597,
+        "x": 7.097,
         "y": 7.427
       },
       "isLocked": false,
@@ -37,7 +37,7 @@
       },
       "prevControl": {
         "x": 7.693,
-        "y": 6.841
+        "y": 6.341
       },
       "nextControl": null,
       "isLocked": false,
