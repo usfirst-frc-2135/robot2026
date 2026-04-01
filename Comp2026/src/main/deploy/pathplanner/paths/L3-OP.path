@@ -48,7 +48,7 @@
   "folder": "FromLaunch",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 35.0
+    "rotation": 58.400000000000006
   },
   "useDefaultConstraints": true
 }
