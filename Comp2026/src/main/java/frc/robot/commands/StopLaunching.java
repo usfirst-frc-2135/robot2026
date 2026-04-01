@@ -4,6 +4,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.HPConsts;
 import frc.robot.Constants.INConsts;
+import frc.robot.Constants.INConsts.INRollerMode;
 import frc.robot.Constants.KKConsts;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Kicker;
@@ -46,7 +47,7 @@ public class StopLaunching extends SequentialCommandGroup
         launcher.getLauncherPrimedCommand(),
 
         new LogCommand(getName(), "Move Intake -45 degrees"),
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getHalfwayAngle)
+        intake.getMoveToAngleCommand(INRollerMode.HOLD, intake::getThirtyAngle)
 
         // @formatter:on
     );
