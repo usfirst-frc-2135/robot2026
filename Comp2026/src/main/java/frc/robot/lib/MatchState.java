@@ -115,7 +115,7 @@ public class MatchState
             CommandScheduler.getInstance( )
                 .schedule(m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
             // Set LEDs to first warning - slow flashing @ 0.5 cycle
-            setLEDForCurrentShift(ANIMATION.STROBE, 0.5);
+            setLEDForCurrentShift(ANIMATION.STROBE, 2.0);
             m_shiftState = ShiftState.SLOWWARN;
             break;
           case 5 :
@@ -123,7 +123,7 @@ public class MatchState
             break;
           case 3 :  // At 3 seconds remaining
             // Set LEDs to final warning - fast flashing at 0.25 cycle
-            setLEDForCurrentShift(ANIMATION.STROBE, 0.25);
+            setLEDForCurrentShift(ANIMATION.STROBE, 4.0);
             m_shiftState = ShiftState.FASTWARN;
             break;
           case 2 :
