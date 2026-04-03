@@ -351,7 +351,7 @@ public class LED
    * 
    * Set LED requests based on the requested color and animation
    */
-  private void setLEDs(COLOR color, ANIMATION animation, double rate)
+  public void setLEDs(COLOR color, ANIMATION animation, double rate)
   {
     m_request.color = color;
     m_request.animation = animation;
@@ -372,13 +372,13 @@ public class LED
    *          LED animation pattern to use
    * @return instant command that changes LEDs
    */
-  public Command getLEDCommand(COLOR color, ANIMATION animation, double rate)
-  {
-    return new InstantCommand(            // Command that runs exactly once
-        ( ) -> setLEDs(color, animation, rate) // Method to call
-    )                                     //
-        .withName("LEDSet")          //
-        .ignoringDisable(true);
-  }
+  // public Command getLEDCommand(COLOR color, ANIMATION animation, double rate)
+  // {
+  //   return new InstantCommand(            // Command that runs exactly once
+  //       ( ) -> setLEDs(color, animation, rate) // Method to call
+  //   )                                     //
+  //       .withName("LEDSet")          //
+  //       .ignoringDisable(true);
+  // }
 
 }

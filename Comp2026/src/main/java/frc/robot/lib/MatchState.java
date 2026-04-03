@@ -6,12 +6,9 @@ package frc.robot.lib;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-import com.ctre.phoenix6.Utils;
-
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants;
@@ -25,12 +22,17 @@ import frc.robot.Constants.LEDConsts.COLOR;
 public class MatchState
 {
   // Constants
+  enum ShiftState
+  {
+    UNINITIALIZED, NORMAL, SLOWWARN, FASTWARN
+  }
 
   // Member objects
   private String            m_name          = new String( );
   private HID               m_hid;
   private LED               m_led;
   private int               m_prevShiftTime = 0;
+  private ShiftState        m_shiftState    = ShiftState.UNINITIALIZED;
 
   private NetworkTableEntry m_matchTime     = SmartDashboard.getEntry("MatchTime");
   private NetworkTableEntry m_shiftTime     = SmartDashboard.getEntry("ShiftTime");
@@ -77,8 +79,8 @@ public class MatchState
 
   private void setLEDForCurrentShift(ANIMATION animation, double rate)
   {
-    COLOR color = (currentShiftIsOurs( )) ? COLOR.GREEN : COLOR.ORANGE;
-    CommandScheduler.getInstance( ).schedule(m_led.getLEDCommand(color, animation, rate));
+    COLOR color = (currentShiftIsOurs( )) ? COLOR.GREEN : COLOR.RED;
+    m_led.setLEDs(color, animation, rate);
   }
 
   /****************************************************************************
@@ -91,32 +93,22 @@ public class MatchState
 
     double matchTime = DriverStation.getMatchTime( );
 
-    // Simulate counting when no driver station attached
-
-    if (Utils.isSimulation( ))
-    {
-      matchTime = 160 - Timer.getFPGATimestamp( );
-    }
-
     int shiftTime = timeLeftInShiftSeconds(matchTime);
 
     m_matchTime.setNumber(matchTime);
 
     // If in Teleop and shift time has ticked down one count
 
-    if (DriverStation.isTeleop( ))
+    if (DriverStation.isTeleopEnabled( ))
     {
       // shiftTime counts down as an integer
 
       if (shiftTime != m_prevShiftTime)
       {
-
         // Do the correct action based on the remaining time in the shift
         switch (shiftTime)
         {
-          case 5 :  // At 5 seconds remaining
-          case 4 :
-            DataLogManager.log("End of Shift Warning");
+          case 6 :  // At 5 seconds remaining
             // Start rumble
             CommandScheduler.getInstance( )
                 .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
@@ -124,17 +116,26 @@ public class MatchState
                 .schedule(m_hid.getHIDRumbleOperatorCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
             // Set LEDs to first warning - slow flashing @ 0.5 cycle
             setLEDForCurrentShift(ANIMATION.STROBE, 0.5);
+            m_shiftState = ShiftState.SLOWWARN;
+            break;
+          case 5 :
+          case 4 :
             break;
           case 3 :  // At 3 seconds remaining
-          case 2 :
-          case 1 :
-            DataLogManager.log("End of Shift Fast Warning");
             // Set LEDs to final warning - fast flashing at 0.25 cycle
             setLEDForCurrentShift(ANIMATION.STROBE, 0.25);
+            m_shiftState = ShiftState.FASTWARN;
+            break;
+          case 2 :
+          case 1 :
+          case 0 :
             break;
           default :
-            // Set LEDs to solid color for current cycle
-            setLEDForCurrentShift(ANIMATION.SOLID, 0.0);
+            if (m_shiftState == ShiftState.FASTWARN)
+            {
+              setLEDForCurrentShift(ANIMATION.SOLID, 0.0);
+              m_shiftState = ShiftState.NORMAL;
+            }
             break;
         }
         m_prevShiftTime = shiftTime;  // Update saved value, so this code only runs when the ticks change
@@ -177,6 +178,13 @@ public class MatchState
   public void initialize( )
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getName( )));
+  }
+
+  public void teleopInit( )
+  {
+    DataLogManager.log(String.format("%s: Subsystem initialized!", getName( )));
+    setLEDForCurrentShift(ANIMATION.SOLID, 0.0);
+    m_shiftState = ShiftState.NORMAL;
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -297,6 +305,38 @@ public class MatchState
 
   /****************************************************************************
    * 
+   * Return if the shift time is for Red alliance
+   * 
+   * @param currentMatchTime
+   *          current Match time in seconds (countdown)
+   * @return true of an active Red alliance shift
+   */
+  public static boolean isCurrentShiftRed(double currentMatchTime)
+  {
+    if (currentMatchTime >= 105 && currentMatchTime <= 130)
+    {
+      return blueWonAuto( ) ? true : false;
+    }
+    else if (currentMatchTime >= 80 && currentMatchTime <= 105)
+    {
+      return blueWonAuto( ) ? false : true;
+    }
+    else if (currentMatchTime >= 55 && currentMatchTime <= 80)
+    {
+      return blueWonAuto( ) ? true : false;
+    }
+    else if (currentMatchTime >= 30 && currentMatchTime <= 55)
+    {
+      return blueWonAuto( ) ? false : true;
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  /****************************************************************************
+   * 
    * Return if the current shift is ours
    * 
    * @return true if shift has the hub active
@@ -304,15 +344,7 @@ public class MatchState
   public static boolean currentShiftIsOurs( )
   {
     double currentMatchTime = DriverStation.getMatchTime( );
-    boolean isBlueShift = isCurrentShiftBlue(currentMatchTime);
-    if (isBlue( ))
-    {
-      return isBlueShift;
-    }
-    else
-    {
-      return !isBlueShift;
-    }
+    return (isBlue( )) ? isCurrentShiftBlue(currentMatchTime) : !isCurrentShiftRed(currentMatchTime);
   }
 
   ////////////////////////////////////////////////////////////////////////////

@@ -637,6 +637,7 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
+    m_matchState.teleopInit( );
 
     CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
     CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
