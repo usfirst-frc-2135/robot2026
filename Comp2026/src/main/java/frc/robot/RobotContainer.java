@@ -40,6 +40,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Constants.KKConsts;
 import frc.robot.Constants.KKConsts.KKRollerMode;
 import frc.robot.autos.AutoScore1A;
 import frc.robot.autos.AutoScore1B;
@@ -307,7 +308,10 @@ public class RobotContainer
         new StopIntaking(m_intake, m_hopper),                 //
         m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
     ));
-    m_driverPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
+    m_driverPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
+        m_launcher.getLauncherPrimedCommand( ), //
+        new AcquireFuel(m_intake, m_hopper)));//
     m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
@@ -361,7 +365,10 @@ public class RobotContainer
         new StopIntaking(m_intake, m_hopper),                 //
         m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
     ));
-    m_operatorPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
+    m_operatorPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
+        m_launcher.getLauncherPrimedCommand( ), //
+        new AcquireFuel(m_intake, m_hopper)));//
     m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button

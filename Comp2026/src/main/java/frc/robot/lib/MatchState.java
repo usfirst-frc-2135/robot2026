@@ -131,7 +131,7 @@ public class MatchState
           case 0 :
             break;
           default :
-            if (m_shiftState == ShiftState.FASTWARN)
+            if (m_shiftState != ShiftState.NORMAL)
             {
               setLEDForCurrentShift(ANIMATION.SOLID, 0.0);
               m_shiftState = ShiftState.NORMAL;
@@ -344,7 +344,7 @@ public class MatchState
   public static boolean currentShiftIsOurs( )
   {
     double currentMatchTime = DriverStation.getMatchTime( );
-    return (isBlue( )) ? isCurrentShiftBlue(currentMatchTime) : !isCurrentShiftRed(currentMatchTime);
+    return (isBlue( )) ? isCurrentShiftBlue(currentMatchTime) : isCurrentShiftRed(currentMatchTime);
   }
 
   ////////////////////////////////////////////////////////////////////////////

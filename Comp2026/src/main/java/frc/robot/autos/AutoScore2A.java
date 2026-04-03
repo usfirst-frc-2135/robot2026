@@ -12,6 +12,7 @@ import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
 import frc.robot.commands.StopIntaking;
+import frc.robot.commands.StopLaunching;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -57,6 +58,7 @@ public class AutoScore2A extends SequentialCommandGroup
         new WaitCommand(0.250),
         new LogCommand(getName(),"Launch fuel"),
         new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(7),
+        new StopLaunching(intake, hopper, kicker, launcher),
 
         new LogCommand(getName(),"Drive third path while acquiring"),
         new ParallelCommandGroup(
