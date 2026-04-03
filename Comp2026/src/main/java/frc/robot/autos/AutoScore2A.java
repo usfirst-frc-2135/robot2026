@@ -46,7 +46,10 @@ public class AutoScore2A extends SequentialCommandGroup
         new LogCommand(getName(), "Acquire fuel and score once then acquire fuel again in tighter path then launch"),
         new LogCommand(getName(),"Drive path while acquiring"),
         new ParallelCommandGroup(
-            drivetrain.getPathCommand(ppAuto.get(0)),
+            new SequentialCommandGroup(
+              new WaitCommand(0.25),
+              drivetrain.getPathCommand(ppAuto.get(0))
+            ),
             new AcquireFuel(intake,hopper)
           ),
         new LogCommand(getName(),"Drive return path while stop intaking and prime the launcher"),
