@@ -7,6 +7,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
@@ -42,15 +43,19 @@ public class AutoScore1A extends SequentialCommandGroup
         // @formatter:off
 
         new LogCommand(getName(), "Acquire fuel and score once"),
+        new LogCommand(getName(),"Drive path while acquiring"),
         new ParallelCommandGroup(
           drivetrain.getPathCommand(ppAuto.get(0)),
           new AcquireFuel(intake, hopper)
         ), 
-        new StopIntaking(intake, hopper, kicker),
+        new LogCommand(getName(),"Drive return path while stop intaking and prime the launcher"),
         new ParallelCommandGroup(
           drivetrain.getPathCommand(ppAuto.get(1)),
-          launcher.getLauncherScoreCommand( )
+          launcher.getLauncherScoreCommand( ),
+          new StopIntaking(intake, hopper)
         ), 
+        new WaitCommand(0.250),
+        new LogCommand(getName(),"Launch fuel"),
         new LaunchFuel(intake, hopper, kicker, launcher)
 
         // @formatter:on
