@@ -46,7 +46,7 @@ public class StopLaunching extends SequentialCommandGroup
         launcher.getLauncherPrimedCommand(),
 
         new LogCommand(getName(), "Move Intake -45 degrees"),
-        intake.getMoveToAngleCommand(INRollerMode.HOLD, intake::getThirtyAngle)
+        intake.getMoveToAngleCommand(INRollerMode.STOP, intake::getThirtyAngle)
 
         // @formatter:on
     );
