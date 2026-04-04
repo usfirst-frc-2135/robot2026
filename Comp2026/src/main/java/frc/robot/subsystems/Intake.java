@@ -93,7 +93,7 @@ public class Intake extends SubsystemBase
 
   private static final double       kToleranceDegrees     = 3.0;      // PID tolerance in degrees
   private static final double       kMMDebounceTime       = 0.060;    // Seconds to debounce a final position check
-  private static final double       kMMMoveTimeout        = 1.3;      // Seconds allowed for a Motion Magic movement
+  private static final double       kMMMoveTimeout        = 1.5;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
   //    Measured hardstops and pre-defined positions (0 degrees is horizontal to the floor):
