@@ -19,6 +19,7 @@ import com.ctre.phoenix6.controls.TwinkleAnimation;
 import com.ctre.phoenix6.controls.TwinkleOffAnimation;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.AnimationDirectionValue;
+import com.ctre.phoenix6.signals.Enable5VRailValue;
 import com.ctre.phoenix6.signals.RGBWColor;
 import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
 import com.ctre.phoenix6.signals.StripTypeValue;
@@ -50,7 +51,7 @@ public class LED
    */
   private static final int                     kSlot          = 0;    // Animation slot (0 - 7)
   private static final int                     kSlot0StartIdx = 0;    // LEDs controled by animation slot 0
-  private static final int                     kSlot0EndIdx   = 7;
+  private static final int                     kSlot0EndIdx   = 12;
 
   private static final double                  kFrameRate     = 2.0;  // Animation speed in Hz 2-1000
   private static final double                  kBrightness    = 0.7;  // Brightness level 0.0 - 1.0
@@ -67,11 +68,13 @@ public class LED
   {
     COLOR     color     = COLOR.OFF;
     ANIMATION animation = ANIMATION.SOLID;
+    double    rate      = kFrameRate;
 
-    LEDRequest(COLOR reqColor, ANIMATION reqAnimation)
+    LEDRequest(COLOR reqColor, ANIMATION reqAnimation, double reqRate)
     {
       color = reqColor;
       animation = reqAnimation;
+      rate = reqRate;
     }
   }
 
@@ -93,8 +96,8 @@ public class LED
 
   private String                           m_name             = new String( );
   private boolean                          m_candleValid      = false;
-  private LEDRequest                       m_request          = new LEDRequest(COLOR.OFF, ANIMATION.SOLID);
-  private LEDRequest                       m_active           = new LEDRequest(COLOR.OFF, ANIMATION.SOLID);
+  private LEDRequest                       m_request          = new LEDRequest(COLOR.OFF, ANIMATION.SOLID, kFrameRate);
+  private LEDRequest                       m_active           = new LEDRequest(COLOR.OFF, ANIMATION.SOLID, kFrameRate);
 
   /****************************************************************************
    * 
@@ -114,6 +117,7 @@ public class LED
     /* disable status LED when being controlled */
     cfg.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Disabled;
     cfg.CANdleFeatures.VBatOutputMode = VBatOutputModeValue.Off;
+    cfg.CANdleFeatures.Enable5VRail = Enable5VRailValue.Enabled;
 
     m_candleValid = PhoenixUtil6.getInstance( ).candleInitialize6(m_candle, cfg);
 
@@ -253,14 +257,8 @@ public class LED
     RGBWColor ledColor;
     ControlRequest animation;
 
-    if (m_request.color != m_active.color || m_request.animation != m_active.animation)
+    if (m_request.color != m_active.color || m_request.animation != m_active.animation || m_request.rate != m_active.rate)
     {
-      if (m_request.color == COLOR.DASHBOARD)
-        m_request.color = m_colorChooser.getSelected( );
-
-      if (m_request.animation == ANIMATION.DASHBOARD)
-        m_request.animation = m_animationChooser.getSelected( );
-
       // Convert color request to a control request
       switch (m_request.color)
       {
@@ -299,39 +297,39 @@ public class LED
           animation = new SolidColor(kSlot0StartIdx, kSlot0EndIdx).withColor(ledColor);
           break;
         case COLORFLOW :
-          animation = new ColorFlowAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate)
+          animation = new ColorFlowAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
               .withDirection(kDirection).withColor(ledColor);
           break;
         case FIRE :
-          animation = new FireAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate)
+          animation = new FireAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
               .withDirection(kDirection).withBrightness(kBrightness).withCooling(kCooling).withSparking(kSparking);
           break;
         case LARSON :
-          animation = new LarsonAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate).withSize(kSize)
-              .withColor(ledColor);
+          animation = new LarsonAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+              .withSize(kSize).withColor(ledColor);
           break;
         case RAINBOW :
-          animation = new RainbowAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate)
+          animation = new RainbowAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
               .withDirection(kDirection).withBrightness(kBrightness);
           break;
         case RGBFADE :
-          animation = new RgbFadeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate)
+          animation = new RgbFadeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
               .withBrightness(kBrightness);
           break;
         case SINGLEFADE :
-          animation =
-              new SingleFadeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate).withColor(ledColor);
+          animation = new SingleFadeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+              .withColor(ledColor);
           break;
         case STROBE :
           animation =
-              new StrobeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate).withColor(ledColor);
+              new StrobeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate).withColor(ledColor);
           break;
         case TWINKLE :
-          animation = new TwinkleAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate)
+          animation = new TwinkleAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
               .withMaxLEDsOnProportion(kMaxLEDsOn).withColor(ledColor);
           break;
         case TWINKLEOFF :
-          animation = new TwinkleOffAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(kFrameRate)
+          animation = new TwinkleOffAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
               .withMaxLEDsOnProportion(kMaxLEDsOn).withColor(ledColor);
           break;
       }
@@ -344,6 +342,7 @@ public class LED
 
       m_active.color = m_request.color;
       m_active.animation = m_request.animation;
+      m_active.rate = m_request.rate;
     }
   }
 
@@ -355,6 +354,7 @@ public class LED
   {
     m_request.color = color;
     m_request.animation = animation;
+    m_request.rate = rate;
     DataLogManager.log(String.format("%s: CANdle request is %s, %s, %.3f", getName( ), color, animation, rate));
   }
 
