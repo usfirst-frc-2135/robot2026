@@ -32,7 +32,7 @@ public final class Constants
 
   public static final boolean kRumbleOn             = true;
   public static final boolean kRumbleOff            = false;
-  public static final double  kRumbleIntensity      = 0.5;    // 0.0 is low, 1.0 is high
+  public static final double  kRumbleIntensity      = 1.0;    // 0.0 is low, 1.0 is high
 
   // Phoenix firmware versions expected
   public static final int     kPhoenix6MajorVersion = 26;

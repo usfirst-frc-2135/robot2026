@@ -51,8 +51,8 @@ public class Launcher extends SubsystemBase
   private static final String kSubsystemName     = "Launcher";
 
   private static final double kMOI               = 0.005;     // Simulation - Moment of Inertia
-  private static final double kLauncherAutoRPM   = 3250.0;    // RPM to score for autonomous
-  private static final double kLauncherTeleopRPM = 3250.0;    // RPM to score for autonomous
+  private static final double kLauncherAutoRPM   = 3170.0;    // RPM to score for autonomous
+  private static final double kLauncherTeleopRPM = 3150.0;    // RPM to score for autonomous
   private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
   private static final double kLauncherPrimedRPM = 2400.0;    // RPM to pass 
   private static final double kRPMStepSize       = 50.0;      // RPM step size for increment/decrement

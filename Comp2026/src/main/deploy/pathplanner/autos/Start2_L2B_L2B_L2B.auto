@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start1-NZ1"
+            "pathName": "Start2-L2B"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NZ1-L1"
+            "pathName": "L2B-L2B"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "L1-NZ1A-NZ1B-NZ1C-L1"
+            "pathName": "L2B-L2B"
           }
         }
       ]

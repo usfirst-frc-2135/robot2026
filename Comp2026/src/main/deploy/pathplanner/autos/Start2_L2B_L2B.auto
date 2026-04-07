@@ -1,0 +1,25 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start2-L2B"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L2B-L2B"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "2-AutoScore1B",
+  "choreoAuto": false
+}
