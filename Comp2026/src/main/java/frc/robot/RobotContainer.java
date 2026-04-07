@@ -35,10 +35,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.Constants.KKConsts;
+import frc.robot.Constants.KKConsts.KKRollerMode;
 import frc.robot.autos.AutoScore1A;
 import frc.robot.autos.AutoScore1B;
 import frc.robot.autos.AutoScore2A;
@@ -177,12 +180,12 @@ public class RobotContainer
       Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3"),
 
       Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START1.toString( ), "Start1_NZ1A_NZ1B_NZ1C_L1"),
-      Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A"),
+      Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START2.toString( ), "Start2_L2B_L2B"),
       Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3A_NZ3B_NZ3C_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_NZ1A_NZ1B_NZ1C_L1"),
-      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
-      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_NZ3A_NZ3B_NZ3C_L3"),
+      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_NZ1C_L1"),
+      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START2.toString( ), "Start2_L2B_L2B_L2B"),
+      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_NZ3C_L3"),
 
       Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L2A"),
       Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
@@ -301,9 +304,15 @@ public class RobotContainer
     // Driver - Bumpers, start, back
     //
     m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
-    m_driverPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
-    m_driverPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
-    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
+    m_driverPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
+        new StopIntaking(m_intake, m_hopper),                 //
+        m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
+    ));
+    m_driverPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
+        m_launcher.getLauncherPrimedCommand( ), //
+        new AcquireFuel(m_intake, m_hopper)));//
+    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
     m_driverPad.start( ).onTrue(m_drivetrain.runOnce(( ) -> m_drivetrain.seedFieldCentric( )));         // aka Menu button
@@ -328,7 +337,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
+    // m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
     m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
 
@@ -352,9 +361,15 @@ public class RobotContainer
     // Operator - Bumpers, start, back
     //
     m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
-    m_operatorPad.leftBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
-    m_operatorPad.rightBumper( ).onTrue(new AcquireFuel(m_intake, m_hopper));
-    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
+    m_operatorPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
+        new StopIntaking(m_intake, m_hopper),                 //
+        m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
+    ));
+    m_operatorPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
+        m_launcher.getLauncherPrimedCommand( ), //
+        new AcquireFuel(m_intake, m_hopper)));//
+    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
@@ -374,7 +389,7 @@ public class RobotContainer
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
     m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper, m_kicker));
+    // m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
     m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
 
@@ -629,6 +644,7 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
+    m_matchState.teleopInit( );
 
     CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
     CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));

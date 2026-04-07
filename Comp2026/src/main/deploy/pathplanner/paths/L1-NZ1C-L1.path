@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.175863467071524,
-        "y": 7.34199295298504
+        "x": 3.0119929529850396,
+        "y": 7.505863467071524
       },
       "isLocked": false,
       "linkedName": "L1"
@@ -20,11 +20,11 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 3.103,
+        "x": 3.353,
         "y": 7.427
       },
       "nextControl": {
-        "x": 4.103,
+        "x": 4.603,
         "y": 7.427
       },
       "isLocked": false,
@@ -36,7 +36,7 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 4.597000000000016,
+        "x": 4.597,
         "y": 7.427
       },
       "nextControl": {
@@ -53,11 +53,11 @@
       },
       "prevControl": {
         "x": 6.193,
-        "y": 6.541
+        "y": 6.041
       },
       "nextControl": {
         "x": 6.193,
-        "y": 4.291
+        "y": 5.291
       },
       "isLocked": false,
       "linkedName": "NZ1C"
@@ -65,18 +65,18 @@
     {
       "anchor": {
         "x": 6.193,
-        "y": 5.541
+        "y": 5.041
       },
       "prevControl": {
-        "x": 6.183164615484703,
-        "y": 5.29119354449607
+        "x": 6.193,
+        "y": 5.291
       },
       "nextControl": {
-        "x": 6.202835384515296,
-        "y": 5.790806455503929
+        "x": 6.193,
+        "y": 4.541
       },
       "isLocked": false,
-      "linkedName": "NZ1C"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -100,12 +100,12 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 4.003473493303572,
-        "y": 7.4660337611607135
+        "x": 4.103,
+        "y": 7.427
       },
       "nextControl": {
-        "x": 3.2025265066964286,
-        "y": 7.387966238839286
+        "x": 3.103,
+        "y": 7.427
       },
       "isLocked": false,
       "linkedName": "TR1-EN"
@@ -116,8 +116,8 @@
         "y": 7.08
       },
       "prevControl": {
-        "x": 3.0390790470550204,
-        "y": 7.2578426163316
+        "x": 2.8809964764925198,
+        "y": 7.292931733535762
       },
       "nextControl": null,
       "isLocked": false,
@@ -126,24 +126,32 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 1.25,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 3,
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.5,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 3.5,
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 4.0,
       "rotationDegrees": -90.0
     },
     {
       "waypointRelativePos": 5.0,
-      "rotationDegrees": 180.0
+      "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 6.0,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 5.75,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -158,11 +166,11 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
+    "velocity": 0,
     "rotation": -58.400000000000006
   },
   "reversed": false,
-  "folder": "FromStart",
+  "folder": "FromLaunch",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -58.400000000000006

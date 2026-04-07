@@ -7,6 +7,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
@@ -42,25 +43,31 @@ public class AutoScore2B extends SequentialCommandGroup
         // @formatter:off
 
         new LogCommand(getName(), "Acquire fuel, score once, acquire fuel from depot or outpost and score"),
+        new LogCommand(getName(),"Drive path while acquiring"),
         new ParallelCommandGroup(
-          new LogCommand(getName(),"Path 1"),
-          drivetrain.getPathCommand(ppAuto.get(0)),
-          new AcquireFuel(intake,hopper)
+            drivetrain.getPathCommand(ppAuto.get(0)),
+            new AcquireFuel(intake,hopper)
           ),
-        new StopIntaking(intake, hopper, kicker),
+        new LogCommand(getName(),"Drive return path while stop intaking and prime the launcher"),
         new ParallelCommandGroup(
-          new LogCommand(getName(),"Path 2"),
-          drivetrain.getPathCommand(ppAuto.get(1)),
-          launcher.getLauncherScoreCommand()
+            drivetrain.getPathCommand(ppAuto.get(1)),
+            launcher.getLauncherScoreCommand(),
+            new StopIntaking(intake, hopper)
           ),
-        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(4),
+        new WaitCommand(0.250),
+        new LogCommand(getName(),"Launch fuel"),
+        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(7),
+
+        new LogCommand(getName(),"Drive third path while acquiring"),
         new ParallelCommandGroup(
-          new LogCommand(getName(),"Path 3"),
-          drivetrain.getPathCommand(ppAuto.get(2)),
-          new AcquireFuel(intake,hopper)
+            drivetrain.getPathCommand(ppAuto.get(2)),
+            new AcquireFuel(intake,hopper)
           ),
-        new StopIntaking(intake, hopper, kicker),
         launcher.getLauncherScoreCommand(),
+        new StopIntaking(intake, hopper),
+        new WaitCommand(0.250),
+
+        new LogCommand(getName(),"Launch fuel"),
         new LaunchFuel(intake, hopper, kicker, launcher)
         
         // @formatter:on

@@ -42,16 +42,17 @@ public class AutoScore1B extends SequentialCommandGroup
         // @formatter:off
 
         new LogCommand(getName(), "Acquire fuel with NZ path and score"),
-        new ParallelCommandGroup(
+        new LogCommand(getName(),"Drive path while acquiring"),
+        new ParallelCommandGroup( 
           drivetrain.getPathCommand(ppAuto.get(0)),
           new AcquireFuel(intake, hopper)
         ), 
-        new StopIntaking(intake, hopper, kicker),
-        new ParallelCommandGroup(
-          drivetrain.getPathCommand(ppAuto.get(1)),
-          launcher.getLauncherScoreCommand()
-        ), 
+        new LogCommand(getName(),"Prime the launcher, stop intaking, launch fuel"),
+        launcher.getLauncherScoreCommand( ),
+        new StopIntaking(intake, hopper),
         new LaunchFuel(intake, hopper, kicker, launcher)
+
+        // @formatter:on
     );
   }
 
