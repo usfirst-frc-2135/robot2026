@@ -257,8 +257,12 @@ public class LED
 
     if (m_request.color != m_active.color || m_request.animation != m_active.animation || m_request.rate != m_active.rate)
     {
+      m_active.color = m_request.color;
+      m_active.animation = m_request.animation;
+      m_active.rate = m_request.rate;
+
       // Convert color request to a control request
-      switch (m_request.color)
+      switch (m_active.color)
       {
         default :
         case OFF :
@@ -288,59 +292,57 @@ public class LED
       }
 
       // Convert animation request to a control request
-      switch (m_request.animation)
+      switch (m_active.animation)
       {
         default :
         case SOLID :
+          m_candle.setControl(new EmptyAnimation(0)); // Animation must be cleared fro solid colors to work
           animation = new SolidColor(kSlot0StartIdx, kSlot0EndIdx).withColor(ledColor);
           break;
         case COLORFLOW :
-          animation = new ColorFlowAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+          animation = new ColorFlowAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate)
               .withDirection(kDirection).withColor(ledColor);
           break;
         case FIRE :
-          animation = new FireAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+          animation = new FireAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate)
               .withDirection(kDirection).withBrightness(kBrightness).withCooling(kCooling).withSparking(kSparking);
           break;
         case LARSON :
-          animation = new LarsonAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+          animation = new LarsonAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate)
               .withSize(kSize).withColor(ledColor);
           break;
         case RAINBOW :
-          animation = new RainbowAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+          animation = new RainbowAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate)
               .withDirection(kDirection).withBrightness(kBrightness);
           break;
         case RGBFADE :
-          animation = new RgbFadeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+          animation = new RgbFadeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate)
               .withBrightness(kBrightness);
           break;
         case SINGLEFADE :
-          animation = new SingleFadeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+          animation = new SingleFadeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate)
               .withColor(ledColor);
           break;
         case STROBE :
           animation =
-              new StrobeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate).withColor(ledColor);
+              new StrobeAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate).withColor(ledColor);
           break;
         case TWINKLE :
-          animation = new TwinkleAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+          animation = new TwinkleAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate)
               .withMaxLEDsOnProportion(kMaxLEDsOn).withColor(ledColor);
           break;
         case TWINKLEOFF :
-          animation = new TwinkleOffAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_request.rate)
+          animation = new TwinkleOffAnimation(kSlot0StartIdx, kSlot0EndIdx).withSlot(kSlot).withFrameRate(m_active.rate)
               .withMaxLEDsOnProportion(kMaxLEDsOn).withColor(ledColor);
           break;
       }
 
-      DataLogManager.log(String.format("%s: CANdle active now %s, %s", getName( ), m_request.color, m_request.animation));
+      DataLogManager.log(String.format("%s: CANdle active now %s, %s", getName( ), m_active.color, m_active.animation));
       if (m_candleValid)
       {
         m_candle.setControl(animation);
       }
 
-      m_active.color = m_request.color;
-      m_active.animation = m_request.animation;
-      m_active.rate = m_request.rate;
     }
   }
 
@@ -370,6 +372,7 @@ public class LED
    *          LED animation pattern to use
    * @return instant command that changes LEDs
    */
+
   // public Command getLEDCommand(COLOR color, ANIMATION animation, double rate)
   // {
   //   return new InstantCommand(            // Command that runs exactly once
