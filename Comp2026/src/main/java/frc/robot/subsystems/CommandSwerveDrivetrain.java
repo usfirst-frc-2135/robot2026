@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.Volts;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -59,7 +58,6 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -695,7 +693,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @return poseAlignFollowCommand
      *         path following command to align to a pose scoring position
      */
-    private Command getPoseAlignPPFollowCommand( )
+    public Command getPoseAlignPPFollowCommand( )
     {
         Pose2d currentPose = m_driveStatePose.get( );
         Pose2d goalPose = Vision.findGoalPose(currentPose);
@@ -723,7 +721,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @return poseAlignFindCommand
      *         path finding command to align to a pose scoring position
      */
-    private Command getAlignToPosePPFindCommand( )
+    public Command getAlignToPosePPFindCommand( )
     {
         Pose2d currentPose = m_driveStatePose.get( );
         Pose2d goalPose = Vision.findGoalPose(currentPose);
