@@ -79,7 +79,13 @@ public class MatchState
 
   private void setLEDForCurrentShift(ANIMATION animation, double rate)
   {
-    COLOR color = (currentShiftIsOurs( )) ? COLOR.GREEN : COLOR.RED;
+    COLOR color;
+    if (currentShiftIsEndgame()){
+      color = COLOR.YELLOW;
+    }else{
+      color = currentShiftIsOurs( ) ? COLOR.GREEN : COLOR.RED;
+
+    }
     m_led.setLEDs(color, animation, rate);
   }
 
@@ -108,7 +114,7 @@ public class MatchState
         // Do the correct action based on the remaining time in the shift
         switch (shiftTime)
         {
-          case 6 :  // At 5 seconds remaining
+          case 10 :  // At 5 seconds remaining
             // Start rumble
             CommandScheduler.getInstance( )
                 .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
@@ -118,12 +124,16 @@ public class MatchState
             setLEDForCurrentShift(ANIMATION.STROBE, 2.0);
             m_shiftState = ShiftState.SLOWWARN;
             break;
+          case 9:
+          case 8:
+          case 7:
+          case 6:
           case 5 :
           case 4 :
             break;
           case 3 :  // At 3 seconds remaining
             // Set LEDs to final warning - fast flashing at 0.25 cycle
-            setLEDForCurrentShift(ANIMATION.STROBE, 4.0);
+            setLEDForCurrentShift(ANIMATION.STROBE, 8.0);
             m_shiftState = ShiftState.FASTWARN;
             break;
           case 2 :
@@ -346,6 +356,19 @@ public class MatchState
     double currentMatchTime = DriverStation.getMatchTime( );
     return (isBlue( )) ? isCurrentShiftBlue(currentMatchTime) : isCurrentShiftRed(currentMatchTime);
   }
+
+  /****************************************************************************
+   * 
+   * Return if the current shift is endgame
+   * 
+   * @return true if shift endgame
+   */
+  public static boolean currentShiftIsEndgame( )
+  {
+    double currentMatchTime = DriverStation.getMatchTime( );
+    return currentMatchTime <= 30;
+  }
+
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// COMMAND FACTORIES ////////////////////////////////
