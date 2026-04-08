@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0119929529850396,
-        "y": 7.505863467071524
+        "x": 2.955789047379733,
+        "y": 7.221953752956877
       },
       "isLocked": false,
       "linkedName": "L1"
@@ -24,7 +24,7 @@
         "y": 7.427
       },
       "nextControl": {
-        "x": 4.603,
+        "x": 4.103,
         "y": 7.427
       },
       "isLocked": false,
@@ -36,11 +36,11 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 4.597,
+        "x": 5.097,
         "y": 7.427
       },
       "nextControl": {
-        "x": 6.597,
+        "x": 6.347,
         "y": 7.427
       },
       "isLocked": false,
@@ -48,85 +48,53 @@
     },
     {
       "anchor": {
-        "x": 6.193,
-        "y": 5.541
+        "x": 6.443,
+        "y": 5.791
       },
       "prevControl": {
-        "x": 6.193,
-        "y": 6.041
+        "x": 6.443,
+        "y": 6.291
       },
       "nextControl": {
-        "x": 6.193,
+        "x": 6.443,
         "y": 5.291
-      },
-      "isLocked": false,
-      "linkedName": "NZ1C"
-    },
-    {
-      "anchor": {
-        "x": 6.193,
-        "y": 5.041
-      },
-      "prevControl": {
-        "x": 6.193,
-        "y": 5.291
-      },
-      "nextControl": {
-        "x": 6.193,
-        "y": 4.541
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.597,
-        "y": 7.427
+        "x": 6.193,
+        "y": 4.4605
       },
       "prevControl": {
-        "x": 6.597,
-        "y": 7.427
+        "x": 6.193,
+        "y": 4.7105
       },
       "nextControl": {
-        "x": 4.597,
-        "y": 7.427
+        "x": 6.193,
+        "y": 4.2105
       },
       "isLocked": false,
-      "linkedName": "TR1-EX"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.603,
-        "y": 7.427
+        "x": 6.193,
+        "y": 7.2
       },
       "prevControl": {
-        "x": 4.103,
-        "y": 7.427
-      },
-      "nextControl": {
-        "x": 3.103,
-        "y": 7.427
-      },
-      "isLocked": false,
-      "linkedName": "TR1-EN"
-    },
-    {
-      "anchor": {
-        "x": 2.75,
-        "y": 7.08
-      },
-      "prevControl": {
-        "x": 2.8809964764925198,
-        "y": 7.292931733535762
+        "x": 6.193933535946033,
+        "y": 6.950001742984801
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "L1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.25,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0.0
     },
     {
@@ -134,24 +102,12 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.5,
-      "rotationDegrees": -90.0
-    },
-    {
-      "waypointRelativePos": 3.0,
+      "waypointRelativePos": 2.75,
       "rotationDegrees": -90.0
     },
     {
       "waypointRelativePos": 4.0,
       "rotationDegrees": -90.0
-    },
-    {
-      "waypointRelativePos": 5.0,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 5.75,
-      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -166,8 +122,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -58.400000000000006
+    "velocity": 0.0,
+    "rotation": -45.0
   },
   "reversed": false,
   "folder": "FromLaunch",

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.012735825536134,
-        "y": 0.5745944452879743
+        "x": 2.9557900641467905,
+        "y": 0.8580477210522496
       },
       "isLocked": false,
       "linkedName": "L3"
@@ -24,7 +24,7 @@
         "y": 0.642
       },
       "nextControl": {
-        "x": 4.603,
+        "x": 4.103,
         "y": 0.642
       },
       "isLocked": false,
@@ -36,11 +36,11 @@
         "y": 0.642
       },
       "prevControl": {
-        "x": 4.597,
+        "x": 5.097,
         "y": 0.6420000000000001
       },
       "nextControl": {
-        "x": 6.597,
+        "x": 6.347,
         "y": 0.642
       },
       "isLocked": false,
@@ -48,85 +48,53 @@
     },
     {
       "anchor": {
-        "x": 6.193,
-        "y": 2.528
+        "x": 6.443,
+        "y": 2.278
       },
       "prevControl": {
-        "x": 6.193,
-        "y": 2.028
+        "x": 6.443,
+        "y": 1.528
       },
       "nextControl": {
-        "x": 6.193,
+        "x": 6.443,
         "y": 2.778
-      },
-      "isLocked": false,
-      "linkedName": "NZ3C"
-    },
-    {
-      "anchor": {
-        "x": 6.193,
-        "y": 3.028
-      },
-      "prevControl": {
-        "x": 6.193,
-        "y": 2.778
-      },
-      "nextControl": {
-        "x": 6.193,
-        "y": 3.528
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.597,
-        "y": 0.642
+        "x": 6.193,
+        "y": 3.6095
       },
       "prevControl": {
-        "x": 6.597,
-        "y": 0.6419999999999999
+        "x": 6.193,
+        "y": 3.359499999999997
       },
       "nextControl": {
-        "x": 4.597,
-        "y": 0.6420000000000001
+        "x": 6.193,
+        "y": 3.8595
       },
       "isLocked": false,
-      "linkedName": "TR3-EX"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.603,
-        "y": 0.642
+        "x": 6.154,
+        "y": 0.869
       },
       "prevControl": {
-        "x": 4.103,
-        "y": 0.6419999999999999
-      },
-      "nextControl": {
-        "x": 3.103,
-        "y": 0.6420000000000001
-      },
-      "isLocked": false,
-      "linkedName": "TR3-EN"
-    },
-    {
-      "anchor": {
-        "x": 2.75,
-        "y": 1.0
-      },
-      "prevControl": {
-        "x": 2.8809964764925198,
-        "y": 0.7870682664642381
+        "x": 6.1559646502014935,
+        "y": 1.1189922801799803
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "L3"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.25,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0.0
     },
     {
@@ -134,24 +102,12 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.5,
-      "rotationDegrees": 90.0
-    },
-    {
-      "waypointRelativePos": 3.0,
+      "waypointRelativePos": 2.75,
       "rotationDegrees": 90.0
     },
     {
       "waypointRelativePos": 4.0,
       "rotationDegrees": 90.0
-    },
-    {
-      "waypointRelativePos": 5.0,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 5.75,
-      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -167,7 +123,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 58.3
+    "rotation": 45.0
   },
   "reversed": false,
   "folder": "FromLaunch",
