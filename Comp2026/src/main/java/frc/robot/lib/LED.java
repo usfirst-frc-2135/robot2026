@@ -52,7 +52,7 @@ public class LED
   private static final int                     kSlot0EndIdx   = 12;
 
   private static final double                  kFrameRate     = 2.0;  // Animation speed in Hz 2-1000
-  private static final double                  kBrightness    = 0.7;  // Brightness level 0.0 - 1.0
+  private static final double                  kBrightness    = 1.0;  // Brightness level 0.0 - 1.0
   private static final AnimationDirectionValue kDirection     = AnimationDirectionValue.Forward;
   private static final int                     kSize          = 4;    // Number of LEDs in animations that use partial string
   private static final double                  kSparking      = 0.4;  // Sparking level 0.0 - 1.0
