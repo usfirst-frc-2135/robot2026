@@ -65,63 +65,31 @@
     {
       "anchor": {
         "x": 6.193,
-        "y": 5.041
+        "y": 4.4605
       },
       "prevControl": {
         "x": 6.193,
-        "y": 5.291
+        "y": 4.7105
       },
       "nextControl": {
         "x": 6.193,
-        "y": 4.541
+        "y": 3.9604999999999997
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.597,
-        "y": 7.427
+        "x": 6.193,
+        "y": 7.2
       },
       "prevControl": {
-        "x": 6.597,
-        "y": 7.427
-      },
-      "nextControl": {
-        "x": 4.597,
-        "y": 7.427
-      },
-      "isLocked": false,
-      "linkedName": "TR1-EX"
-    },
-    {
-      "anchor": {
-        "x": 3.603,
-        "y": 7.427
-      },
-      "prevControl": {
-        "x": 4.103,
-        "y": 7.427
-      },
-      "nextControl": {
-        "x": 3.103,
-        "y": 7.427
-      },
-      "isLocked": false,
-      "linkedName": "TR1-EN"
-    },
-    {
-      "anchor": {
-        "x": 2.75,
-        "y": 7.08
-      },
-      "prevControl": {
-        "x": 2.8809964764925198,
-        "y": 7.292931733535762
+        "x": 6.198084997106482,
+        "y": 5.838252314814815
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "L1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -150,7 +118,7 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 5.75,
+      "waypointRelativePos": 5,
       "rotationDegrees": 0.0
     }
   ],
@@ -166,8 +134,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -58.400000000000006
+    "velocity": 0.0,
+    "rotation": -45.0
   },
   "reversed": false,
   "folder": "FromLaunch",

@@ -65,63 +65,31 @@
     {
       "anchor": {
         "x": 6.193,
-        "y": 3.028
+        "y": 3.6095
       },
       "prevControl": {
         "x": 6.193,
-        "y": 2.778
+        "y": 3.359499999999997
       },
       "nextControl": {
         "x": 6.193,
-        "y": 3.528
+        "y": 4.109499999999997
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.597,
-        "y": 0.642
+        "x": 6.154,
+        "y": 0.869
       },
       "prevControl": {
-        "x": 6.597,
-        "y": 0.6419999999999999
-      },
-      "nextControl": {
-        "x": 4.597,
-        "y": 0.6420000000000001
-      },
-      "isLocked": false,
-      "linkedName": "TR3-EX"
-    },
-    {
-      "anchor": {
-        "x": 3.603,
-        "y": 0.642
-      },
-      "prevControl": {
-        "x": 4.103,
-        "y": 0.6419999999999999
-      },
-      "nextControl": {
-        "x": 3.103,
-        "y": 0.6420000000000001
-      },
-      "isLocked": false,
-      "linkedName": "TR3-EN"
-    },
-    {
-      "anchor": {
-        "x": 2.75,
-        "y": 1.0
-      },
-      "prevControl": {
-        "x": 2.8809964764925198,
-        "y": 0.7870682664642381
+        "x": 6.160818214699074,
+        "y": 1.7365849971064864
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "L3"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -150,7 +118,7 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 5.75,
+      "waypointRelativePos": 5,
       "rotationDegrees": 0.0
     }
   ],
@@ -167,7 +135,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 58.3
+    "rotation": 45.0
   },
   "reversed": false,
   "folder": "FromLaunch",
