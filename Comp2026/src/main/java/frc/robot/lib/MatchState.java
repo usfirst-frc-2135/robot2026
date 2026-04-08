@@ -70,16 +70,28 @@ public class MatchState
     return m_name;
   }
 
-  /**
+  /****************************************************************************
+   * 
    * Use currentShiftIsOurs() to determine if this is our shift
    * 
    * @param animation
    *          LED animation to apply
+   * @param rate
+   *          Flashing frequency
    */
-
   private void setLEDForCurrentShift(ANIMATION animation, double rate)
   {
-    COLOR color = (currentShiftIsOurs( )) ? COLOR.GREEN : COLOR.RED;
+    COLOR color = COLOR.OFF;
+    double currentMatchTime = Math.floor(DriverStation.getMatchTime( ));
+
+    if (currentShiftIsEndgame(currentMatchTime))
+    {
+      color = COLOR.YELLOW;
+    }
+    else
+    {
+      color = currentShiftIsOurs(currentMatchTime) ? COLOR.GREEN : COLOR.RED;
+    }
     m_led.setLEDs(color, animation, rate);
   }
 
@@ -108,7 +120,7 @@ public class MatchState
         // Do the correct action based on the remaining time in the shift
         switch (shiftTime)
         {
-          case 6 :  // At 5 seconds remaining
+          case 10 :  // At 5 seconds remaining
             // Start rumble
             CommandScheduler.getInstance( )
                 .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
@@ -118,18 +130,22 @@ public class MatchState
             setLEDForCurrentShift(ANIMATION.STROBE, 2.0);
             m_shiftState = ShiftState.SLOWWARN;
             break;
+          case 9 :
+          case 8 :
+          case 7 :
+          case 6 :
           case 5 :
           case 4 :
             break;
           case 3 :  // At 3 seconds remaining
             // Set LEDs to final warning - fast flashing at 0.25 cycle
-            setLEDForCurrentShift(ANIMATION.STROBE, 4.0);
+            setLEDForCurrentShift(ANIMATION.STROBE, 8.0);
             m_shiftState = ShiftState.FASTWARN;
             break;
           case 2 :
           case 1 :
-          case 0 :
             break;
+          case 0 :
           default :
             if (m_shiftState != ShiftState.NORMAL)
             {
@@ -281,25 +297,25 @@ public class MatchState
    */
   public static boolean isCurrentShiftBlue(double currentMatchTime)
   {
-    if (currentMatchTime >= 105 && currentMatchTime <= 130)
+    if (currentMatchTime > 105 && currentMatchTime <= 130)     // Shift 1
     {
       return blueWonAuto( ) ? false : true;
     }
-    else if (currentMatchTime >= 80 && currentMatchTime <= 105)
+    else if (currentMatchTime > 80 && currentMatchTime <= 105)  // Shift 2
     {
       return blueWonAuto( ) ? true : false;
     }
-    else if (currentMatchTime >= 55 && currentMatchTime <= 80)
+    else if (currentMatchTime > 55 && currentMatchTime <= 80)   // Shift 3
     {
       return blueWonAuto( ) ? false : true;
     }
-    else if (currentMatchTime >= 30 && currentMatchTime <= 55)
+    else if (currentMatchTime > 30 && currentMatchTime <= 55)   // Shift 4
     {
       return blueWonAuto( ) ? true : false;
     }
     else
     {
-      return true;
+      return true;                                              // Transition and endgame
     }
   }
 
@@ -313,25 +329,25 @@ public class MatchState
    */
   public static boolean isCurrentShiftRed(double currentMatchTime)
   {
-    if (currentMatchTime >= 105 && currentMatchTime <= 130)
+    if (currentMatchTime > 105 && currentMatchTime <= 130)     // Shift 1
     {
       return blueWonAuto( ) ? true : false;
     }
-    else if (currentMatchTime >= 80 && currentMatchTime <= 105)
+    else if (currentMatchTime > 80 && currentMatchTime <= 105)  // Shift 1
     {
       return blueWonAuto( ) ? false : true;
     }
-    else if (currentMatchTime >= 55 && currentMatchTime <= 80)
+    else if (currentMatchTime > 55 && currentMatchTime <= 80)   // Shift 1
     {
       return blueWonAuto( ) ? true : false;
     }
-    else if (currentMatchTime >= 30 && currentMatchTime <= 55)
+    else if (currentMatchTime > 30 && currentMatchTime <= 55)   // Shift 1
     {
       return blueWonAuto( ) ? false : true;
     }
     else
     {
-      return true;
+      return true;                                              // Transition and endgame
     }
   }
 
@@ -339,12 +355,24 @@ public class MatchState
    * 
    * Return if the current shift is ours
    * 
+   * @param matchTime
+   *          current match time in seconds
    * @return true if shift has the hub active
    */
-  public static boolean currentShiftIsOurs( )
+  public static boolean currentShiftIsOurs(double matchTime)
   {
-    double currentMatchTime = DriverStation.getMatchTime( );
-    return (isBlue( )) ? isCurrentShiftBlue(currentMatchTime) : isCurrentShiftRed(currentMatchTime);
+    return (isBlue( )) ? isCurrentShiftBlue(matchTime) : isCurrentShiftRed(matchTime);
+  }
+
+  /****************************************************************************
+   * 
+   * Return if the current shift is endgame
+   * 
+   * @return true if shift endgame
+   */
+  public static boolean currentShiftIsEndgame(double matchTime)
+  {
+    return matchTime <= 30;
   }
 
   ////////////////////////////////////////////////////////////////////////////
