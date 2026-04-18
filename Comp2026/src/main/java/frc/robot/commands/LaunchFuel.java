@@ -49,7 +49,6 @@ public class LaunchFuel extends SequentialCommandGroup
         new LogCommand(getName(), "Start Kicker Rollers"), 
         kicker.getRollerModeCommand(KKConsts.KKRollerMode.ACQUIRE),
 
-        new WaitCommand(1.75),
         new LogCommand(getName(), "Swing Intake Arm to index fuel"), 
         intake.getIndexingCommand()
 

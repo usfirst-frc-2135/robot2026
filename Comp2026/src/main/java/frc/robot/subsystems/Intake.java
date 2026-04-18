@@ -704,7 +704,7 @@ public class Intake extends SubsystemBase
   {
     return new SequentialCommandGroup( //
         getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),     //
-        new WaitCommand(0.25),                                            //
+        new WaitCommand(2.0),                                            //
         getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),           //
         new WaitCommand(0.25),                                            //
         new RepeatCommand(                                                        //
