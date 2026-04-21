@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.pathplanner.lib.util.FlippingUtil;
 
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -61,19 +62,22 @@ public class Vision
   };
 
   // Constants
-  private static final double kAimingKp  = 0.01;
-  private static final double kDrivingKp = 0.08;
-  private static final double kTXOffset  = 0.0;
-  private static final double kTYOffset  = 8.0;
+  private static final double kAimingKp    = 0.01;
+  private static final double kDrivingKp   = 0.08;
+  private static final double kTXOffset    = 0.0;
+  private static final double kTYOffset    = 8.0;
 
   // Objects
 
   /* What to publish over networktables for telemetry */
-  private String              m_name     = "";
+  private String              m_name       = "";
 
   // Declare module variables
   @SuppressWarnings("unused")
-  private streamMode          m_stream   = streamMode.STANDARD;
+  private streamMode          m_stream     = streamMode.STANDARD;
+
+  private MedianFilter        m_filteredTX = new MedianFilter(5);
+  private MedianFilter        m_filteredTY = new MedianFilter(5);
 
   /****************************************************************************
    * 
@@ -157,9 +161,11 @@ public class Vision
    */
   public AngularVelocity aimProportional(AngularVelocity maxAngularRate)
   {
-    double tx =
+    double sampledTX =
         LimelightHelpers.getTV(Constants.kLLFrontName) ? (LimelightHelpers.getTX(Constants.kLLFrontName) + kTXOffset) : 0.0;
-    double proportionalFactor = -tx * kAimingKp;
+
+    double appliedTX = m_filteredTX.calculate(sampledTX);
+    double proportionalFactor = -appliedTX * kAimingKp;
 
     return maxAngularRate.times(proportionalFactor);
   }
@@ -174,9 +180,11 @@ public class Vision
    */
   public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
   {
-    double ty =
+    double sampledTY =
         LimelightHelpers.getTV(Constants.kLLFrontName) ? (LimelightHelpers.getTY(Constants.kLLFrontName) + kTYOffset) : 0.0;
-    double proportionalFactor = -ty * kDrivingKp;
+
+    double appliedTY = m_filteredTY.calculate(sampledTY);
+    double proportionalFactor = -appliedTY * kDrivingKp;
 
     return maxSpeed.times(proportionalFactor);
   }
