@@ -23,7 +23,7 @@ public class HID
   // Constants
 
   // Member objects
-  private String     m_name          = new String( );
+  private String     m_name          = "";
   private GenericHID m_driver;
   private GenericHID m_operator;
   private Timer      m_timerDriver   = new Timer( );

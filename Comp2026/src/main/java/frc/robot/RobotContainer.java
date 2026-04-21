@@ -221,12 +221,12 @@ public class RobotContainer
    */
   private void updateAutoChooserCallback(AutoChooser option)
   {
-    Robot.reloadAutomousCommand(option.toString( ));
+    Robot.reloadAutonomousCommand(option.toString( ));
   }
 
   private void updateStartChooserCallback(StartPose option)
   {
-    Robot.reloadAutomousCommand(option.toString( ));
+    Robot.reloadAutonomousCommand(option.toString( ));
   }
 
   /****************************************************************************

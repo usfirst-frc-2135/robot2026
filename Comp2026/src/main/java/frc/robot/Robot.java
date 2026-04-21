@@ -5,18 +5,19 @@ import java.util.Optional;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.lib.LimelightHelpers;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,13 +28,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot
 {
   private static final boolean m_isComp          = detectRobot( ); // Detect which robot is in use
+  private static final String  printBarrier      = "========================================================================\n";
   private final RobotContainer m_robotContainer  = new RobotContainer(this); // Create that robot
   private Command              m_autonomousCommand;
   private boolean              m_faultsCleared   = false;
   private static double        m_timeMark        = Timer.getFPGATimestamp( );
   private static boolean       m_loadAutoCommand = true;
   private double               m_autoDelay       = 0.0;
-  private Optional<Alliance>   m_alliance;
+  private Optional<Alliance>   m_alliance        = Optional.empty( );
 
   /****************************************************************************
    * 
@@ -46,19 +48,33 @@ public class Robot extends TimedRobot
     DriverStation.startDataLog(DataLogManager.getLog( )); // Logs joystick data
     Robot.timeMarker("Robot: start");
 
-    // Start the web server for remoote dashboard layout
-    WebServer.start(5800, Filesystem.getDeployDirectory( ).getPath( ));
-
     // Log when commands initialize, interrupt, and end states
     CommandScheduler.getInstance( ).onCommandInitialize(cmd -> DataLogManager.log(String.format("%s: Init", cmd.getName( ))));
     CommandScheduler.getInstance( ).onCommandInterrupt(cmd -> DataLogManager.log(String.format("%s: Interrupt", cmd.getName( ))));
     CommandScheduler.getInstance( ).onCommandFinish(cmd -> DataLogManager.log(String.format("%s: End", cmd.getName( ))));
 
-    // Forward packets from RoboRIO USB connections to ethernet
-    for (int port = 5800; port <= 5809; port++)
+    if (RobotBase.isReal( ))
     {
-      PortForwarder.add(port, Constants.kLLFrontName + ".local", port);
-      PortForwarder.add(port, Constants.kLLBackName + ".local", port);
+      // Start the web server for remote dashboard layout (only on a real RoboRIO)
+      try
+      {
+        WebServer.start(5800, Filesystem.getDeployDirectory( ).getPath( ));
+      }
+      catch (Exception e)
+      {
+        DataLogManager.log(String.format("Failed to start WebServer: %s", e.toString( )));
+      }
+
+      // Forward packets from RoboRIO USB connections to ethernet (only on a real RoboRIO)
+      try
+      {
+        LimelightHelpers.setupPortForwardingUSB(0);
+        LimelightHelpers.setupPortForwardingUSB(1);
+      }
+      catch (Exception e)
+      {
+        DataLogManager.log(String.format("Failed to add port forwards: %s", e.toString( )));
+      }
     }
 
     // Recommended by PathPlanner docs
@@ -254,10 +270,10 @@ public class Robot extends TimedRobot
    */
   private static void datalogMatchBanner(String msg)
   {
-    DataLogManager.log(String.format("========================================================================"));
+    DataLogManager.log(String.format(printBarrier));
     DataLogManager.log(String.format("%s: Match %s %s, %s Alliance", msg, DriverStation.getMatchType( ).toString( ),
         DriverStation.getMatchNumber( ), DriverStation.getAlliance( ).toString( )));
-    DataLogManager.log(String.format("========================================================================"));
+    DataLogManager.log(String.format(printBarrier));
   }
 
   /****************************************************************************
@@ -274,7 +290,7 @@ public class Robot extends TimedRobot
     }
 
     Optional<Alliance> alliance = DriverStation.getAlliance( );
-    if (m_alliance != alliance)
+    if (!m_alliance.equals(alliance))
     {
       m_loadAutoCommand = true;
       m_alliance = alliance;
@@ -325,7 +341,7 @@ public class Robot extends TimedRobot
    * 
    * Signal autonomous command to reload
    */
-  public static void reloadAutomousCommand(String optionName)
+  public static void reloadAutonomousCommand(String optionName)
   {
     DataLogManager.log(String.format("Auto change! - %s", optionName));
     m_loadAutoCommand = true;

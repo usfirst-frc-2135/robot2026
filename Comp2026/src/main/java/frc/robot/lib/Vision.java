@@ -69,7 +69,7 @@ public class Vision
   // Objects
 
   /* What to publish over networktables for telemetry */
-  private String              m_name     = new String( );
+  private String              m_name     = "";
 
   // Declare module variables
   @SuppressWarnings("unused")
@@ -117,8 +117,8 @@ public class Vision
     LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLFrontName);  // These work on LL3 and lower (not LL4)
     LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLBackName);   // These work on LL3 and lower (not LL4)
 
-    SetCPUThrottleLevel(true);
-    SetIMUModeExternalSeed( );
+    setCPUThrottleLevel(true);
+    setIMUModeExternalSeed( );
 
     if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Red)))
     {
@@ -143,8 +143,8 @@ public class Vision
   {
     DataLogManager.log(String.format("%s: Subsystem running!", getName( )));
 
-    SetCPUThrottleLevel(false);
-    SetIMUModeAssistExternal( );
+    setCPUThrottleLevel(false);
+    setIMUModeAssistExternal( );
   }
 
   /****************************************************************************
@@ -189,7 +189,7 @@ public class Vision
    *          Defaults to 0. Your Limelgiht will process one frame
    *          after skipping <throttle> frames.
    */
-  public void SetCPUThrottleLevel(boolean throttle)
+  public void setCPUThrottleLevel(boolean throttle)
   {
     DataLogManager.log(String.format("%s: Set Throttle level to %s", getName( ), throttle));
     LimelightHelpers.SetThrottle(Constants.kLLFrontName, throttle ? 100 : 0);
@@ -201,7 +201,7 @@ public class Vision
    * Set IMU mode to passed parameter
    * 
    */
-  private void SetIMUModes(imuMode mode)
+  private void setIMUModes(imuMode mode)
   {
     DataLogManager.log(String.format("%s: Set IMU Mode to %d (%s)", getName( ), mode.value, mode));
     LimelightHelpers.SetIMUMode(Constants.kLLFrontName, mode.value);
@@ -213,9 +213,9 @@ public class Vision
    * Set IMU mode to EXTERNAL_SEED mode (load the LL4 internal IMU from robot IMU)
    * 
    */
-  public void SetIMUModeExternalSeed( )
+  public void setIMUModeExternalSeed( )
   {
-    SetIMUModes(imuMode.EXTERNAL_SEED);
+    setIMUModes(imuMode.EXTERNAL_SEED);
   }
 
   /****************************************************************************
@@ -223,9 +223,9 @@ public class Vision
    * Set IMU mode to INTERNAL mode (use the LL4 internal IMU)
    * 
    */
-  public void SetIMUModeInternal( )
+  public void setIMUModeInternal( )
   {
-    SetIMUModes(imuMode.INTERNAL);
+    setIMUModes(imuMode.INTERNAL);
   }
 
   /****************************************************************************
@@ -233,9 +233,9 @@ public class Vision
    * Set IMU mode to MT1 ASSIST mode (use the LL4 internal IMU with MT1 updates)
    * 
    */
-  public void SetIMUModeAssistMT1( )
+  public void setIMUModeAssistMT1( )
   {
-    SetIMUModes(imuMode.INTERNAL_MT1_ASSIST);
+    setIMUModes(imuMode.INTERNAL_MT1_ASSIST);
   }
 
   /****************************************************************************
@@ -243,9 +243,9 @@ public class Vision
    * Set IMU mode to External ASSIST mode (use the LL4 internal IMU with External updates)
    * 
    */
-  public void SetIMUModeAssistExternal( )
+  public void setIMUModeAssistExternal( )
   {
-    SetIMUModes(imuMode.INTERNAL_EXT_ASSIST);
+    setIMUModes(imuMode.INTERNAL_EXT_ASSIST);
   }
 
   /****************************************************************************

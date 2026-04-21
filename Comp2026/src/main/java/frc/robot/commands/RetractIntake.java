@@ -29,7 +29,7 @@ public class RetractIntake extends SequentialCommandGroup
 
         // @formatter:off
 
-        new LogCommand(getName(), "Stop rollers & Retract intake rotary"),
+        new LogCommand(getName(), "Stop rollers and Retract intake rotary"),
         intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getStowedAngle),
 
         new LogCommand(getName(), "Run Hopper Rollers"), 

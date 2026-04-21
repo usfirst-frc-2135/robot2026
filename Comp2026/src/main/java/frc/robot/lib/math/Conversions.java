@@ -88,7 +88,7 @@ public class Conversions
    */
   public static double rotationsToOutputRadians(double rotations, double gearRatio)
   {
-    return rotations * (2 * Math.PI / gearRatio);
+    return rotations * (2.0 * Math.PI / gearRatio);
   }
 
   /**
@@ -102,7 +102,7 @@ public class Conversions
    */
   public static double radiansToInputRotations(double radians, double gearRatio)
   {
-    return radians / (2 * Math.PI / gearRatio);
+    return radians / (2.0 * Math.PI / gearRatio);
   }
 
   //

@@ -330,7 +330,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
             );
 
-            // Initialize the previous setpoint to the robot's current speeds & module states
+            // Initialize the previous setpoint to the robot's current speeds and module states
             ChassisSpeeds currentSpeeds = this.getState().Speeds; // Method to get current robot-relative chassis speeds
             SwerveModuleState[] currentStates = this.getState().ModuleStates; // Method to get the current swerve module states
             m_previousSetpoint = new SwerveSetpoint(currentSpeeds, currentStates, DriveFeedforwards.zeros(config.numModules)); 

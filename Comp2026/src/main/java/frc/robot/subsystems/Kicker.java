@@ -99,8 +99,8 @@ public class Kicker extends SubsystemBase
     // update for 20 msec loop
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_rollerMotorSim.setRawRotorPosition((5300 / 60 / 50) * m_rollerMotor.get( ));
-    m_rollerMotorSim.setRotorVelocity((5300 / 60) * m_rollerMotor.get( ));
+    m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
+    m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
 
     // SimBattery estimates loaded battery voltages
 
