@@ -41,10 +41,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.BooleanPublisher;
-import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -100,10 +100,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /* Robot set pose */
     private final NetworkTable          kSwerveTable         = kNTInst.getTable("swerve");
-    private final DoubleArrayPublisher  m_setPosePub         = kSwerveTable.getDoubleArrayTopic("setPose").publish();
-    private final DoubleArraySubscriber m_setPoseSub         = kSwerveTable.getDoubleArrayTopic("setPose").subscribe(new double[3]);
-    private final BooleanPublisher      m_limelightPub       = kSwerveTable.getBooleanTopic("useLimelight").publish();
-    private final BooleanSubscriber     m_limelightSub       = kSwerveTable.getBooleanTopic("useLimelight").subscribe(false);
+    private final DoubleArrayEntry      m_setPoseEntry       = kSwerveTable.getDoubleArrayTopic("setPose").getEntry(new double[3]);
+    private final BooleanEntry          m_limelightEntry     = kSwerveTable.getBooleanTopic("useLimelight").getEntry(false);
 
 
     private MedianFilter                m_frontFilter        = new MedianFilter(5);
@@ -469,7 +467,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     private void initDashboard( )
     {
-        m_setPosePub.set(new double[3]);
+        m_setPoseEntry.set(new double[3]);
 
         // Get the default instance of NetworkTables that was created automatically when the robot program starts
         SmartDashboard.putData("SetPose", getResetPoseCommand( ));
@@ -477,7 +475,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // SmartDashboard.putData("AlignToPosePID", getAlignToPosePIDCommand( ));
         // SmartDashboard.putData("AlignToPosePPFollow", new DeferredCommand(( ) -> getPoseAlignPPFollowCommand( ), Set.of(this)));
         // SmartDashboard.putData("AlignToPosePPFind", new DeferredCommand(( ) -> getAlignToPosePPFindCommand( ), Set.of(this)));
-        m_limelightPub.set(false);
+        m_limelightEntry.set(false);
     }
 
     /****************************************************************************
@@ -530,7 +528,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 };
                 poseArray.set(array);
 
-                if (m_limelightSub.get( ))
+                if (m_limelightEntry.get( ))
                 {
                     setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
                     addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
@@ -574,7 +572,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
                 // Code used by some teams to scale std devs by distance (below) and used by several teams
 
-                if (m_limelightSub.get( ))
+                if (m_limelightEntry.get( ))
                 {
                     setVisionMeasurementStdDevs(VecBuilder.fill( //
                             Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
@@ -634,9 +632,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Command getResetPoseCommand( )
     {
         return this
-                .runOnce(
-                        ( ) -> resetPoseAndLimelight(new Pose2d(new Translation2d(m_setPoseSub.get( )[0], m_setPoseSub.get( )[1]),
-                                new Rotation2d(m_setPoseSub.get( )[2])))) //
+                .runOnce(( ) -> resetPoseAndLimelight(
+                        new Pose2d(new Translation2d(m_setPoseEntry.get( )[0], m_setPoseEntry.get( )[1]),
+                                new Rotation2d(m_setPoseEntry.get( )[2])))) //
                 .withName("ResetOdometry").ignoringDisable(true);
     }
 
