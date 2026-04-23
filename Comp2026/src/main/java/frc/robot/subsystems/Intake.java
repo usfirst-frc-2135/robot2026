@@ -162,10 +162,7 @@ public class Intake extends SubsystemBase
   private boolean                   m_mmMoveIsFinished;                         // Movement has completed (within tolerance)
 
   // Network tables publisher objects
-  // private DoublePublisher           m_rollSpeedPub;
-  // private DoublePublisher           m_rollSupCurPub;
   private DoublePublisher           m_rotDegreesPub;
-
   private DoublePublisher           m_ccDegreesPub;
   private DoublePublisher           m_goalDegreesPub;
 
@@ -236,8 +233,6 @@ public class Intake extends SubsystemBase
     m_ccDegrees = Units.rotationsToDegrees((m_canCoderValid) ? m_ccAngle.getValue( ).in(Rotations) : 0.0);
 
     // Update network table publishers
-    // m_rollSpeedPub.set(m_rollerMotor.get( ));
-    // m_rollSupCurPub.set(m_rollerMotor.getSupplyCurrent( ).getValueAsDouble( ));
 
     m_ccDegreesPub.set(m_ccDegrees);
     m_rotDegreesPub.set(m_currentDegrees);
@@ -289,9 +284,6 @@ public class Intake extends SubsystemBase
     NetworkTable table = inst.getTable("intake");
 
     // Initialize network tables publishers
-    // m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
-    // m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
-
     m_ccDegreesPub = table.getDoubleTopic("ccDegrees").publish( );
     m_rotDegreesPub = table.getDoubleTopic("rotDegrees").publish( );
     m_goalDegreesPub = table.getDoubleTopic("targetDegrees").publish( );

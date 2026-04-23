@@ -48,8 +48,6 @@ public class Kicker extends SubsystemBase
   private boolean               m_rollerValid;        // Health indicator for motor 
 
   // Network tables publisher objects
-  // private DoublePublisher       m_rollSpeedPub;
-  // private DoublePublisher       m_rollSupCurPub;
 
   /****************************************************************************
    * 
@@ -80,8 +78,6 @@ public class Kicker extends SubsystemBase
     // This method will be called once per scheduler run
 
     // Update network table publishers
-    // m_rollSpeedPub.set(m_rollerMotor.get( ));
-    // m_rollSupCurPub.set(m_rollerMotor.getSupplyCurrent( ).getValueAsDouble( ));
   }
 
   /****************************************************************************
@@ -117,8 +113,6 @@ public class Kicker extends SubsystemBase
     // NetworkTable table = inst.getTable("kicker");
 
     // Initialize network tables publishers
-    // m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
-    // m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
 
     // Add commands
     // SmartDashboard.putData("KickerStop", getRollerModeCommand(KKRollerMode.STOP));
