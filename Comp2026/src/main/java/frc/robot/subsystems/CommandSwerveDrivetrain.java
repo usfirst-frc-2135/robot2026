@@ -4,7 +4,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
@@ -78,55 +77,6 @@ import frc.robot.lib.Vision;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-
-    /* What to publish over networktables for telemetry */
-    private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
-
-    /* Robot pose for field positioning */
-    private final NetworkTable          kFieldTable = kNTInst.getTable("Pose");
-
-    private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
-    private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
-
-    private final Translation2d         kHubCenterBlue       = new Translation2d(Inches.of(182.11), Inches.of(158.84));
-    private final Translation2d         kHubCenterRed        = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.84));
-    private static final double         kAimingKp            = 0.012;
-    private static final double         kDrivingKp           = 0.6;
-    private static final double         optimalDistance      = Units.inchesToMeters(138.0);
-    private static final LinearVelocity kMaxSpeed            = TunerConstants.kSpeedAt12Volts; //max top speed
-    private static final AngularVelocity kMaxAngularRate     = RotationsPerSecond.of(1.0);
-    private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
-    private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
-
-    /* Robot set pose */
-    private final NetworkTable          kSwerveTable         = kNTInst.getTable("swerve");
-    private final DoubleArrayEntry      m_setPoseEntry       = kSwerveTable.getDoubleArrayTopic("setPose").getEntry(new double[3]);
-    private final BooleanEntry          m_limelightEntry     = kSwerveTable.getBooleanTopic("useLimelight").getEntry(false);
-
-
-    private MedianFilter                m_frontFilter        = new MedianFilter(5);
-    private MedianFilter                m_backFilter         = new MedianFilter(5);
-
-    private BooleanPublisher            m_frontUpdate        = kSwerveTable.getBooleanTopic("FrontCam").publish();
-    private BooleanPublisher            m_backUpdate         = kSwerveTable.getBooleanTopic("BackCam").publish();
-
-    private DoublePublisher             m_rangePub           = kSwerveTable.getDoubleTopic("AlignRange").publish();
-    private DoublePublisher             m_aimPub             = kSwerveTable.getDoubleTopic("AlignAim").publish();
-
-    private double []                   m_moduleDistances    = {0, 0, 0, 0};
-
-    private SwerveSetpointGenerator     m_setpointGenerator;
-    private SwerveSetpoint              m_previousSetpoint;
-
-    private Translation2d               m_hubCenter          = new Translation2d();
-
-    /* Robot pathToPose constraints */
-    private final PathConstraints       kPathFindConstraints = new PathConstraints( // 
-        3.5,            // kMaxVelocityMps
-        3.5,      // kMaxAccelerationMpsSq
-        2.0 * Math.PI,                 // kMaxAngularSpeedRadiansPerSecond
-        2.0 * Math.PI                  // kMaxAngularSpeedRadiansPerSecondSquared
-    );
 
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
@@ -322,7 +272,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this // Subsystem for requirements
             );
             
-              m_setpointGenerator = new SwerveSetpointGenerator(
+            m_setpointGenerator = new SwerveSetpointGenerator(
                 config, // The robot configuration. This is the same config used for generating trajectories and running path following commands.
                 Units.rotationsToRadians(10.0) // The max rotation velocity of a swerve module in radians per second. This should probably be stored in your Constants file
 
@@ -390,11 +340,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-            double front = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
-            m_frontUpdate.set(m_frontFilter.calculate(front) > 0.5);
+        double front = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
+        m_frontUpdate.set(m_frontFilter.calculate(front) > 0.5);
 
-            double back = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
-            m_backUpdate.set(m_backFilter.calculate(back) > 0.5);        
+        double back = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
+        m_backUpdate.set(m_backFilter.calculate(back) > 0.5);        
     }
 
     private void startSimThread() {
@@ -458,6 +408,57 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     // @formatter:on
+    /***********************************************************************************/
+    /***********************************************************************************/
+
+    /* Swerve constants */
+    private static final double            kAimingKp            = 0.012;
+    private static final double            kDrivingKp           = 0.6;
+    private static final double            optimalDistance      = Units.inchesToMeters(138.0);
+
+    /* Get the network tables instance */
+    private final NetworkTableInstance     inst                 = NetworkTableInstance.getDefault( );
+    private final NetworkTable             kSwerveTable         = inst.getTable("swerve");
+
+    /* Limelight network table entries for field localization */
+    private final DoubleArrayPublisher     kLLPoseFront         = kSwerveTable.getDoubleArrayTopic("llPose-front").publish( );
+    private final DoubleArrayPublisher     kLLPoseBack          = kSwerveTable.getDoubleArrayTopic("llPose-back").publish( );
+    private final BooleanPublisher         m_frontUpdate        = kSwerveTable.getBooleanTopic("FrontCam").publish( );
+    private final BooleanPublisher         m_backUpdate         = kSwerveTable.getBooleanTopic("BackCam").publish( );
+    private final BooleanEntry             m_limelightEntry     = kSwerveTable.getBooleanTopic("useLimelight").getEntry(false);
+
+    /* Robot set pose entry and auto-align controls */
+    private final DoubleArrayEntry         m_setPoseEntry       =
+            kSwerveTable.getDoubleArrayTopic("setPose").getEntry(new double[3]);
+    private DoublePublisher                m_rangePub           = kSwerveTable.getDoubleTopic("AlignRange").publish( );
+    private DoublePublisher                m_aimPub             = kSwerveTable.getDoubleTopic("AlignAim").publish( );
+
+    /* Pose entry from Telemetry used for auto-align to a pose */
+    private final NetworkTable             kDriveStateTable     = inst.getTable("DriveState");
+    private final StructSubscriber<Pose2d> m_driveStatePose     =
+            kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
+
+    /* Limelight tracking filters for update */
+    private MedianFilter                   m_frontFilter        = new MedianFilter(5);
+    private MedianFilter                   m_backFilter         = new MedianFilter(5);
+
+    private double[ ]                      m_moduleDistances    =
+    {
+            0, 0, 0, 0
+    };
+
+    private SwerveSetpointGenerator        m_setpointGenerator;
+    private SwerveSetpoint                 m_previousSetpoint;
+
+    private Translation2d                  m_hubCenter          = new Translation2d( );
+
+    /* Robot pathToPose constraints */
+    private final PathConstraints          kPathFindConstraints = new PathConstraints( // 
+            3.5,            // kMaxVelocityMps
+            3.5,      // kMaxAccelerationMpsSq
+            2.0 * Math.PI,                 // kMaxAngularSpeedRadiansPerSecond
+            2.0 * Math.PI                  // kMaxAngularSpeedRadiansPerSecondSquared
+    );
 
     /***********************************************************************************/
     /***********************************************************************************/
@@ -772,12 +773,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command GetAutoAlignToHub( )
     {
-
         return this.applyRequest(( ) ->
         {
             // Sets hub center depending on whether alliance is red, blue, or missing
             Optional<Alliance> alliance = DriverStation.getAlliance( );
-            m_hubCenter = (alliance.equals(Optional.of(DriverStation.Alliance.Red))) ? kHubCenterRed : kHubCenterBlue;
+            m_hubCenter = (alliance.equals(Optional.of(DriverStation.Alliance.Red))) ? Constants.kHubCenterRed
+                    : Constants.kHubCenterBlue;
 
             Pose2d robotPose = m_driveStatePose.get( );
 
@@ -795,8 +796,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             m_aimPub.set(diffAngle);
             m_rangePub.set(distanceToHub);
 
-            return new SwerveRequest.RobotCentric( ).withVelocityX(this.rangePoseProportional(distanceToHub, kMaxSpeed))
-                    .withVelocityY(0).withRotationalRate(this.aimPoseProportional(diffAngle, kMaxAngularRate));
+            return new SwerveRequest.RobotCentric( )
+                    .withVelocityX(this.rangePoseProportional(distanceToHub, TunerConstants.kSpeedAt12Volts))       //
+                    .withVelocityY(0)                                                                  //
+                    .withRotationalRate(this.aimPoseProportional(diffAngle, RotationsPerSecond.of(1.0))     //
+            );
         });
     }
 
