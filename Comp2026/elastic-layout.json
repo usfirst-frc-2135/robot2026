@@ -9,8 +9,8 @@
         "containers": [
           {
             "title": "Alerts",
-            "x": 1024.0,
-            "y": 256.0,
+            "x": 768.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Alerts",
@@ -21,7 +21,7 @@
           },
           {
             "title": "AutoMode",
-            "x": 768.0,
+            "x": 512.0,
             "y": 0.0,
             "width": 256.0,
             "height": 128.0,
@@ -34,7 +34,7 @@
           },
           {
             "title": "AutoDelay",
-            "x": 768.0,
+            "x": 512.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -48,7 +48,7 @@
           },
           {
             "title": "GameSpecificMessage",
-            "x": 896.0,
+            "x": 640.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -62,8 +62,8 @@
           },
           {
             "title": "MatchTime",
-            "x": 1024.0,
-            "y": 128.0,
+            "x": 768.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Match Time",
@@ -78,8 +78,8 @@
           },
           {
             "title": "ShiftTime",
-            "x": 1152.0,
-            "y": 128.0,
+            "x": 896.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Match Time",
@@ -115,8 +115,8 @@
           },
           {
             "title": "BackCam",
-            "x": 1152.0,
-            "y": 0.0,
+            "x": 384.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -132,8 +132,8 @@
           },
           {
             "title": "FrontCam",
-            "x": 1024.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -166,8 +166,8 @@
           },
           {
             "title": "scoreRPM",
-            "x": 128.0,
-            "y": 256.0,
+            "x": 1024.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -180,7 +180,7 @@
           },
           {
             "title": "AutoStart",
-            "x": 768.0,
+            "x": 512.0,
             "y": 128.0,
             "width": 256.0,
             "height": 128.0,
@@ -189,6 +189,23 @@
               "topic": "/SmartDashboard/AutoStart",
               "period": 0.06,
               "sort_options": false
+            }
+          },
+          {
+            "title": "useLimelight",
+            "x": 128.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/swerve/useLimelight",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -418,37 +435,9 @@
             }
           },
           {
-            "title": "leftSpeed",
-            "x": 512.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/launcher/leftSpeed",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "rightSpeed",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/launcher/rightSpeed",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "scoreRPM",
             "x": 640.0,
-            "y": 256.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -504,7 +493,7 @@
           {
             "title": "launcherRPM",
             "x": 640.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -518,7 +507,7 @@
           {
             "title": "motorRPM",
             "x": 512.0,
-            "y": 128.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -532,7 +521,7 @@
           {
             "title": "atRequestedRPM",
             "x": 512.0,
-            "y": 256.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
