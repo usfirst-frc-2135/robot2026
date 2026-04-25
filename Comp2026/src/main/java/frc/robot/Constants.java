@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
@@ -40,7 +42,19 @@ public final class Constants
   public static final String  kRobotString          = "RobotContainer";
 
   public static final String  kLLFrontName          = "limelight-front";
+  public static final double        kLLFront_Forward      = Units.inchesToMeters(-0.602);  // Distance from robot center to front limelight (positive forward, negative rearward)
+  public static final double        kLLFront_Side         = Units.inchesToMeters(2.292);  // Distance from robot center to front limelight (positive right, negative opposite)
+  public static final double        kLLFront_Up           = Units.inchesToMeters(20.923);  // Distance from robot center to front limelight (positive up, negative down)
+  public static final double        kLLFront_Roll         = 0.0;  // Rotation of front limelight in the roll direction (positive is clockwise, negative is counterclockwise)
+  public static final double        kLLFront_Pitch        = 0.0;  // Rotation of front limelight in the pitch direction (positive is tilted back, negative is tilted down)
+  public static final double        kLLFront_Yaw          = 15.0; // Rotation of front limelight in the yaw direction (positive is left, negative is right)
   public static final String  kLLBackName           = "limelight-back";
+  public static final double        kLLBack_Forward       = Units.inchesToMeters(-12.057);  // Distance from robot center to back limelight (positive forward, negative rearward)
+  public static final double        kLLBack_Side          = Units.inchesToMeters(-2.844);  // Distance from robot center to back limelight (positive right, negative opposite)
+  public static final double        kLLBack_Up            = Units.inchesToMeters(8.686);  // Distance from robot center to back limelight (positive up, negative down)
+  public static final double        kLLBack_Roll          = 0.0;  // Rotation of back limelight in the roll direction (positive is clockwise, negative is counterclockwise)
+  public static final double        kLLBack_Pitch         = 0.0;  // Rotation of back limelight in the pitch direction (positive is tilted back, negative is tilted down)
+  public static final double        kLLBack_Yaw           = 20.0; // Rotation of back limelight in the yaw direction (positive is left, negative is right)
 
   // Robot physical dimensions
   public static final double  kChassisLength        = 26.0;                                     // Length (and width) of chassis frame

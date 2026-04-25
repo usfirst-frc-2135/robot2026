@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.lib.LimelightHelpers;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -63,17 +62,6 @@ public class Robot extends TimedRobot
       catch (Exception e)
       {
         DataLogManager.log(String.format("Failed to start WebServer: %s", e.toString( )));
-      }
-
-      // Forward packets from RoboRIO USB connections to ethernet (only on a real RoboRIO)
-      try
-      {
-        LimelightHelpers.setupPortForwardingUSB(0);
-        LimelightHelpers.setupPortForwardingUSB(1);
-      }
-      catch (Exception e)
-      {
-        DataLogManager.log(String.format("Failed to add port forwards: %s", e.toString( )));
       }
     }
 

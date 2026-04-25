@@ -116,6 +116,17 @@ public class Vision
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getName( )));
 
+    // Forward packets from RoboRIO USB connections to ethernet (only on a real RoboRIO)
+    try
+    {
+      LimelightHelpers.setupPortForwardingUSB(0);
+      LimelightHelpers.setupPortForwardingUSB(1);
+    }
+    catch (Exception e)
+    {
+      DataLogManager.log(String.format("Failed to add port forwards: %s", e.toString( )));
+    }
+
     LimelightHelpers.setLEDMode_ForceOff(Constants.kLLFrontName);         // These work on LL3 and lower (not LL4)
     LimelightHelpers.setLEDMode_ForceOff(Constants.kLLBackName);          // These work on LL3 and lower (not LL4)
     LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLFrontName);  // These work on LL3 and lower (not LL4)
@@ -136,6 +147,16 @@ public class Vision
     {
       DataLogManager.log(String.format("%s: Driver station alliance color NOT SET!", getName( )));
     }
+
+    // TODO: uncomment and test in cameras
+    // LimelightHelpers.setCameraPose_RobotSpace(Constants.kLLFrontName, Constants.kLLFront_Forward, Constants.kLLFront_Side,
+    //     Constants.kLLFront_Up, Constants.kLLFront_Pitch, Constants.kLLFront_Roll, Constants.kLLFront_Yaw);
+    // LimelightHelpers.setCameraPose_RobotSpace(Constants.kLLBackName, Constants.kLLBack_Forward, Constants.kLLBack_Side,
+    //     Constants.kLLBack_Up, Constants.kLLBack_Pitch, Constants.kLLBack_Roll, Constants.kLLBack_Yaw);
+    // LimelightHelpers.setCropWindow(Constants.kLLFrontName, -1.0, 1.0, -1.0, 1.0);  // (left, right, top, bottom) crop window limits for target detection (range 0 to 1, where 0 is left or top of image, and 1 is right or bottom of image)
+    // LimelightHelpers.setCropWindow(Constants.kLLBackName, -1.0, 1.0, -0.35, 1.0);  // (left, right, top, bottom) crop window limits for target detection (range 0 to 1, where 0 is left or top of image, and 1 is right or bottom of image)
+    // LimelightHelpers.setFiducial3DOffset(Constants.kLLFrontName, 0.0, 0.0, 0.0);   // 3D point of interest offset from fiducial center (positive forward, right, up)
+    // LimelightHelpers.setFiducial3DOffset(Constants.kLLBackName, 0.0, 0.0, 0.0);    // 3D point of interest offset from fiducial center (positive forward, right, up)
 
   }
 
