@@ -395,7 +395,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
-
     /**
      * Return the pose at a given timestamp, if the buffer is not empty.
      *
@@ -492,7 +491,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     private boolean visionUpdate(String limelightName, DoubleArrayPublisher poseArray)
     {
-        boolean useMegaTag2 = true; // set to false to use MegaTag1
+        boolean useMegaTag2 = false; // set to false to use MegaTag1
         boolean doRejectUpdate = false;
         if (useMegaTag2 == false)
         {
