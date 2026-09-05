@@ -57,7 +57,7 @@ public class LED
   private static final int                     kSize          = 4;    // Number of LEDs in animations that use partial string
   private static final double                  kSparking      = 0.4;  // Sparking level 0.0 - 1.0
   private static final double                  kCooling       = 0.5;  // Cooling level 0.0 - 1.0
-  private static final double                  kMaxLEDsOn     = 0.5;  // Sparking level 0.0 - 1.0
+  private static final double                  kMaxLEDsOn     = 0.5;  // Number of LEDs on at once 
 
   /*
    * LED object for managing control requests
@@ -92,7 +92,7 @@ public class LED
   private final SendableChooser<COLOR>     m_colorChooser     = new SendableChooser<COLOR>( );
   private final SendableChooser<ANIMATION> m_animationChooser = new SendableChooser<ANIMATION>( );
 
-  private String                           m_name             = new String( );
+  private String                           m_name             = "";
   private boolean                          m_candleValid      = false;
   private LEDRequest                       m_request          = new LEDRequest(COLOR.OFF, ANIMATION.SOLID, kFrameRate);
   private LEDRequest                       m_active           = new LEDRequest(COLOR.OFF, ANIMATION.SOLID, kFrameRate);

@@ -162,10 +162,7 @@ public class Intake extends SubsystemBase
   private boolean                   m_mmMoveIsFinished;                         // Movement has completed (within tolerance)
 
   // Network tables publisher objects
-  // private DoublePublisher           m_rollSpeedPub;
-  // private DoublePublisher           m_rollSupCurPub;
   private DoublePublisher           m_rotDegreesPub;
-
   private DoublePublisher           m_ccDegreesPub;
   private DoublePublisher           m_goalDegreesPub;
 
@@ -236,8 +233,6 @@ public class Intake extends SubsystemBase
     m_ccDegrees = Units.rotationsToDegrees((m_canCoderValid) ? m_ccAngle.getValue( ).in(Rotations) : 0.0);
 
     // Update network table publishers
-    // m_rollSpeedPub.set(m_rollerMotor.get( ));
-    // m_rollSupCurPub.set(m_rollerMotor.getSupplyCurrent( ).getValueAsDouble( ));
 
     m_ccDegreesPub.set(m_ccDegrees);
     m_rotDegreesPub.set(m_currentDegrees);
@@ -269,8 +264,8 @@ public class Intake extends SubsystemBase
     m_CANcoderSim.setRawPosition(Units.radiansToRotations(m_armSim.getAngleRads( )));
     m_CANcoderSim.setVelocity(Units.radiansToRotations(m_armSim.getVelocityRadPerSec( )));
 
-    m_rollerMotorSim.setRawRotorPosition((5300 / 60 / 50) * m_rollerMotor.get( ));
-    m_rollerMotorSim.setRotorVelocity((5300 / 60) * m_rollerMotor.get( ));
+    m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
+    m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
 
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps( )));
@@ -289,9 +284,6 @@ public class Intake extends SubsystemBase
     NetworkTable table = inst.getTable("intake");
 
     // Initialize network tables publishers
-    // m_rollSpeedPub = table.getDoubleTopic("rollSpeed").publish( );
-    // m_rollSupCurPub = table.getDoubleTopic("rollSupCur").publish( );
-
     m_ccDegreesPub = table.getDoubleTopic("ccDegrees").publish( );
     m_rotDegreesPub = table.getDoubleTopic("rotDegrees").publish( );
     m_goalDegreesPub = table.getDoubleTopic("targetDegrees").publish( );
@@ -704,7 +696,7 @@ public class Intake extends SubsystemBase
   {
     return new SequentialCommandGroup( //
         getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),     //
-        new WaitCommand(0.25),                                            //
+        new WaitCommand(2.0),                                            //
         getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),           //
         new WaitCommand(0.25),                                            //
         new RepeatCommand(                                                        //

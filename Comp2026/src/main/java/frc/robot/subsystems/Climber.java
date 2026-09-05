@@ -64,7 +64,7 @@ public class Climber extends SubsystemBase
   private static final double  kClimberLengthMeters = 0.5;     // Simulation
   private static final double  kCarriageMassKg      = 2.0;     // Simulation
   private static final double  kDrumDiameterInches  = 1.375;   // Drum diameter in inches
-  private static final double  kDrumRadiusMeters    = Units.inchesToMeters(kDrumDiameterInches) / 2;
+  private static final double  kDrumRadiusMeters    = Units.inchesToMeters(kDrumDiameterInches) / 2.0;
   private static final double  kRolloutRatio        = kDrumDiameterInches * Math.PI / kGearRatio; // inches per shaft rotation
   private static final Voltage kCalibrateSpeedVolts = Volts.of(-1.0);           // Motor voltage during calibration
   private static final Voltage kManualSpeedVolts    = Volts.of(3.0);  // Motor voltage during manual operation (joystick)
@@ -77,7 +77,7 @@ public class Climber extends SubsystemBase
   private static final double  kMMMoveTimeout       = 2.5;     // Seconds allowed for a Motion Magic movement
 
   // Climber lengths - Motion Magic config parameters
-  private static final double  kLengthClimbed       = 0.0;     // By definition - Climber fully climbed
+  private static final double  kLengthClimbed       = 0.1;     // By definition - Climber fully climbed
   private static final double  kLengthStowed        = 0.0;     // Climber fully down/back
   private static final double  kLengthFull          = 10.5;
 
@@ -157,7 +157,7 @@ public class Climber extends SubsystemBase
     kNTPrefix = prefix;
     kNTTableName = "climber" + instanceName;
 
-    // m_climbMotor = (instanceName == "Left") ? new TalonFX(Ports.kCANID_ClimberLeft) : new TalonFX(Ports.kCANID_ClimberRight);
+    // m_climbMotor = (instanceName.equals("Left")) ? new TalonFX(Ports.kCANID_ClimberLeft) : new TalonFX(Ports.kCANID_ClimberRight);
 
     // Initialize climber motor objects
     m_climberValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_climbMotor, kSubsystemFullName,

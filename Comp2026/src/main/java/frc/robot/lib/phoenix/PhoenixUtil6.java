@@ -408,8 +408,11 @@ public class PhoenixUtil6
   public void candlePrintFaults(CANdle candle, String name)
   {
     DataLogManager.log(String.format("%s: ------------------ DUMP FAULTS ------------------", name));
-    StatusSignal<Integer> faults = candle.getFaultField( );
-    StatusSignal<Integer> stickyFaults = candle.getStickyFaultField( );
+    // StatusSignal<Integer> faults = candle.getFaultField( );
+    // StatusSignal<Integer> stickyFaults = candle.getStickyFaultField( );
+    // faults.getValue( );
+    // stickyFaults.getValue( );
+
     DataLogManager.log(String.format("  5VTooHigh ......... %5s %5s", candle.getFault_5VTooHigh( ).toString( ),
         candle.getStickyFault_5VTooHigh( ).toString( )));
     DataLogManager.log(String.format("  5VTooLow .......... %5s %5s", candle.getFault_5VTooLow( ).toString( ),
@@ -430,9 +433,6 @@ public class PhoenixUtil6
         candle.getStickyFault_Undervoltage( ).toString( )));
     DataLogManager.log(String.format("  UnlicensedFeatureInUse .. %5s %5s", candle.getFault_UnlicensedFeatureInUse( ).toString( ),
         candle.getStickyFault_UnlicensedFeatureInUse( ).toString( )));
-
-    faults.getValue( );
-    stickyFaults.getValue( );
   }
 
 }

@@ -4,7 +4,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
@@ -41,10 +40,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.BooleanPublisher;
-import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -78,57 +77,6 @@ import frc.robot.lib.Vision;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-
-    /* What to publish over networktables for telemetry */
-    private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
-
-    /* Robot pose for field positioning */
-    private final NetworkTable          kFieldTable = kNTInst.getTable("Pose");
-
-    private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
-    private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
-
-    private final Translation2d         kHubCenterBlue       = new Translation2d(Inches.of(182.11), Inches.of(158.84));
-    private final Translation2d         kHubCenterRed        = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.84));
-    private static final double         kAimingKp            = 0.012;
-    private static final double         kDrivingKp           = 0.6;
-    private static final double         optimalDistance      = Units.inchesToMeters(138.0);
-    private static final LinearVelocity kMaxSpeed            = TunerConstants.kSpeedAt12Volts; //max top speed
-    private static final AngularVelocity kMaxAngularRate     = RotationsPerSecond.of(1.0);
-    private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
-    private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
-
-    /* Robot set pose */
-    private final NetworkTable          kSwerveTable         = kNTInst.getTable("swerve");
-    private final DoubleArrayPublisher  m_setPosePub         = kSwerveTable.getDoubleArrayTopic("setPose").publish();
-    private final DoubleArraySubscriber m_setPoseSub         = kSwerveTable.getDoubleArrayTopic("setPose").subscribe(new double[3]);
-    private final BooleanPublisher      m_limelightPub       = kSwerveTable.getBooleanTopic("useLimelight").publish();
-    private final BooleanSubscriber     m_limelightSub       = kSwerveTable.getBooleanTopic("useLimelight").subscribe(false);
-
-
-    private MedianFilter                m_frontFilter        = new MedianFilter(5);
-    private MedianFilter                m_backFilter         = new MedianFilter(5);
-
-    private BooleanPublisher            m_frontUpdate        = kSwerveTable.getBooleanTopic("FrontCam").publish();
-    private BooleanPublisher            m_backUpdate         = kSwerveTable.getBooleanTopic("BackCam").publish();
-
-    private DoublePublisher             m_rangePub           = kSwerveTable.getDoubleTopic("AlignRange").publish();
-    private DoublePublisher             m_aimPub             = kSwerveTable.getDoubleTopic("AlignAim").publish();
-
-    private double []                   m_moduleDistances    = {0, 0, 0, 0};
-
-    private SwerveSetpointGenerator     m_setpointGenerator;
-    private SwerveSetpoint              m_previousSetpoint;
-
-    private Translation2d               m_hubCenter          = new Translation2d();
-
-    /* Robot pathToPose constraints */
-    private final PathConstraints       kPathFindConstraints = new PathConstraints( // 
-        3.5,            // kMaxVelocityMps
-        3.5,      // kMaxAccelerationMpsSq
-        2.0 * Math.PI,                 // kMaxAngularSpeedRadiansPerSecond
-        2.0 * Math.PI                  // kMaxAngularSpeedRadiansPerSecondSquared
-    );
 
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
@@ -324,13 +272,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this // Subsystem for requirements
             );
             
-              m_setpointGenerator = new SwerveSetpointGenerator(
+            m_setpointGenerator = new SwerveSetpointGenerator(
                 config, // The robot configuration. This is the same config used for generating trajectories and running path following commands.
                 Units.rotationsToRadians(10.0) // The max rotation velocity of a swerve module in radians per second. This should probably be stored in your Constants file
 
             );
 
-            // Initialize the previous setpoint to the robot's current speeds & module states
+            // Initialize the previous setpoint to the robot's current speeds and module states
             ChassisSpeeds currentSpeeds = this.getState().Speeds; // Method to get current robot-relative chassis speeds
             SwerveModuleState[] currentStates = this.getState().ModuleStates; // Method to get the current swerve module states
             m_previousSetpoint = new SwerveSetpoint(currentSpeeds, currentStates, DriveFeedforwards.zeros(config.numModules)); 
@@ -392,11 +340,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-            double front = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
-            m_frontUpdate.set(m_frontFilter.calculate(front) > 0.5);
+        double front = (visionUpdate(Constants.kLLFrontName, kLLPoseFront)) ? 1.0 : 0.0;
+        m_frontUpdate.set(m_frontFilter.calculate(front) > 0.5);
 
-            double back = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
-            m_backUpdate.set(m_backFilter.calculate(back) > 0.5);        
+        double back = (visionUpdate(Constants.kLLBackName, kLLPoseBack)) ? 1.0 : 0.0;
+        m_backUpdate.set(m_backFilter.calculate(back) > 0.5);        
     }
 
     private void startSimThread() {
@@ -460,6 +408,57 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     // @formatter:on
+    /***********************************************************************************/
+    /***********************************************************************************/
+
+    /* Swerve constants */
+    private static final double            kAimingKp            = 0.012;
+    private static final double            kDrivingKp           = 0.6;
+    private static final double            optimalDistance      = Units.inchesToMeters(138.0);
+
+    /* Get the network tables instance */
+    private final NetworkTableInstance     inst                 = NetworkTableInstance.getDefault( );
+    private final NetworkTable             kSwerveTable         = inst.getTable("swerve");
+
+    /* Limelight network table entries for field localization */
+    private final DoubleArrayPublisher     kLLPoseFront         = kSwerveTable.getDoubleArrayTopic("llPose-front").publish( );
+    private final DoubleArrayPublisher     kLLPoseBack          = kSwerveTable.getDoubleArrayTopic("llPose-back").publish( );
+    private final BooleanPublisher         m_frontUpdate        = kSwerveTable.getBooleanTopic("FrontCam").publish( );
+    private final BooleanPublisher         m_backUpdate         = kSwerveTable.getBooleanTopic("BackCam").publish( );
+    private final BooleanEntry             m_limelightEntry     = kSwerveTable.getBooleanTopic("useLimelight").getEntry(false);
+
+    /* Robot set pose entry and auto-align controls */
+    private final DoubleArrayEntry         m_setPoseEntry       =
+            kSwerveTable.getDoubleArrayTopic("setPose").getEntry(new double[3]);
+    private DoublePublisher                m_rangePub           = kSwerveTable.getDoubleTopic("AlignRange").publish( );
+    private DoublePublisher                m_aimPub             = kSwerveTable.getDoubleTopic("AlignAim").publish( );
+
+    /* Pose entry from Telemetry used for auto-align to a pose */
+    private final NetworkTable             kDriveStateTable     = inst.getTable("DriveState");
+    private final StructSubscriber<Pose2d> m_driveStatePose     =
+            kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
+
+    /* Limelight tracking filters for update */
+    private MedianFilter                   m_frontFilter        = new MedianFilter(5);
+    private MedianFilter                   m_backFilter         = new MedianFilter(5);
+
+    private double[ ]                      m_moduleDistances    =
+    {
+            0, 0, 0, 0
+    };
+
+    private SwerveSetpointGenerator        m_setpointGenerator;
+    private SwerveSetpoint                 m_previousSetpoint;
+
+    private Translation2d                  m_hubCenter          = new Translation2d( );
+
+    /* Robot pathToPose constraints */
+    private final PathConstraints          kPathFindConstraints = new PathConstraints( // 
+            3.5,            // kMaxVelocityMps
+            3.5,      // kMaxAccelerationMpsSq
+            2.0 * Math.PI,                 // kMaxAngularSpeedRadiansPerSecond
+            2.0 * Math.PI                  // kMaxAngularSpeedRadiansPerSecondSquared
+    );
 
     /***********************************************************************************/
     /***********************************************************************************/
@@ -469,7 +468,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     private void initDashboard( )
     {
-        m_setPosePub.set(new double[3]);
+        m_setPoseEntry.set(new double[3]);
 
         // Get the default instance of NetworkTables that was created automatically when the robot program starts
         SmartDashboard.putData("SetPose", getResetPoseCommand( ));
@@ -477,7 +476,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // SmartDashboard.putData("AlignToPosePID", getAlignToPosePIDCommand( ));
         // SmartDashboard.putData("AlignToPosePPFollow", new DeferredCommand(( ) -> getPoseAlignPPFollowCommand( ), Set.of(this)));
         // SmartDashboard.putData("AlignToPosePPFind", new DeferredCommand(( ) -> getAlignToPosePPFindCommand( ), Set.of(this)));
-        m_limelightPub.set(false);
+        m_limelightEntry.set(false);
     }
 
     /****************************************************************************
@@ -530,7 +529,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 };
                 poseArray.set(array);
 
-                if (m_limelightSub.get( ))
+                if (m_limelightEntry.get( ))
                 {
                     setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
                     addVisionMeasurement(mt1.pose, mt1.timestampSeconds);
@@ -574,7 +573,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
                 // Code used by some teams to scale std devs by distance (below) and used by several teams
 
-                if (m_limelightSub.get( ))
+                if (m_limelightEntry.get( ))
                 {
                     setVisionMeasurementStdDevs(VecBuilder.fill( //
                             Math.pow(kBase, mt2.tagCount) * kProportional * mt2.avgTagDist, //
@@ -634,9 +633,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Command getResetPoseCommand( )
     {
         return this
-                .runOnce(
-                        ( ) -> resetPoseAndLimelight(new Pose2d(new Translation2d(m_setPoseSub.get( )[0], m_setPoseSub.get( )[1]),
-                                new Rotation2d(m_setPoseSub.get( )[2])))) //
+                .runOnce(( ) -> resetPoseAndLimelight(
+                        new Pose2d(new Translation2d(m_setPoseEntry.get( )[0], m_setPoseEntry.get( )[1]),
+                                new Rotation2d(m_setPoseEntry.get( )[2])))) //
                 .withName("ResetOdometry").ignoringDisable(true);
     }
 
@@ -774,12 +773,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public Command GetAutoAlignToHub( )
     {
-
         return this.applyRequest(( ) ->
         {
             // Sets hub center depending on whether alliance is red, blue, or missing
             Optional<Alliance> alliance = DriverStation.getAlliance( );
-            m_hubCenter = (alliance.equals(Optional.of(DriverStation.Alliance.Red))) ? kHubCenterRed : kHubCenterBlue;
+            m_hubCenter = (alliance.equals(Optional.of(DriverStation.Alliance.Red))) ? Constants.kHubCenterRed
+                    : Constants.kHubCenterBlue;
 
             Pose2d robotPose = m_driveStatePose.get( );
 
@@ -797,8 +796,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             m_aimPub.set(diffAngle);
             m_rangePub.set(distanceToHub);
 
-            return new SwerveRequest.RobotCentric( ).withVelocityX(this.rangePoseProportional(distanceToHub, kMaxSpeed))
-                    .withVelocityY(0).withRotationalRate(this.aimPoseProportional(diffAngle, kMaxAngularRate));
+            return new SwerveRequest.RobotCentric( )
+                    .withVelocityX(this.rangePoseProportional(distanceToHub, TunerConstants.kSpeedAt12Volts))       //
+                    .withVelocityY(0)                                                                  //
+                    .withRotationalRate(this.aimPoseProportional(diffAngle, RotationsPerSecond.of(1.0))     //
+            );
         });
     }
 

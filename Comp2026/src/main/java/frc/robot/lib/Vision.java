@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.pathplanner.lib.util.FlippingUtil;
 
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -61,19 +62,22 @@ public class Vision
   };
 
   // Constants
-  private static final double kAimingKp  = 0.01;
-  private static final double kDrivingKp = 0.08;
-  private static final double kTXOffset  = 0.0;
-  private static final double kTYOffset  = 8.0;
+  private static final double kAimingKp    = 0.01;
+  private static final double kDrivingKp   = 0.08;
+  private static final double kTXOffset    = 0.0;
+  private static final double kTYOffset    = 8.0;
 
   // Objects
 
   /* What to publish over networktables for telemetry */
-  private String              m_name     = new String( );
+  private String              m_name       = "";
 
   // Declare module variables
   @SuppressWarnings("unused")
-  private streamMode          m_stream   = streamMode.STANDARD;
+  private streamMode          m_stream     = streamMode.STANDARD;
+
+  private MedianFilter        m_filteredTX = new MedianFilter(5);
+  private MedianFilter        m_filteredTY = new MedianFilter(5);
 
   /****************************************************************************
    * 
@@ -112,13 +116,24 @@ public class Vision
   {
     DataLogManager.log(String.format("%s: Subsystem initialized!", getName( )));
 
+    // Forward packets from RoboRIO USB connections to ethernet (only on a real RoboRIO)
+    try
+    {
+      LimelightHelpers.setupPortForwardingUSB(0);
+      LimelightHelpers.setupPortForwardingUSB(1);
+    }
+    catch (Exception e)
+    {
+      DataLogManager.log(String.format("Failed to add port forwards: %s", e.toString( )));
+    }
+
     LimelightHelpers.setLEDMode_ForceOff(Constants.kLLFrontName);         // These work on LL3 and lower (not LL4)
     LimelightHelpers.setLEDMode_ForceOff(Constants.kLLBackName);          // These work on LL3 and lower (not LL4)
     LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLFrontName);  // These work on LL3 and lower (not LL4)
     LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLBackName);   // These work on LL3 and lower (not LL4)
 
-    SetCPUThrottleLevel(true);
-    SetIMUModeExternalSeed( );
+    setCPUThrottleLevel(true);
+    setIMUModeExternalSeed( );
 
     if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Red)))
     {
@@ -133,6 +148,16 @@ public class Vision
       DataLogManager.log(String.format("%s: Driver station alliance color NOT SET!", getName( )));
     }
 
+    // TODO: uncomment and test in cameras
+    // LimelightHelpers.setCameraPose_RobotSpace(Constants.kLLFrontName, Constants.kLLFront_Forward, Constants.kLLFront_Side,
+    //     Constants.kLLFront_Up, Constants.kLLFront_Pitch, Constants.kLLFront_Roll, Constants.kLLFront_Yaw);
+    // LimelightHelpers.setCameraPose_RobotSpace(Constants.kLLBackName, Constants.kLLBack_Forward, Constants.kLLBack_Side,
+    //     Constants.kLLBack_Up, Constants.kLLBack_Pitch, Constants.kLLBack_Roll, Constants.kLLBack_Yaw);
+    // LimelightHelpers.setCropWindow(Constants.kLLFrontName, -1.0, 1.0, -1.0, 1.0);  // (left, right, top, bottom) crop window limits for target detection (range 0 to 1, where 0 is left or top of image, and 1 is right or bottom of image)
+    // LimelightHelpers.setCropWindow(Constants.kLLBackName, -1.0, 1.0, -0.35, 1.0);  // (left, right, top, bottom) crop window limits for target detection (range 0 to 1, where 0 is left or top of image, and 1 is right or bottom of image)
+    // LimelightHelpers.setFiducial3DOffset(Constants.kLLFrontName, 0.0, 0.0, 0.0);   // 3D point of interest offset from fiducial center (positive forward, right, up)
+    // LimelightHelpers.setFiducial3DOffset(Constants.kLLBackName, 0.0, 0.0, 0.0);    // 3D point of interest offset from fiducial center (positive forward, right, up)
+
   }
 
   /****************************************************************************
@@ -143,8 +168,8 @@ public class Vision
   {
     DataLogManager.log(String.format("%s: Subsystem running!", getName( )));
 
-    SetCPUThrottleLevel(false);
-    SetIMUModeAssistExternal( );
+    setCPUThrottleLevel(false);
+    setIMUModeAssistExternal( );
   }
 
   /****************************************************************************
@@ -157,9 +182,11 @@ public class Vision
    */
   public AngularVelocity aimProportional(AngularVelocity maxAngularRate)
   {
-    double tx =
+    double sampledTX =
         LimelightHelpers.getTV(Constants.kLLFrontName) ? (LimelightHelpers.getTX(Constants.kLLFrontName) + kTXOffset) : 0.0;
-    double proportionalFactor = -tx * kAimingKp;
+
+    double appliedTX = m_filteredTX.calculate(sampledTX);
+    double proportionalFactor = -appliedTX * kAimingKp;
 
     return maxAngularRate.times(proportionalFactor);
   }
@@ -174,9 +201,11 @@ public class Vision
    */
   public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
   {
-    double ty =
+    double sampledTY =
         LimelightHelpers.getTV(Constants.kLLFrontName) ? (LimelightHelpers.getTY(Constants.kLLFrontName) + kTYOffset) : 0.0;
-    double proportionalFactor = -ty * kDrivingKp;
+
+    double appliedTY = m_filteredTY.calculate(sampledTY);
+    double proportionalFactor = -appliedTY * kDrivingKp;
 
     return maxSpeed.times(proportionalFactor);
   }
@@ -189,7 +218,7 @@ public class Vision
    *          Defaults to 0. Your Limelgiht will process one frame
    *          after skipping <throttle> frames.
    */
-  public void SetCPUThrottleLevel(boolean throttle)
+  public void setCPUThrottleLevel(boolean throttle)
   {
     DataLogManager.log(String.format("%s: Set Throttle level to %s", getName( ), throttle));
     LimelightHelpers.SetThrottle(Constants.kLLFrontName, throttle ? 100 : 0);
@@ -201,7 +230,7 @@ public class Vision
    * Set IMU mode to passed parameter
    * 
    */
-  private void SetIMUModes(imuMode mode)
+  private void setIMUModes(imuMode mode)
   {
     DataLogManager.log(String.format("%s: Set IMU Mode to %d (%s)", getName( ), mode.value, mode));
     LimelightHelpers.SetIMUMode(Constants.kLLFrontName, mode.value);
@@ -213,9 +242,9 @@ public class Vision
    * Set IMU mode to EXTERNAL_SEED mode (load the LL4 internal IMU from robot IMU)
    * 
    */
-  public void SetIMUModeExternalSeed( )
+  public void setIMUModeExternalSeed( )
   {
-    SetIMUModes(imuMode.EXTERNAL_SEED);
+    setIMUModes(imuMode.EXTERNAL_SEED);
   }
 
   /****************************************************************************
@@ -223,9 +252,9 @@ public class Vision
    * Set IMU mode to INTERNAL mode (use the LL4 internal IMU)
    * 
    */
-  public void SetIMUModeInternal( )
+  public void setIMUModeInternal( )
   {
-    SetIMUModes(imuMode.INTERNAL);
+    setIMUModes(imuMode.INTERNAL);
   }
 
   /****************************************************************************
@@ -233,9 +262,9 @@ public class Vision
    * Set IMU mode to MT1 ASSIST mode (use the LL4 internal IMU with MT1 updates)
    * 
    */
-  public void SetIMUModeAssistMT1( )
+  public void setIMUModeAssistMT1( )
   {
-    SetIMUModes(imuMode.INTERNAL_MT1_ASSIST);
+    setIMUModes(imuMode.INTERNAL_MT1_ASSIST);
   }
 
   /****************************************************************************
@@ -243,9 +272,9 @@ public class Vision
    * Set IMU mode to External ASSIST mode (use the LL4 internal IMU with External updates)
    * 
    */
-  public void SetIMUModeAssistExternal( )
+  public void setIMUModeAssistExternal( )
   {
-    SetIMUModes(imuMode.INTERNAL_EXT_ASSIST);
+    setIMUModes(imuMode.INTERNAL_EXT_ASSIST);
   }
 
   /****************************************************************************
