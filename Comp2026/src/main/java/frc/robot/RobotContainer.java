@@ -61,6 +61,7 @@ import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
+import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -467,103 +468,108 @@ public class RobotContainer
    */
   public Command getAutonomousCommand( )
   {
-    AutoChooser autoOption = m_autoChooser.getSelected( );
-    StartPose startOption = m_startChooser.getSelected( );
-    double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
+    // AutoChooser autoOption = m_autoChooser.getSelected( );
+    // StartPose startOption = m_startChooser.getSelected( );
+    // double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
 
-    // Cancel any autos that were already running
+    // // Cancel any autos that were already running
 
-    if (m_autoCommand != null)
-    {
-      if (m_autoCommand.isScheduled( ))
-      {
-        m_autoCommand.cancel( );
-      }
-      m_autoCommand = null;
-    }
-
-    // Get auto name using created key
-
-    String autoKey = autoOption.toString( ) + startOption.toString( );
-    String autoName = autoMap.get(autoKey);
-    DataLogManager.log(String.format("========================================================================"));
-    DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
-    DataLogManager.log(String.format("========================================================================"));
-
-    // Get list of paths within the auto file for all autos except AUTOSTOP
-
-    try
-    {
-      m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
-    }
-    catch (ParseException | IOException e)
-    {
-      DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-    }
-
-    if (m_ppPathList.isEmpty( ))
-    {
-      DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-    }
-
-    DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
-
+    // if (m_autoCommand != null)
     // {
-    //   // Debug only: print states of first path
-    //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
-    //   for (int i = 0; i < states.size( ); i++)
-    //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
+    //   if (m_autoCommand.isScheduled( ))
+    //   {
+    //     m_autoCommand.cancel( );
+    //   }
+    //   m_autoCommand = null;
     // }
 
-    // Create the correct base command and pass the path list
+    // // Get auto name using created key
 
-    switch (autoOption)
-    {
-      default :
-      case AUTOSTOP :
-        m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
-        break;
-      case AUTOTEST :
-        m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
-        break;
-      case AUTOSCORE1A :
-        m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE1B :
-        m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE2A :
-        m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE2B :
-        m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-    }
+    // String autoKey = autoOption.toString( ) + startOption.toString( );
+    // String autoName = autoMap.get(autoKey);
+    // DataLogManager.log(String.format("========================================================================"));
+    // DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
+    // DataLogManager.log(String.format("========================================================================"));
 
-    DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
+    // // Get list of paths within the auto file for all autos except AUTOSTOP
 
-    // Build a new sequential command from the base command that allows for a delay and handles odometry
+    // try
+    // {
+    //   m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+    // }
+    // catch (ParseException | IOException e)
+    // {
+    //   DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
+    //   return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+    // }
 
-    // Update robot pose to where we want immediately so it displays correctly in dashboard
-    resetOdometryToInitialPose(m_ppPathList.get(0));
+    // if (m_ppPathList.isEmpty( ))
+    // {
+    //   DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
+    //   return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+    // }
 
-    // Build the autonomous command to run
-    if (autoOption != AutoChooser.AUTOSTOP)
-    {
-      m_autoCommand = new SequentialCommandGroup(                                                       //
-          new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
-          new InstantCommand(( ) ->      // Update pose again right before we run the command
-          {
-            resetOdometryToInitialPose(m_ppPathList.get(0));
-          }, m_drivetrain),                                                                             //
-          new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
-          new WaitCommand(delay),                                                                       //
-          m_autoCommand,                                                                                //
-          new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
-      );
-    }
+    // DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
+
+    // // {
+    // //   // Debug only: print states of first path
+    // //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
+    // //   for (int i = 0; i < states.size( ); i++)
+    // //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
+    // // }
+
+    // // Create the correct base command and pass the path list
+
+    // switch (autoOption)
+    // {
+    //   default :
+    //   case AUTOSTOP :
+    //     m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
+    //     break;
+    //   case AUTOTEST :
+    //     m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
+    //     break;
+    //   case AUTOSCORE1A :
+    //     m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+    //     break;
+    //   case AUTOSCORE1B :
+    //     m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+    //     break;
+    //   case AUTOSCORE2A :
+    //     m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+    //     break;
+    //   case AUTOSCORE2B :
+    //     m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+    //     break;
+    // }
+
+    // DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
+
+    // // Build a new sequential command from the base command that allows for a delay and handles odometry
+
+    // // Update robot pose to where we want immediately so it displays correctly in dashboard
+    // resetOdometryToInitialPose(m_ppPathList.get(0));
+
+    // // Build the autonomous command to run
+    // if (autoOption != AutoChooser.AUTOSTOP)
+    // {
+    //   m_autoCommand = new SequentialCommandGroup(                                                       //
+    //       new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
+    //       new InstantCommand(( ) ->      // Update pose again right before we run the command
+    //       {
+    //         resetOdometryToInitialPose(m_ppPathList.get(0));
+    //       }, m_drivetrain),                                                                             //
+    //       new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
+    //       new WaitCommand(delay),                                                                       //
+    //       m_autoCommand,                                                                                //
+    //       new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
+    //   );
+    // }
+
+    Path firstStraight = new Path("first-straight");
+
+    Command m_autoCommand =
+        m_drivetrain.getPathBuilder( ).withPoseReset(m_drivetrain::resetPoseAndLimelight).build(firstStraight);
 
     return m_autoCommand;
   }

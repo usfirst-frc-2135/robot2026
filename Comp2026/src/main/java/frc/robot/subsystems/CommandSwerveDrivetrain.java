@@ -20,6 +20,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.controller.PIDController;
 import frc.robot.lib.BLine.*;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
@@ -97,6 +98,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
+
+    FollowPath.Builder pathBuilder; 
 
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
@@ -287,6 +290,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", ex.getStackTrace());
         }
+
+        pathBuilder = new FollowPath.Builder(
+            this,
+            () -> getState().Pose,
+            () -> getState().Speeds,
+            this::driveRobotRelative,
+            new PIDController(2.0, 0.0, 0.0),
+            new PIDController(1.0, 0.0, 0.0),
+            new PIDController(0.2, 0.0, 0.0)
+        ).withDefaultShouldFlip()
+        .withTRatioBasedTranslationHandoffs(true);
+    }
+
+    public FollowPath.Builder getPathBuilder() {
+        return pathBuilder; 
     }
 
     /**
