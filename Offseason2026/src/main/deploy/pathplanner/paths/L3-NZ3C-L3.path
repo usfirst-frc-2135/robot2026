@@ -1,0 +1,179 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.75,
+        "y": 1.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.012735825536134,
+        "y": 0.5745944452879743
+      },
+      "isLocked": false,
+      "linkedName": "L3"
+    },
+    {
+      "anchor": {
+        "x": 3.603,
+        "y": 0.642
+      },
+      "prevControl": {
+        "x": 3.353,
+        "y": 0.642
+      },
+      "nextControl": {
+        "x": 4.603,
+        "y": 0.642
+      },
+      "isLocked": false,
+      "linkedName": "TR3-EN"
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 0.642
+      },
+      "prevControl": {
+        "x": 4.597,
+        "y": 0.6420000000000001
+      },
+      "nextControl": {
+        "x": 6.597,
+        "y": 0.642
+      },
+      "isLocked": false,
+      "linkedName": "TR3-EX"
+    },
+    {
+      "anchor": {
+        "x": 6.193,
+        "y": 2.528
+      },
+      "prevControl": {
+        "x": 6.193,
+        "y": 2.028
+      },
+      "nextControl": {
+        "x": 6.193,
+        "y": 2.778
+      },
+      "isLocked": false,
+      "linkedName": "NZ3C"
+    },
+    {
+      "anchor": {
+        "x": 6.193,
+        "y": 3.028
+      },
+      "prevControl": {
+        "x": 6.193,
+        "y": 2.778
+      },
+      "nextControl": {
+        "x": 6.193,
+        "y": 3.528
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.597,
+        "y": 0.642
+      },
+      "prevControl": {
+        "x": 6.597,
+        "y": 0.6419999999999999
+      },
+      "nextControl": {
+        "x": 4.597,
+        "y": 0.6420000000000001
+      },
+      "isLocked": false,
+      "linkedName": "TR3-EX"
+    },
+    {
+      "anchor": {
+        "x": 3.603,
+        "y": 0.642
+      },
+      "prevControl": {
+        "x": 4.103,
+        "y": 0.6419999999999999
+      },
+      "nextControl": {
+        "x": 3.103,
+        "y": 0.6420000000000001
+      },
+      "isLocked": false,
+      "linkedName": "TR3-EN"
+    },
+    {
+      "anchor": {
+        "x": 2.75,
+        "y": 1.0
+      },
+      "prevControl": {
+        "x": 2.8809964764925198,
+        "y": 0.7870682664642381
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "L3"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.25,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.997347480106101,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 2.5,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 4.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 5.0,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 5.75,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.2,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 58.3
+  },
+  "reversed": false,
+  "folder": "FromLaunch",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 58.3
+  },
+  "useDefaultConstraints": true
+}
