@@ -3,32 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.75,
-        "y": 7.08
+        "x": 4.403,
+        "y": 7.427
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.926776695296637,
-        "y": 7.256776695296637
-      },
-      "isLocked": false,
-      "linkedName": "L1"
-    },
-    {
-      "anchor": {
-        "x": 3.603,
-        "y": 7.427
-      },
-      "prevControl": {
-        "x": 3.353,
-        "y": 7.427
-      },
-      "nextControl": {
-        "x": 4.603,
+        "x": 4.653,
         "y": 7.427
       },
       "isLocked": false,
-      "linkedName": "TR1-EN"
+      "linkedName": "Start1"
     },
     {
       "anchor": {
@@ -142,31 +126,31 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.0,
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.8,
+      "waypointRelativePos": 1.7999999999999998,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 4.0,
+      "waypointRelativePos": 3.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 5.2,
+      "waypointRelativePos": 4.2,
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 6.0,
+      "waypointRelativePos": 5.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 7.0,
+      "waypointRelativePos": 6.0,
       "rotationDegrees": 180.0
     }
   ],
@@ -189,7 +173,7 @@
   "folder": "FromLaunch",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -58.400000000000006
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

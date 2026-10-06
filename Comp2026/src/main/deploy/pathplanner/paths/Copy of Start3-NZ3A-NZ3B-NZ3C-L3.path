@@ -3,32 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.75,
-        "y": 1.0
+        "x": 4.403,
+        "y": 0.642
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0692405491502766,
-        "y": 0.6807594508497232
-      },
-      "isLocked": false,
-      "linkedName": "L3"
-    },
-    {
-      "anchor": {
-        "x": 3.603,
-        "y": 0.642
-      },
-      "prevControl": {
-        "x": 3.103,
-        "y": 0.6420000000000001
-      },
-      "nextControl": {
-        "x": 4.103,
+        "x": 4.7803715098486,
         "y": 0.642
       },
       "isLocked": false,
-      "linkedName": "TR3-EN"
+      "linkedName": "Start3"
     },
     {
       "anchor": {
@@ -146,27 +130,23 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 2.8,
+      "waypointRelativePos": 1.7999999999999998,
       "rotationDegrees": 119.99999999999999
     },
     {
-      "waypointRelativePos": 4.0,
+      "waypointRelativePos": 3.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 5.2,
+      "waypointRelativePos": 4.2,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 6.0,
+      "waypointRelativePos": 5.0,
       "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 7.0,
+      "waypointRelativePos": 6.0,
       "rotationDegrees": 180.0
     }
   ],
@@ -174,8 +154,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.5,
-    "maxAcceleration": 0.5,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -186,10 +166,10 @@
     "rotation": 58.3
   },
   "reversed": false,
-  "folder": "FromLaunch",
+  "folder": "FromStart",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 58.3
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
