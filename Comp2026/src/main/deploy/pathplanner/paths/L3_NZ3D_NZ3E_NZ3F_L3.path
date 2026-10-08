@@ -65,15 +65,15 @@
     {
       "anchor": {
         "x": 6.46,
-        "y": 3.884
+        "y": 3.584
       },
       "prevControl": {
         "x": 5.960074048252166,
-        "y": 3.892604810806914
+        "y": 3.5926048108069155
       },
       "nextControl": {
         "x": 6.959925951747834,
-        "y": 3.875395189193086
+        "y": 3.5753951891930855
       },
       "isLocked": false,
       "linkedName": "NZ3E"
@@ -150,7 +150,7 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 3.0,
+      "waypointRelativePos": 2.75,
       "rotationDegrees": 90.0
     },
     {
