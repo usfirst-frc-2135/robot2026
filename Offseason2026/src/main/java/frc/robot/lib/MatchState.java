@@ -28,7 +28,7 @@ public class MatchState
   }
 
   // Member objects
-  private String            m_name          = new String( );
+  private String            m_name          = "";
   private HID               m_hid;
   private LED               m_led;
   private int               m_prevShiftTime = 0;
@@ -70,21 +70,27 @@ public class MatchState
     return m_name;
   }
 
-  /**
+  /****************************************************************************
+   * 
    * Use currentShiftIsOurs() to determine if this is our shift
    * 
    * @param animation
    *          LED animation to apply
+   * @param rate
+   *          Flashing frequency
    */
-
   private void setLEDForCurrentShift(ANIMATION animation, double rate)
   {
-    COLOR color;
-    if (currentShiftIsEndgame()){
-      color = COLOR.YELLOW;
-    }else{
-      color = currentShiftIsOurs( ) ? COLOR.GREEN : COLOR.RED;
+    COLOR color = COLOR.OFF;
+    double currentMatchTime = Math.floor(DriverStation.getMatchTime( ));
 
+    if (isCurrentShiftEndgame(currentMatchTime))
+    {
+      color = COLOR.YELLOW;
+    }
+    else
+    {
+      color = isHubActive(currentMatchTime) ? COLOR.GREEN : COLOR.RED;
     }
     m_led.setLEDs(color, animation, rate);
   }
@@ -114,7 +120,7 @@ public class MatchState
         // Do the correct action based on the remaining time in the shift
         switch (shiftTime)
         {
-          case 10 :  // At 5 seconds remaining
+          case 10 :  // At 10 seconds remaining
             // Start rumble
             CommandScheduler.getInstance( )
                 .schedule(m_hid.getHIDRumbleDriverCommand(Constants.kRumbleOn, Seconds.of(1.0), Constants.kRumbleIntensity));
@@ -124,10 +130,10 @@ public class MatchState
             setLEDForCurrentShift(ANIMATION.STROBE, 2.0);
             m_shiftState = ShiftState.SLOWWARN;
             break;
-          case 9:
-          case 8:
-          case 7:
-          case 6:
+          case 9 :
+          case 8 :
+          case 7 :
+          case 6 :
           case 5 :
           case 4 :
             break;
@@ -138,8 +144,8 @@ public class MatchState
             break;
           case 2 :
           case 1 :
-          case 0 :
             break;
+          case 0 :
           default :
             if (m_shiftState != ShiftState.NORMAL)
             {
@@ -213,7 +219,7 @@ public class MatchState
    */
   public static boolean isBlue( )
   {
-    return DriverStation.getAlliance( ).orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Blue);
+    return DriverStation.getAlliance( ).orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Blue;
   }
 
   /**
@@ -283,78 +289,36 @@ public class MatchState
 
   /****************************************************************************
    * 
-   * Return if the shift time is for Blue alliance
+   * Return if the hub is active
    * 
-   * @param currentMatchTime
-   *          current Match time in seconds (countdown)
-   * @return true of an active Blue alliance shift
-   */
-  public static boolean isCurrentShiftBlue(double currentMatchTime)
-  {
-    if (currentMatchTime >= 105 && currentMatchTime <= 130)
-    {
-      return blueWonAuto( ) ? false : true;
-    }
-    else if (currentMatchTime >= 80 && currentMatchTime <= 105)
-    {
-      return blueWonAuto( ) ? true : false;
-    }
-    else if (currentMatchTime >= 55 && currentMatchTime <= 80)
-    {
-      return blueWonAuto( ) ? false : true;
-    }
-    else if (currentMatchTime >= 30 && currentMatchTime <= 55)
-    {
-      return blueWonAuto( ) ? true : false;
-    }
-    else
-    {
-      return true;
-    }
-  }
-
-  /****************************************************************************
-   * 
-   * Return if the shift time is for Red alliance
-   * 
-   * @param currentMatchTime
-   *          current Match time in seconds (countdown)
-   * @return true of an active Red alliance shift
-   */
-  public static boolean isCurrentShiftRed(double currentMatchTime)
-  {
-    if (currentMatchTime >= 105 && currentMatchTime <= 130)
-    {
-      return blueWonAuto( ) ? true : false;
-    }
-    else if (currentMatchTime >= 80 && currentMatchTime <= 105)
-    {
-      return blueWonAuto( ) ? false : true;
-    }
-    else if (currentMatchTime >= 55 && currentMatchTime <= 80)
-    {
-      return blueWonAuto( ) ? true : false;
-    }
-    else if (currentMatchTime >= 30 && currentMatchTime <= 55)
-    {
-      return blueWonAuto( ) ? false : true;
-    }
-    else
-    {
-      return true;
-    }
-  }
-
-  /****************************************************************************
-   * 
-   * Return if the current shift is ours
-   * 
+   * @param matchTime
+   *          current match time in seconds
    * @return true if shift has the hub active
    */
-  public static boolean currentShiftIsOurs( )
+  public static boolean isHubActive(double matchTime)
   {
-    double currentMatchTime = DriverStation.getMatchTime( );
-    return (isBlue( )) ? isCurrentShiftBlue(currentMatchTime) : isCurrentShiftRed(currentMatchTime);
+    boolean isAllianceShift = (isBlue( ) && blueWonAuto( )) || (isRed( ) && !blueWonAuto( ));
+
+    if (matchTime > 105 && matchTime <= 130)     // Shift 1 - inactive if our alliance won auto
+    {
+      return (isAllianceShift) ? false : true;
+    }
+    else if (matchTime > 80 && matchTime <= 105)  // Shift 2 - active if our alliance won auto
+    {
+      return (isAllianceShift) ? true : false;
+    }
+    else if (matchTime > 55 && matchTime <= 80)   // Shift 3 - inactive if our alliance won auto
+    {
+      return (isAllianceShift) ? false : true;
+    }
+    else if (matchTime > 30 && matchTime <= 55)   // Shift 4 - active if our alliance won auto
+    {
+      return (isAllianceShift) ? true : false;
+    }
+    else
+    {
+      return true;                                // Transition and endgame - hub always active
+    }
   }
 
   /****************************************************************************
@@ -363,12 +327,10 @@ public class MatchState
    * 
    * @return true if shift endgame
    */
-  public static boolean currentShiftIsEndgame( )
+  public static boolean isCurrentShiftEndgame(double matchTime)
   {
-    double currentMatchTime = DriverStation.getMatchTime( );
-    return currentMatchTime <= 30;
+    return matchTime <= 30;
   }
-
 
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// COMMAND FACTORIES ////////////////////////////////

@@ -111,9 +111,6 @@ public class Launcher extends SubsystemBase
   private LinearFilter                        m_rightVelocityFilter  = LinearFilter.singlePoleIIR(0.080, 0.020);
 
   // Network tables publisher objects
-  private DoublePublisher                     m_leftSpeedPub;
-  private DoublePublisher                     m_rightSpeedPub;
-
   private DoublePublisher                     m_motorRPMPub;
   private DoublePublisher                     m_launcherRPMPub;
   private BooleanPublisher                    m_atRequestedRPMPub;
@@ -175,8 +172,6 @@ public class Launcher extends SubsystemBase
       BaseStatusSignal.refreshAll(m_leftVelocity, m_rightVelocity);
       m_leftRPM = m_leftVelocityFilter.calculate((m_leftVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
       m_rightRPM = m_rightVelocityFilter.calculate((m_rightVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
-      m_leftSpeedPub.set(m_leftRPM);
-      m_rightSpeedPub.set(m_rightRPM);
 
       m_isAtRequestedRPM = ((m_leftRPM > kToleranceRPM) && MathUtil.isNear(m_motorRPM, m_leftRPM, kToleranceRPM))
           && ((m_rightRPM > kToleranceRPM) && MathUtil.isNear(m_motorRPM, m_rightRPM, kToleranceRPM));
@@ -230,9 +225,6 @@ public class Launcher extends SubsystemBase
     NetworkTable table = inst.getTable("launcher");
 
     // Initialize network tables publishers
-    m_leftSpeedPub = table.getDoubleTopic("leftSpeed").publish( );
-    m_rightSpeedPub = table.getDoubleTopic("rightSpeed").publish( );
-
     m_atRequestedRPMPub = table.getBooleanTopic("atRequestedRPM").publish( );
     m_motorRPMPub = table.getDoubleTopic("motorRPM").publish( );
     m_launcherRPMPub = table.getDoubleTopic("launcherRPM").publish( );
