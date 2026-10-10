@@ -24,7 +24,7 @@
         "y": 7.427
       },
       "nextControl": {
-        "x": 3.853000000000001,
+        "x": 3.8530000000000006,
         "y": 7.427
       },
       "isLocked": false,
@@ -36,12 +36,12 @@
         "y": 7.427
       },
       "prevControl": {
-        "x": 5.347052466630863,
-        "y": 7.421878421855915
+        "x": 5.346999999999997,
+        "y": 7.427
       },
       "nextControl": {
-        "x": 5.846947533369134,
-        "y": 7.432121578144084
+        "x": 5.997000000000001,
+        "y": 7.427
       },
       "isLocked": false,
       "linkedName": "TR1-EX"
@@ -52,12 +52,12 @@
         "y": 5.907760416666667
       },
       "prevControl": {
-        "x": 5.830599592572127,
-        "y": 6.481725130264051
+        "x": 5.849114583333333,
+        "y": 6.407760416666667
       },
       "nextControl": {
-        "x": 5.881741071428571,
-        "y": 4.896339285714287
+        "x": 5.849114583333333,
+        "y": 4.907760416666667
       },
       "isLocked": false,
       "linkedName": "NZ1D"
@@ -68,12 +68,12 @@
         "y": 4.485
       },
       "prevControl": {
-        "x": 6.343383423603408,
-        "y": 4.498867504905631
+        "x": 6.093021971501551,
+        "y": 4.480156546022029
       },
       "nextControl": {
-        "x": 6.842613600206115,
-        "y": 4.47113249509437
+        "x": 6.842986782106367,
+        "y": 4.487421726988986
       },
       "isLocked": false,
       "linkedName": "NZ1E"
@@ -84,12 +84,12 @@
         "y": 5.908
       },
       "prevControl": {
-        "x": 7.376151785714285,
-        "y": 4.753022321428571
+        "x": 7.337,
+        "y": 4.658000000000001
       },
       "nextControl": {
-        "x": 7.286181731501365,
-        "y": 7.407138920709752
+        "x": 7.337,
+        "y": 7.1579999999999995
       },
       "isLocked": false,
       "linkedName": null
@@ -150,7 +150,11 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 2.81081081081081,
+      "waypointRelativePos": 2.5,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 3.25,
       "rotationDegrees": -90.0
     },
     {
@@ -172,7 +176,14 @@
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.2,
     "maxAcceleration": 3.5,
