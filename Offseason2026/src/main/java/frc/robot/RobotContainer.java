@@ -123,12 +123,12 @@ public class RobotContainer
 
   // These subsystems may use LED or vision and must be created afterward
   private final CommandSwerveDrivetrain               m_drivetrain    = TunerConstants.createDrivetrain( );
-  private final Intake                                m_intake        = new Intake( );
-  private final Hopper                                m_hopper        = new Hopper( );
-  private final Kicker                                m_kicker        = new Kicker( );
-  private final Launcher                              m_launcher      = new Launcher( );
+  //private final Intake                                m_intake        = new Intake( );
+  //private final Hopper                                m_hopper        = new Hopper( );
+  //private final Kicker                                m_kicker        = new Kicker( );
+  //private final Launcher                              m_launcher      = new Launcher( );
   // private final Climber                               m_climberLeft   = new Climber("Left", "CL-", false);
-  private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
+  //private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command
@@ -303,16 +303,16 @@ public class RobotContainer
     //
     // Driver - Bumpers, start, back
     //
-    m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
-    m_driverPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
-        new StopIntaking(m_intake, m_hopper),                 //
-        m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
-    ));
-    m_driverPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
-        m_launcher.getLauncherPrimedCommand( ), //
-        new AcquireFuel(m_intake, m_hopper)));//
-    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    //m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
+    //.leftBumper( ).onFalse(new ParallelCommandGroup(  //
+        //new StopIntaking(m_intake, m_hopper),                 //
+        //m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
+    //));
+    //m_driverPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
+        //m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
+        //m_launcher.getLauncherPrimedCommand( ), //
+        //new AcquireFuel(m_intake, m_hopper)));//
+    //m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
     m_driverPad.start( ).onTrue(m_drivetrain.runOnce(( ) -> m_drivetrain.seedFieldCentric( )));         // aka Menu button
@@ -322,8 +322,8 @@ public class RobotContainer
     //
     // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
     // m_driverPad.pov(180).onTrue(new ClimbTower(m_climberRight));
-    m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
-    m_driverPad.pov(90).onTrue(new ClimbTower(m_climberRight));
+    //m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
+    //m_driverPad.pov(90).onTrue(new ClimbTower(m_climberRight));
     m_driverPad.pov(180).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
         .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
         .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
@@ -336,10 +336,10 @@ public class RobotContainer
     // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
+    //m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
     // m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
+    //m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
+    //m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
 
     m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
     m_driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
@@ -350,35 +350,35 @@ public class RobotContainer
     //
     // Operator - A, B, X, Y
     //
-    m_operatorPad.a( ).onTrue(Commands.runOnce(( ) -> m_launcher.decrementTeleopRPM( )));
-    m_operatorPad.b( ).onTrue(Commands.runOnce(( ) -> m_launcher.incrementTeleopRPM( )));
+    //m_operatorPad.a( ).onTrue(Commands.runOnce(( ) -> m_launcher.decrementTeleopRPM( )));
+    //m_operatorPad.b( ).onTrue(Commands.runOnce(( ) -> m_launcher.incrementTeleopRPM( )));
 
-    m_operatorPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
-    m_operatorPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
-    m_operatorPad.y( ).onTrue(m_launcher.getLauncherStopCommand( ));
+    //m_operatorPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
+    //m_operatorPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getHID( ).getXButtonPressed( ))));
+    //m_operatorPad.y( ).onTrue(m_launcher.getLauncherStopCommand( ));
 
     //
     // Operator - Bumpers, start, back
     //
-    m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
-    m_operatorPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
-        new StopIntaking(m_intake, m_hopper),                 //
-        m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
-    ));
-    m_operatorPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
-        m_launcher.getLauncherPrimedCommand( ), //
-        new AcquireFuel(m_intake, m_hopper)));//
-    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    //m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
+    //m_operatorPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
+        //new StopIntaking(m_intake, m_hopper),                 //
+        //m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
+    //));
+    //m_operatorPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
+        //m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
+        //m_launcher.getLauncherPrimedCommand( ), //
+        //new AcquireFuel(m_intake, m_hopper)));//
+    //m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
-    m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
-    m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
+    //m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
+    //m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
 
     //
     // Operator - POV buttons
     //
-    m_operatorPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
-    m_operatorPad.pov(90).onTrue(new ClimbTower(m_climberRight));
+    //m_operatorPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
+    //m_operatorPad.pov(90).onTrue(new ClimbTower(m_climberRight));
     m_operatorPad.pov(180).onTrue(new LogCommand("operatorPad", "POV:180"));
     m_operatorPad.pov(270).onTrue(new LogCommand("operatorPad", "POV:270"));
 
@@ -388,10 +388,10 @@ public class RobotContainer
     // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
     // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
     //
-    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
+    //m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
     // m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
+    //m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
+    //m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
 
     m_operatorPad.leftStick( ).toggleOnTrue(new LogCommand("operPad", "left stick"));
     m_operatorPad.rightStick( ).toggleOnTrue(new LogCommand("operPad", "right stick"));
@@ -528,18 +528,18 @@ public class RobotContainer
       case AUTOTEST :
         m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
         break;
-      case AUTOSCORE1A :
-        m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE1B :
-        m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE2A :
-        m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE2B :
-        m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
+      // case AUTOSCORE1A :
+      //   m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+      //   break;
+      // case AUTOSCORE1B :
+      //   m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+      //   break;
+      // case AUTOSCORE2A :
+      //   m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+      //   break;
+      // case AUTOSCORE2B :
+      //   m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+      //   break;
     }
 
     DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
@@ -613,12 +613,12 @@ public class RobotContainer
 
     m_vision.initialize( );
 
-    m_intake.initialize( );
-    m_hopper.initialize( );
-    m_kicker.initialize( );
-    m_launcher.initialize( );
+    // m_intake.initialize( );
+    // m_hopper.initialize( );
+    // m_kicker.initialize( );
+    // m_launcher.initialize( );
 
-    m_climberRight.initialize( );
+    // m_climberRight.initialize( );
   }
 
   /****************************************************************************
@@ -629,10 +629,10 @@ public class RobotContainer
   {
     m_vision.run( );
 
-    m_launcher.initAutonomousRPM( );
+    // m_launcher.initAutonomousRPM( );
 
-    CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
-    CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
+    // CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
+    // CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
   /****************************************************************************
@@ -643,11 +643,11 @@ public class RobotContainer
   {
     m_vision.run( );
 
-    m_launcher.initTeleopRPM( );
+    //m_launcher.initTeleopRPM( );
     m_matchState.teleopInit( );
 
-    CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
-    CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
+    // CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
+    // CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
   /****************************************************************************
@@ -671,10 +671,10 @@ public class RobotContainer
     m_led.printFaults( );
     m_power.printFaults( );
 
-    m_intake.printFaults( );
-    m_hopper.printFaults( );
-    m_kicker.printFaults( );
-    m_launcher.printFaults( );
-    m_climberRight.printFaults( );
+    // m_intake.printFaults( );
+    // m_hopper.printFaults( );
+    // m_kicker.printFaults( );
+    // m_launcher.printFaults( );
+    // m_climberRight.printFaults( );
   }
 }
