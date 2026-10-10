@@ -294,10 +294,8 @@ public class RobotContainer
     // Driver - A, B, X, Y
     // 
     m_driverPad.a( ).whileTrue(m_drivetrain.GetAutoAlignToHub( ));
-    m_driverPad.b( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim       //
-        .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
-        .withVelocityY(0)                                    //
-        .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
+    m_driverPad.b( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim.withVelocityX(m_vision.rangeProportional(kMaxSpeed))
+        .withVelocityY(0).withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
 
     m_driverPad.x( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));
     m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
@@ -306,14 +304,10 @@ public class RobotContainer
     // Driver - Bumpers, start, back
     //
     m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
-    m_driverPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
-        new StopIntaking(m_intake, m_hopper),                 //
-        m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
-    ));
-    m_driverPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
-        m_launcher.getLauncherPrimedCommand( ), //
-        new AcquireFuel(m_intake, m_hopper)));//
+    m_driverPad.leftBumper( ).onFalse(
+        new ParallelCommandGroup(new StopIntaking(m_intake, m_hopper), m_kicker.getRollerModeCommand(KKRollerMode.STOP)));
+    m_driverPad.rightBumper( ).onTrue(new SequentialCommandGroup(m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
+        m_launcher.getLauncherPrimedCommand( ), new AcquireFuel(m_intake, m_hopper)));
     m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_driverPad.back( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                             // aka View button
@@ -326,10 +320,9 @@ public class RobotContainer
     // m_driverPad.pov(180).onTrue(new ClimbTower(m_climberRight));
     m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
     m_driverPad.pov(90).onTrue(new ClimbTower(m_climberRight));
-    m_driverPad.pov(180).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(-180.0))));
+    m_driverPad.pov(180)
+        .whileTrue(m_drivetrain.applyRequest(( ) -> facing.withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))
+            .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( ))).withTargetDirection(Rotation2d.fromDegrees(-180.0))));
     m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
     //
@@ -363,14 +356,10 @@ public class RobotContainer
     // Operator - Bumpers, start, back
     //
     m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
-    m_operatorPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
-        new StopIntaking(m_intake, m_hopper),                 //
-        m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
-    ));
-    m_operatorPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
-        m_launcher.getLauncherPrimedCommand( ), //
-        new AcquireFuel(m_intake, m_hopper)));//
+    m_operatorPad.leftBumper( ).onFalse(
+        new ParallelCommandGroup(new StopIntaking(m_intake, m_hopper), m_kicker.getRollerModeCommand(KKRollerMode.STOP)));
+    m_operatorPad.rightBumper( ).onTrue(new SequentialCommandGroup(m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),
+        m_launcher.getLauncherPrimedCommand( ), new AcquireFuel(m_intake, m_hopper)));
     m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
     m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
@@ -408,24 +397,20 @@ public class RobotContainer
     if (!m_macOSXSim)
     {
       m_drivetrain.setDefaultCommand(                                                                 // Drivetrain will execute this command periodically
-          m_drivetrain.applyRequest(( ) -> drive                                                      //
-              .withVelocityX(kMaxSpeed.times(                                                         // Apply deadband to joystick value
-                  MathUtil.applyDeadband(-m_driverPad.getLeftY( ), 0.15, 1.0))) // Drive forward with negative Y (forward)
+          m_drivetrain.applyRequest(( ) -> drive.withVelocityX(kMaxSpeed.times(                                                         // Apply deadband to joystick value
+              MathUtil.applyDeadband(-m_driverPad.getLeftY( ), 0.15, 1.0))) // Drive forward with negative Y (forward)
               .withVelocityY(kMaxSpeed.times(                                                         // Apply deadband to joystick value
                   MathUtil.applyDeadband(-m_driverPad.getLeftX( ), 0.15, 1.0))) // Drive left with negative X (left)
               .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getRightX( )))                   // Drive counterclockwise with negative X (left)
-          )                                                                                           //
-              .withName("CommandSwerveDrivetrain"));
+          ).withName("CommandSwerveDrivetrain"));
     }
     else // When using simulation on MacOS X, XBox controllers need to be re-mapped due to an Apple bug
     {
       m_drivetrain.setDefaultCommand(                                                                 // Drivetrain will execute this command periodically
-          m_drivetrain.applyRequest(( ) -> drive                                                      //
-              .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                               // Drive forward with negative Y (forward)
+          m_drivetrain.applyRequest(( ) -> drive.withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                               // Drive forward with negative Y (forward)
               .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                               // Drive left with negative X (left)
               .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getLeftTriggerAxis( )))          // Drive counterclockwise with negative X (left)
-          )                                                                                           //
-              .withName("CommandSwerveDrivetrain"));
+          ).withName("CommandSwerveDrivetrain"));
     }
 
     // Idle while the robot is disabled. This ensures the configured neutral mode is applied to the drive motors while disabled.
@@ -469,109 +454,107 @@ public class RobotContainer
    */
   public Command getAutonomousCommand( )
   {
-    AutoChooser autoOption = m_autoChooser.getSelected( );
-    StartPose startOption = m_startChooser.getSelected( );
-    double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
+    // AutoChooser autoOption = m_autoChooser.getSelected( );
+    // StartPose startOption = m_startChooser.getSelected( );
+    // double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
 
-    // Cancel any autos that were already running
+    // // Cancel any autos that were already running
 
-    if (m_autoCommand != null)
-    {
-      if (m_autoCommand.isScheduled( ))
-      {
-        m_autoCommand.cancel( );
-      }
-      m_autoCommand = null;
-    }
-
-    // Get auto name using created key
-
-    String autoKey = autoOption.toString( ) + startOption.toString( );
-    String autoName = autoMap.get(autoKey);
-    DataLogManager.log(String.format("========================================================================"));
-    DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
-    DataLogManager.log(String.format("========================================================================"));
-
-    // Get list of paths within the auto file for all autos except AUTOSTOP
-
-    try
-    {
-      m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
-    }
-    catch (ParseException | IOException e)
-    {
-      DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-    }
-
-    if (m_ppPathList.isEmpty( ))
-    {
-      DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-    }
-
-    DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
-
+    // if (m_autoCommand != null)
     // {
-    //   // Debug only: print states of first path
-    //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
-    //   for (int i = 0; i < states.size( ); i++)
-    //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
+    //   if (m_autoCommand.isScheduled( ))
+    //   {
+    //     m_autoCommand.cancel( );
+    //   }
+    //   m_autoCommand = null;
     // }
 
-    // Create the correct base command and pass the path list
+    // // Get auto name using created key
 
-    switch (autoOption)
-    {
-      default :
-      case AUTOSTOP :
-        m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
-        break;
-      case AUTOTEST :
-        m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
-        break;
-      case AUTOSCORE1A :
-        m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE1B :
-        m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE2A :
-        m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE2B :
-        m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-    }
+    // String autoKey = autoOption.toString( ) + startOption.toString( );
+    // String autoName = autoMap.get(autoKey);
+    // DataLogManager.log(String.format("========================================================================"));
+    // DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
+    // DataLogManager.log(String.format("========================================================================"));
 
-    DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
+    // // Get list of paths within the auto file for all autos except AUTOSTOP
 
-    // Build a new sequential command from the base command that allows for a delay and handles odometry
+    // try
+    // {
+    //   m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+    // }
+    // catch (ParseException | IOException e)
+    // {
+    //   DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
+    //   return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+    // }
 
-    // Update robot pose to where we want immediately so it displays correctly in dashboard
-    resetOdometryToInitialPose(m_ppPathList.get(0));
+    // if (m_ppPathList.isEmpty( ))
+    // {
+    //   DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
+    //   return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+    // }
 
-    // Build the autonomous command to run
-    if (autoOption != AutoChooser.AUTOSTOP)
-    {
-      m_autoCommand = new SequentialCommandGroup(                                                       //
-          new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
-          new InstantCommand(( ) ->      // Update pose again right before we run the command
-          {
-            resetOdometryToInitialPose(m_ppPathList.get(0));
-          }, m_drivetrain),                                                                             //
-          new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
-          new WaitCommand(delay),                                                                       //
-          m_autoCommand,                                                                                //
-          new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
-      );
-    }
+    // DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
 
-    // Path firstStraight = new Path("first-straight");
-    // PathPlannerPath nze = PathPlannerPath.fromPathFile("L1_NZ1D_NZ1E_NZ1F_L1.path");
-    // Command m_autoCommand =
-    //     // m_drivetrain.getPathBuilder( ).withPoseReset(m_drivetrain::resetPoseAndLimelight).build(firstStraight);
-    //     m_drivetrain.getPathCommand(nze);
+    // // {
+    // //   // Debug only: print states of first path
+    // //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
+    // //   for (int i = 0; i < states.size( ); i++)
+    // //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
+    // // }
+
+    // // Create the correct base command and pass the path list
+
+    // switch (autoOption)
+    // {
+    //   default :
+    //   case AUTOSTOP :
+    //     m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
+    //     break;
+    //   case AUTOTEST :
+    //     m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
+    //     break;
+    //   case AUTOSCORE1A :
+    //     m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+    //     break;
+    //   case AUTOSCORE1B :
+    //     m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+    //     break;
+    //   case AUTOSCORE2A :
+    //     m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+    //     break;
+    //   case AUTOSCORE2B :
+    //     m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+    //     break;
+    // }
+
+    // DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
+
+    // // Build a new sequential command from the base command that allows for a delay and handles odometry
+
+    // // Update robot pose to where we want immediately so it displays correctly in dashboard
+    // resetOdometryToInitialPose(m_ppPathList.get(0));
+
+    // // Build the autonomous command to run
+    // if (autoOption != AutoChooser.AUTOSTOP)
+    // {
+    //   m_autoCommand = new SequentialCommandGroup(                                                       
+    //       new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 
+    //       new InstantCommand(( ) ->      // Update pose again right before we run the command
+    //       {
+    //         resetOdometryToInitialPose(m_ppPathList.get(0));
+    //       }, m_drivetrain),                                                                             
+    //       new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), 
+    //       new WaitCommand(delay),                                                                       
+    //       m_autoCommand,                                                                                
+    //       new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    
+    //   );
+    // }
+
+    Path firstStraight = new Path("first-straight");
+    Command m_autoCommand =
+        m_drivetrain.getPathBuilder( ).withPoseReset(m_drivetrain::resetPoseAndLimelight).build(firstStraight);
 
     return m_autoCommand;
   }
