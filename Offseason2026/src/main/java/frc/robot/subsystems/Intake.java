@@ -128,7 +128,7 @@ public class Intake extends SubsystemBase
   private final TalonFXSimState     m_rotarySim           = m_rotaryMotor.getSimState( );
   private final CANcoderSimState    m_CANcoderSim         = m_CANcoder.getSimState( );
   private final SingleJointedArmSim m_armSim              = new SingleJointedArmSim(DCMotor.getKrakenX60(1), kRotaryGearRatio,
-      SingleJointedArmSim.estimateMOI(kRotaryLengthMeters, kRotaryWeightKg), kRotaryLengthMeters, -Math.PI, Math.PI, true, 0.0);
+      SingleJointedArmSim.estimateMOI(kRotaryLengthMeters, kRotaryWeightKg), kRotaryLengthMeters, -Math.PI, Math.PI, false, 0.0);
 
   // Mechanism2d
   private final Mechanism2d         m_rotaryMech          = new Mechanism2d(1.0, 1.0);
