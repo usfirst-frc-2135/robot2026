@@ -175,21 +175,21 @@ public class RobotContainer
       Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "Start2_Stop"),
       Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "STart3_Stop"),
 
-      Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1"),
-      Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A"),
-      Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3"),
+      // Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1"),
+      // Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A"),
+      // Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START1.toString( ), "Start1_NZ1A_NZ1B_NZ1C_L1"),
-      Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START2.toString( ), "Start2_L2B_L2B"),
-      Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3A_NZ3B_NZ3C_L3"),
+      // Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START1.toString( ), "Start1_NZ1A_NZ1B_NZ1C_L1"),
+      // Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START2.toString( ), "Start2_L2B_L2B"),
+      // Map.entry(AutoChooser.AUTOSCORE1B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3A_NZ3B_NZ3C_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_NZ1C_L1"),
-      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START2.toString( ), "Start2_L2B_L2B_L2B"),
-      Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_NZ3C_L3"),
+      // Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_NZ1C_L1"),
+      // Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START2.toString( ), "Start2_L2B_L2B_L2B"),
+      // Map.entry(AutoChooser.AUTOSCORE2A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_NZ3C_L3"),
 
-      Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L2A"),
-      Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
-      Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_OP_L2B"),
+      // Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L2A"),
+      // Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
+      // Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_OP_L2B"),
 
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_T1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_T2"),
@@ -244,10 +244,10 @@ public class RobotContainer
 
     // Configure autonomous sendable chooser
     m_autoChooser.setDefaultOption("0 - AutoStop", AutoChooser.AUTOSTOP);
-    m_autoChooser.addOption("1 - AutoScore1A", AutoChooser.AUTOSCORE1A);
-    m_autoChooser.addOption("2 - AutoScore1B", AutoChooser.AUTOSCORE1B);
-    m_autoChooser.addOption("3 - AutoScore2A", AutoChooser.AUTOSCORE2A);
-    m_autoChooser.addOption("4 - AutoScore2B", AutoChooser.AUTOSCORE2B);
+    //m_autoChooser.addOption("1 - AutoScore1A", AutoChooser.AUTOSCORE1A);
+    // m_autoChooser.addOption("2 - AutoScore1B", AutoChooser.AUTOSCORE1B);
+    // m_autoChooser.addOption("3 - AutoScore2A", AutoChooser.AUTOSCORE2A);
+    // m_autoChooser.addOption("4 - AutoScore2B", AutoChooser.AUTOSCORE2B);
     m_autoChooser.addOption("9 - AutoTest", AutoChooser.AUTOTEST);
     m_autoChooser.onChange(this::updateAutoChooserCallback);
 
