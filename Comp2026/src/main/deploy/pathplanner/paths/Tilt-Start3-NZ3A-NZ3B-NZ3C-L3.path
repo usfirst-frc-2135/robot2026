@@ -20,11 +20,11 @@
         "y": 0.642
       },
       "prevControl": {
-        "x": 5.097,
-        "y": 0.6420000000000001
+        "x": 5.097000000000002,
+        "y": 0.642
       },
       "nextControl": {
-        "x": 6.097,
+        "x": 5.897,
         "y": 0.642
       },
       "isLocked": false,
@@ -130,7 +130,7 @@
       "rotationDegrees": 0.0
     },
     {
-      "waypointRelativePos": 1.8,
+      "waypointRelativePos": 1.8660477453580908,
       "rotationDegrees": 90.0
     },
     {
