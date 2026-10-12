@@ -698,13 +698,13 @@ public class Intake extends SubsystemBase
         getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),     //
         new WaitCommand(2.0),                                            //
         getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),           //
-        new WaitCommand(0.25),                                            //
+        new WaitCommand(0.15),                                            //
         new RepeatCommand(                                                        //
             new SequentialCommandGroup(                                           //
                 getMoveToAngleCommand(INRollerMode.HOLD, this::getSixtyAngle),    //
-                new WaitCommand(0.25),                                    //
+                new WaitCommand(0.15),                                    //
                 getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle), //
-                new WaitCommand(0.25),                                    //
+                new WaitCommand(0.15),                                    //
                 getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)    //
             )                                                                     //
         )).withName(kSubsystemName + "IndexingCommand");
