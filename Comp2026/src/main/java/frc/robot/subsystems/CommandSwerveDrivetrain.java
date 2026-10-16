@@ -92,7 +92,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final Translation2d         kHubCenterRed        = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.84));
     private static final double         kAimingKp            = 0.012;
     private static final double         kDrivingKp           = 0.6;
-    private static final double         optimalDistance      = Units.inchesToMeters(138.0);
+    private static final double         optimalDistance      = Units.inchesToMeters(120.0);
     private static final LinearVelocity kMaxSpeed            = TunerConstants.kSpeedAt12Volts; //max top speed
     private static final AngularVelocity kMaxAngularRate     = RotationsPerSecond.of(1.0);
     private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
