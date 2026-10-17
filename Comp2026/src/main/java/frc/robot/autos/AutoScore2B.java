@@ -53,9 +53,8 @@ public class AutoScore2B extends SequentialCommandGroup
             launcher.getLauncherScoreCommand(),
             new StopIntaking(intake, hopper)
           ),
-        new WaitCommand(0.250),
         new LogCommand(getName(),"Launch fuel"),
-        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(4),
+        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(3.5),
 
         new LogCommand(getName(),"Drive return path while intaking "),
         new ParallelCommandGroup(
@@ -64,8 +63,6 @@ public class AutoScore2B extends SequentialCommandGroup
           ),
         launcher.getLauncherScoreCommand(),
         new StopIntaking(intake, hopper),
-        new WaitCommand(0.250),
-
         new LogCommand(getName(),"Launch fuel"),
         new LaunchFuel(intake, hopper, kicker, launcher)
         
