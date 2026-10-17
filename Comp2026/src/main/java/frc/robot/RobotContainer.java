@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.lang.model.util.ElementScanner14;
+
 import org.json.simple.parser.ParseException;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -61,6 +63,7 @@ import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
+import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -140,11 +143,12 @@ public class RobotContainer
   private enum AutoChooser
   {
     AUTOSTOP,           // AutoStop - sit still, do nothing
-    AUTOTEST,           // Run a selected test auto
-    AUTOSCORE1A,        // One cycle of scoring fuel - 2 paths (out to neutral zone, back to score)
-    AUTOSCORE1B,        // One cycle of scoring fuel - 1 big looping path that returns to scoring position
-    AUTOSCORE2A,        // Two cycles of scoring fuel - 3 paths (out to neutral zone, back to launch, looping path back to score)
-    AUTOSCORE2B         // 
+    AUTOTEST,           // PP: Run a selected test auto
+    AUTOSCORE1A,        // PP: One cycle of scoring fuel - 2 paths (out to neutral zone, back to score)
+    AUTOSCORE1B,        // PP: One cycle of scoring fuel - 1 big looping path that returns to scoring position
+    AUTOSCORE2A,        // PP: Two cycles of scoring fuel - 3 paths (out to neutral zone, back to launch, looping path back to score)
+    AUTOSCORE2B,        // PP: Two cycles of scoring fuel - 2 paths (out to neutral zone and back to launch, looping path back to score)
+    AUTOSCORE3A,        // BLine: Two cycles of scoring fuel - 2 paths (out to neutral zone and back to launch, looping path back to score)
   }
 
   /**
@@ -191,9 +195,14 @@ public class RobotContainer
       Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
       Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_OP_L2B"),
 
+      // BLine paths for AUTOSCORE3A - 2 cycles of scoring fuel - 2 paths (out to neutral zone and back to launch, looping path back to score)
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L2A"),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_OP_L2B"),
+
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_T1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_T2"),
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_T3")       // 
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_T3") //
   ));
 
   /****************************************************************************
@@ -248,7 +257,7 @@ public class RobotContainer
     m_autoChooser.addOption("2 - AutoScore1B", AutoChooser.AUTOSCORE1B);
     m_autoChooser.addOption("3 - AutoScore2A", AutoChooser.AUTOSCORE2A);
     m_autoChooser.addOption("4 - AutoScore2B", AutoChooser.AUTOSCORE2B);
-    m_autoChooser.addOption("9 - AutoTest", AutoChooser.AUTOTEST);
+    m_autoChooser.addOption("5 - AutoScore3A", AutoChooser.AUTOSCORE3A);
     m_autoChooser.onChange(this::updateAutoChooserCallback);
 
     // Configure starting pose sendable chooser
@@ -490,79 +499,116 @@ public class RobotContainer
     DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
     DataLogManager.log(String.format("========================================================================"));
 
-    // Get list of paths within the auto file for all autos except AUTOSTOP
+    // Check for Bline autonomous option and build the command differently than PathPlanner autos
 
-    try
+    if (autoOption != AutoChooser.AUTOSCORE3A)
     {
-      m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+      // Get list of paths within the auto file for all autos except AUTOSTOP
+
+      try
+      {
+        m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+      }
+      catch (ParseException | IOException e)
+      {
+        DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
+        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+      }
+
+      if (m_ppPathList.isEmpty( ))
+      {
+        DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
+        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
+      }
+
+      DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
+
+      // {
+      //   // Debug only: print states of first path
+      //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
+      //   for (int i = 0; i < states.size( ); i++)
+      //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
+      // }
+
+      // Create the correct base command and pass the path list
+
+      switch (autoOption)
+      {
+        default :
+        case AUTOSTOP :
+          m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
+          break;
+        case AUTOTEST :
+          m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
+          break;
+        case AUTOSCORE1A :
+          m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+          break;
+        case AUTOSCORE1B :
+          m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+          break;
+        case AUTOSCORE2A :
+          m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+          break;
+        case AUTOSCORE2B :
+          m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+          break;
+      }
+
+      DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
+
+      // Build a new sequential command from the base command that allows for a delay and handles odometry
+
+      // Update robot pose to where we want immediately so it displays correctly in dashboard
+      resetOdometryToInitialPose(m_ppPathList.get(0));
+
+      // Build the autonomous command to run
+      if (autoOption != AutoChooser.AUTOSTOP)
+      {
+        m_autoCommand = new SequentialCommandGroup(                                                       //
+            new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
+            new InstantCommand(( ) ->      // Update pose again right before we run the command
+            {
+              resetOdometryToInitialPose(m_ppPathList.get(0));
+            }, m_drivetrain),                                                                             //
+            new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
+            new WaitCommand(delay),                                                                       //
+            m_autoCommand,                                                                                //
+            new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
+        );
+      }
     }
-    catch (ParseException | IOException e)
+    else  // BLine autonomous option
     {
-      DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-    }
+      var path = "first-straight";
+      DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, path));
+      // DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
+      // DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
 
-    if (m_ppPathList.isEmpty( ))
-    {
-      DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-    }
+      Path firstStraight = new Path(path);
 
-    DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
+      m_autoCommand = m_drivetrain.getPathBuilder( ).withPoseReset(m_drivetrain::resetPoseAndLimelight).build(firstStraight);
 
-    // {
-    //   // Debug only: print states of first path
-    //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
-    //   for (int i = 0; i < states.size( ); i++)
-    //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
-    // }
+      // m_autoCommand = new AutoScore3A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
 
-    // Create the correct base command and pass the path list
+      // Build a new sequential command from the base command that allows for a delay and handles odometry
 
-    switch (autoOption)
-    {
-      default :
-      case AUTOSTOP :
-        m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
-        break;
-      case AUTOTEST :
-        m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
-        break;
-      case AUTOSCORE1A :
-        m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE1B :
-        m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE2A :
-        m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-      case AUTOSCORE2B :
-        m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-        break;
-    }
+      // Update robot pose to where we want immediately so it displays correctly in dashboard
+      // resetOdometryToInitialPose(m_ppPathList.get(0));
 
-    DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
-
-    // Build a new sequential command from the base command that allows for a delay and handles odometry
-
-    // Update robot pose to where we want immediately so it displays correctly in dashboard
-    resetOdometryToInitialPose(m_ppPathList.get(0));
-
-    // Build the autonomous command to run
-    if (autoOption != AutoChooser.AUTOSTOP)
-    {
+      // Build the autonomous command to run
       m_autoCommand = new SequentialCommandGroup(                                                       //
           new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
           new InstantCommand(( ) ->      // Update pose again right before we run the command
           {
-            resetOdometryToInitialPose(m_ppPathList.get(0));
+            // resetOdometryToInitialPose(m_ppPathList.get(0));
           }, m_drivetrain),                                                                             //
           new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
           new WaitCommand(delay),                                                                       //
           m_autoCommand,                                                                                //
           new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
       );
+
     }
 
     return m_autoCommand;
