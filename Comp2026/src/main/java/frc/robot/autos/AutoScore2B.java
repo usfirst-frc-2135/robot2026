@@ -61,8 +61,10 @@ public class AutoScore2B extends SequentialCommandGroup
             drivetrain.getPathCommand(ppAuto.get(1)),
             new AcquireFuel(intake,hopper)
           ),
-        launcher.getLauncherScoreCommand(),
-        new StopIntaking(intake, hopper),
+        new ParallelCommandGroup(
+            launcher.getLauncherScoreCommand(),
+            new StopIntaking(intake, hopper)
+          ),
         new LogCommand(getName(),"Launch fuel"),
         new LaunchFuel(intake, hopper, kicker, launcher)
         
