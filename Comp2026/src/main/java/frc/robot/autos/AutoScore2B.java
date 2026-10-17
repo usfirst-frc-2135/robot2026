@@ -42,31 +42,29 @@ public class AutoScore2B extends SequentialCommandGroup
 
         // @formatter:off
 
-        new LogCommand(getName(), "Acquire fuel, score once, acquire fuel from depot or outpost and score"),
+        new LogCommand(getName(), "Acquire fuel, score once, acquire fuel again and score"),
         new LogCommand(getName(),"Drive path while acquiring"),
         new ParallelCommandGroup(
             drivetrain.getPathCommand(ppAuto.get(0)),
             new AcquireFuel(intake,hopper)
           ),
-        new LogCommand(getName(),"Drive return path while stop intaking and prime the launcher"),
+        new LogCommand(getName(),"stop intaking and prime the launcher"),
         new ParallelCommandGroup(
-            drivetrain.getPathCommand(ppAuto.get(1)),
             launcher.getLauncherScoreCommand(),
             new StopIntaking(intake, hopper)
           ),
-        new WaitCommand(0.250),
         new LogCommand(getName(),"Launch fuel"),
-        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(7),
+        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(3.5),
 
-        new LogCommand(getName(),"Drive third path while acquiring"),
+        new LogCommand(getName(),"Drive return path while intaking "),
         new ParallelCommandGroup(
-            drivetrain.getPathCommand(ppAuto.get(2)),
+            drivetrain.getPathCommand(ppAuto.get(1)),
             new AcquireFuel(intake,hopper)
           ),
-        launcher.getLauncherScoreCommand(),
-        new StopIntaking(intake, hopper),
-        new WaitCommand(0.250),
-
+        new ParallelCommandGroup(
+            launcher.getLauncherScoreCommand(),
+            new StopIntaking(intake, hopper)
+          ),
         new LogCommand(getName(),"Launch fuel"),
         new LaunchFuel(intake, hopper, kicker, launcher)
         

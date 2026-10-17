@@ -55,10 +55,9 @@ public class AutoScore1A extends SequentialCommandGroup
           launcher.getLauncherScoreCommand( ),
           new StopIntaking(intake, hopper)
         ), 
-        new WaitCommand(0.250),
+        new WaitCommand(0.150),
         new LogCommand(getName(),"Launch fuel"),
-        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(8),
-        new StopLaunching(intake, hopper,  kicker, launcher)
+        new LaunchFuel(intake, hopper, kicker, launcher)
 
         // @formatter:on
     );
