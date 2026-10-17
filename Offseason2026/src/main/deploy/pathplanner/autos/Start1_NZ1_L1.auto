@@ -1,0 +1,25 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start1-NZ1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NZ1-L1"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "1-AutoScore1A",
+  "choreoAuto": false
+}
