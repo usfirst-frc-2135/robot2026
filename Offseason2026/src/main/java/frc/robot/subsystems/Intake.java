@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.concurrent.CancellationException;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.BaseStatusSignal;
@@ -230,7 +231,10 @@ public class Intake extends SubsystemBase
   {
     // This method will be called once per scheduler run
 
-    BaseStatusSignal.refreshAll(m_rotaryAngle, m_ccAngle);
+    if (m_rotaryValid && m_canCoderValid)
+    {
+      BaseStatusSignal.refreshAll(m_rotaryAngle, m_ccAngle);
+    }
     m_currentDegrees = Units.rotationsToDegrees((m_rotaryValid) ? m_rotaryAngle.getValue( ).in(Rotations) : 0.0);
     m_ccDegrees = Units.rotationsToDegrees((m_canCoderValid) ? m_ccAngle.getValue( ).in(Rotations) : 0.0);
 
