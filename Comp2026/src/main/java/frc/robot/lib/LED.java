@@ -167,6 +167,7 @@ public class LED
 
     if (m_candleValid)
     {
+      @SuppressWarnings("unused")
       StatusCode m_status = m_candleSim.getLastStatusCode( );
     }
   }
