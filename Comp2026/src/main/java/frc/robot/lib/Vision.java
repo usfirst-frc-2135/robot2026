@@ -331,8 +331,8 @@ public class Vision
   {
     Pose2d goalPose;
 
-    Pose2d atPose = VIConsts.kATField.getTagPose(16).get( ).toPose2d( );
-    Transform2d transform = new Transform2d(0, 0, Rotation2d.k180deg);
+    Pose2d atPose = VIConsts.kATField.getTagPose(10).get( ).toPose2d( );
+    Transform2d transform = new Transform2d(10, 0, Rotation2d.k180deg);
     goalPose = atPose.transformBy(transform);
 
     if (DriverStation.getAlliance( ).orElse(Alliance.Blue) == Alliance.Red)

@@ -80,6 +80,57 @@ import frc.robot.lib.Vision;
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
+    /* What to publish over networktables for telemetry */
+    private final NetworkTableInstance  kNTInst              = NetworkTableInstance.getDefault( );
+
+    /* Robot pose for field positioning */
+    private final NetworkTable          kFieldTable = kNTInst.getTable("Pose");
+
+    private final DoubleArrayPublisher  kLLPoseFront         = kFieldTable.getDoubleArrayTopic("llPose-front").publish(); 
+    private final DoubleArrayPublisher  kLLPoseBack          = kFieldTable.getDoubleArrayTopic("llPose-back").publish(); 
+
+    private final Translation2d         kHubCenterBlue       = new Translation2d(Inches.of(182.11), Inches.of(158.84));
+    private final Translation2d         kHubCenterRed        = new Translation2d(Inches.of(651.22 - 182.11), Inches.of(158.84));
+    private static final double         kAimingKp            = 0.012;
+    private static final double         kDrivingKp           = 0.6;
+    private static final double         optimalDistance      = Units.inchesToMeters(120.0);
+    private static final LinearVelocity kMaxSpeed            = TunerConstants.kSpeedAt12Volts; //max top speed
+    private static final AngularVelocity kMaxAngularRate     = RotationsPerSecond.of(1.0);
+    private final NetworkTable              kDriveStateTable = kNTInst.getTable("DriveState");
+    private final StructSubscriber<Pose2d>  m_driveStatePose = kDriveStateTable.getStructTopic("Pose", Pose2d.struct).subscribe(new Pose2d( ));
+
+    /* Robot set pose */
+    private final NetworkTable          kSwerveTable         = kNTInst.getTable("swerve");
+    private final DoubleArrayPublisher  m_setPosePub         = kSwerveTable.getDoubleArrayTopic("setPose").publish();
+    private final DoubleArraySubscriber m_setPoseSub         = kSwerveTable.getDoubleArrayTopic("setPose").subscribe(new double[3]);
+    private final BooleanPublisher      m_limelightPub       = kSwerveTable.getBooleanTopic("useLimelight").publish();
+    private final BooleanSubscriber     m_limelightSub       = kSwerveTable.getBooleanTopic("useLimelight").subscribe(false);
+
+
+    private MedianFilter                m_frontFilter        = new MedianFilter(5);
+    private MedianFilter                m_backFilter         = new MedianFilter(5);
+
+    private BooleanPublisher            m_frontUpdate        = kSwerveTable.getBooleanTopic("FrontCam").publish();
+    private BooleanPublisher            m_backUpdate         = kSwerveTable.getBooleanTopic("BackCam").publish();
+
+    private DoublePublisher             m_rangePub           = kSwerveTable.getDoubleTopic("AlignRange").publish();
+    private DoublePublisher             m_aimPub             = kSwerveTable.getDoubleTopic("AlignAim").publish();
+
+    private double []                   m_moduleDistances    = {0, 0, 0, 0};
+
+    private SwerveSetpointGenerator     m_setpointGenerator;
+    private SwerveSetpoint              m_previousSetpoint;
+
+    private Translation2d               m_hubCenter          = new Translation2d();
+
+    /* Robot pathToPose constraints */
+    private final PathConstraints       kPathFindConstraints = new PathConstraints( // 
+        3.5,            // kMaxVelocityMps
+        3.5,      // kMaxAccelerationMpsSq
+        2.0 * Math.PI,                 // kMaxAngularSpeedRadiansPerSecond
+        2.0 * Math.PI                  // kMaxAngularSpeedRadiansPerSecondSquared
+    );
+
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
