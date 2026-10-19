@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start1-NZ1"
+            "pathName": "Start3-NZ3A-NZ3B-NZ3C-L3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NZ1-L1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L1_D_L2A"
+            "pathName": "L3-NZ3D-NZ3E-NZ3F-L3"
           }
         }
       ]

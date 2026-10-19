@@ -47,7 +47,7 @@ public class AutoScore2A extends SequentialCommandGroup
         new LogCommand(getName(),"Drive path while acquiring"),
         new ParallelCommandGroup(
             new SequentialCommandGroup(
-              new WaitCommand(0.25),
+              new WaitCommand(0.15),
               drivetrain.getPathCommand(ppAuto.get(0))
             ),
             new AcquireFuel(intake,hopper)
@@ -58,9 +58,9 @@ public class AutoScore2A extends SequentialCommandGroup
             launcher.getLauncherScoreCommand(),
             new StopIntaking(intake, hopper)
           ),
-        new WaitCommand(0.250),
+        new WaitCommand(0.150),
         new LogCommand(getName(),"Launch fuel"),
-        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(7),
+        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(3.5),
         new StopLaunching(intake, hopper, kicker, launcher),
 
         new LogCommand(getName(),"Drive third path while acquiring"),
@@ -70,7 +70,7 @@ public class AutoScore2A extends SequentialCommandGroup
           ),
         launcher.getLauncherScoreCommand(),
         new StopIntaking(intake, hopper),
-        new WaitCommand(0.250),
+        new WaitCommand(0.150),
         
         new LogCommand(getName(),"Launch fuel"),
         new LaunchFuel(intake, hopper, kicker, launcher)

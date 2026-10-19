@@ -23,7 +23,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -48,11 +47,9 @@ import frc.robot.autos.AutoScore2A;
 import frc.robot.autos.AutoScore2B;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
-import frc.robot.commands.ClimbTower;
 import frc.robot.commands.ExpelFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
-import frc.robot.commands.PrepareToClimb;
 import frc.robot.commands.RetractIntake;
 import frc.robot.commands.StopIntaking;
 import frc.robot.commands.StopLaunching;
@@ -61,7 +58,6 @@ import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -127,8 +123,6 @@ public class RobotContainer
   private final Hopper                                m_hopper        = new Hopper( );
   private final Kicker                                m_kicker        = new Kicker( );
   private final Launcher                              m_launcher      = new Launcher( );
-  // private final Climber                               m_climberLeft   = new Climber("Left", "CL-", false);
-  private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command
@@ -320,14 +314,9 @@ public class RobotContainer
     //
     // Driver - POV buttons
     //
-    // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
-    // m_driverPad.pov(180).onTrue(new ClimbTower(m_climberRight));
-    m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
-    m_driverPad.pov(90).onTrue(new ClimbTower(m_climberRight));
-    m_driverPad.pov(180).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(-180.0))));
+    m_driverPad.pov(0).onTrue(new LogCommand("driverPad", "POV 0"));
+    m_driverPad.pov(90).onTrue(new LogCommand("driverPad", "POV 90"));
+    m_driverPad.pov(180).onTrue(new LogCommand("driverPad", "POV 180"));
     m_driverPad.pov(270).onTrue(new LogCommand("driverPad", "POV 270"));
 
     //
@@ -371,14 +360,14 @@ public class RobotContainer
         new AcquireFuel(m_intake, m_hopper)));//
     m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
-    m_operatorPad.back( ).toggleOnTrue(m_climberRight.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
+    m_operatorPad.back( ).onTrue(new LogCommand("driverPad", "Back"));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
 
     //
     // Operator - POV buttons
     //
-    m_operatorPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
-    m_operatorPad.pov(90).onTrue(new ClimbTower(m_climberRight));
+    m_operatorPad.pov(0).onTrue(new LogCommand("operatorPad", "POV:0"));
+    m_operatorPad.pov(90).onTrue(new LogCommand("operatorPad", "POV:90"));
     m_operatorPad.pov(180).onTrue(new LogCommand("operatorPad", "POV:180"));
     m_operatorPad.pov(270).onTrue(new LogCommand("operatorPad", "POV:270"));
 
@@ -594,15 +583,6 @@ public class RobotContainer
 
   /****************************************************************************
    * 
-   * Gamepad joystick axis interfaces
-   */
-  private double getClimberAxis( )
-  {
-    return -m_operatorPad.getLeftY( );
-  }
-
-  /****************************************************************************
-   * 
    * Called by disabledInit - place subsystem initializations here
    */
   public void disabledInit( )
@@ -617,8 +597,6 @@ public class RobotContainer
     m_hopper.initialize( );
     m_kicker.initialize( );
     m_launcher.initialize( );
-
-    m_climberRight.initialize( );
   }
 
   /****************************************************************************
@@ -632,7 +610,6 @@ public class RobotContainer
     m_launcher.initAutonomousRPM( );
 
     CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
-    CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
   /****************************************************************************
@@ -647,7 +624,6 @@ public class RobotContainer
     m_matchState.teleopInit( );
 
     CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
-    CommandScheduler.getInstance( ).schedule(m_climberRight.getCalibrateCommand( ));
   }
 
   /****************************************************************************
@@ -675,6 +651,5 @@ public class RobotContainer
     m_hopper.printFaults( );
     m_kicker.printFaults( );
     m_launcher.printFaults( );
-    m_climberRight.printFaults( );
   }
 }

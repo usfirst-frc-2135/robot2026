@@ -15,12 +15,6 @@
           "data": {
             "pathName": "L2A-L2A"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L2A-OP-L2B"
-          }
         }
       ]
     }
