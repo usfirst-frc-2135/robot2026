@@ -64,8 +64,8 @@ public class Vision
   // Constants
   private static final double kAimingKp    = 0.01;
   private static final double kDrivingKp   = 0.08;
-  private static final double kTXOffset    = 0.0;
-  private static final double kTYOffset    = 8.0;
+  private static final double kTXOffset    = 2.0;
+  private static final double kTYOffset    = 0.0;
 
   // Objects
 
