@@ -377,8 +377,11 @@ public class Intake extends SubsystemBase
 
     m_goalDegrees = m_currentDegrees;
 
-    m_rotaryMotor.setControl(m_requestVolts.withOutput(
-        kRotaryManualVolts.times(axisValue).plus(kManualKG.times(Math.cos(Units.degreesToRadians(m_currentDegrees))))));
+    if (m_rotaryValid)
+    {
+      m_rotaryMotor.setControl(m_requestVolts.withOutput(
+          kRotaryManualVolts.times(axisValue).plus(kManualKG.times(Math.cos(Units.degreesToRadians(m_currentDegrees))))));
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -417,7 +420,10 @@ public class Intake extends SubsystemBase
         m_mmWithinTolerance.calculate(false); // Reset the debounce filter
 
         double goalRotations = Units.degreesToRotations(m_goalDegrees);
-        m_rotaryMotor.setControl(m_mmRequestVolts.withPosition(goalRotations));
+        if (m_rotaryValid)
+        {
+          m_rotaryMotor.setControl(m_mmRequestVolts.withPosition(goalRotations));
+        }
         DataLogManager.log(String.format("%s: MM Angle move: %.1f -> %.1f degrees (%.3f -> %.3f rot)", getSubsystem( ),
             m_currentDegrees, m_goalDegrees, Units.degreesToRotations(m_currentDegrees), goalRotations));
       }
@@ -454,7 +460,10 @@ public class Intake extends SubsystemBase
     boolean timedOut = m_mmMoveTimer.hasElapsed(kMMMoveTimeout);
     double error = m_goalDegrees - m_currentDegrees;
 
-    m_rotaryMotor.setControl(m_mmRequestVolts.withPosition(Units.degreesToRotations(m_goalDegrees)));
+    if (m_rotaryValid)
+    {
+      m_rotaryMotor.setControl(m_mmRequestVolts.withPosition(Units.degreesToRotations(m_goalDegrees)));
+    }
 
     if (holdAngle)
       return false;
@@ -528,7 +537,10 @@ public class Intake extends SubsystemBase
   private void setRotaryStopped( )
   {
     DataLogManager.log(String.format("%s: Rotary motor now STOPPED", getSubsystem( )));
-    m_rotaryMotor.setControl(m_requestVolts.withOutput(0.0));
+    if (m_rotaryValid)
+    {
+      m_rotaryMotor.setControl(m_requestVolts.withOutput(Volts.of(0.0)));
+    }
   }
 
   /****************************************************************************

@@ -12,7 +12,6 @@ import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
 import frc.robot.commands.StopIntaking;
-import frc.robot.commands.StopLaunching;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
