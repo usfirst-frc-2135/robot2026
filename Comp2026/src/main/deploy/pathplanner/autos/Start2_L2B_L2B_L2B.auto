@@ -15,6 +15,12 @@
           "data": {
             "pathName": "L2B-L2B"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L2B-L2B"
+          }
         }
       ]
     }
