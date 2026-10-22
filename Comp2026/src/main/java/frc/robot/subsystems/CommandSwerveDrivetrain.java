@@ -432,7 +432,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Swerve constants */
     private static final double            kAimingKp            = 0.012;
     private static final double            kDrivingKp           = 0.6;
-    private static final double            optimalDistance      = Units.inchesToMeters(138.0);
+    private static final double            kOptimalDistance     = Units.inchesToMeters(138.0);
 
     /* Get the network tables instance */
     private final NetworkTableInstance     inst                 = NetworkTableInstance.getDefault( );
@@ -778,7 +778,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      */
     public LinearVelocity rangePoseProportional(double distanceToHub, LinearVelocity maxSpeed)
     {
-        double proportionalFactor = -(optimalDistance - distanceToHub) * kDrivingKp;
+        double proportionalFactor = -(kOptimalDistance - distanceToHub) * kDrivingKp;
 
         return maxSpeed.times(proportionalFactor);
     }
