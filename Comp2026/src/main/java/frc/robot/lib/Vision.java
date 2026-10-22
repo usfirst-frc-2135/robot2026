@@ -133,7 +133,7 @@ public class Vision
     LimelightHelpers.setStreamMode_PiPSecondary(Constants.kLLBackName);   // These work on LL3 and lower (not LL4)
 
     setCPUThrottleLevel(true);
-    setIMUModeExternalSeed( );
+    // setIMUModeExternalSeed( );
 
     if (DriverStation.getAlliance( ).equals(Optional.of(DriverStation.Alliance.Red)))
     {
@@ -169,7 +169,7 @@ public class Vision
     DataLogManager.log(String.format("%s: Subsystem running!", getName( )));
 
     setCPUThrottleLevel(false);
-    setIMUModeAssistExternal( );
+    // setIMUModeAssistExternal( );
   }
 
   /****************************************************************************

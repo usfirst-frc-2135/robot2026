@@ -494,7 +494,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         // SmartDashboard.putData("AlignToPosePID", getAlignToPosePIDCommand( ));
         // SmartDashboard.putData("AlignToPosePPFollow", new DeferredCommand(( ) -> getPoseAlignPPFollowCommand( ), Set.of(this)));
         // SmartDashboard.putData("AlignToPosePPFind", new DeferredCommand(( ) -> getAlignToPosePPFindCommand( ), Set.of(this)));
-        m_limelightEntry.set(false);
+        m_limelightEntry.set(true);
     }
 
     /****************************************************************************
@@ -574,14 +574,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 doRejectUpdate = true;
             }
             // Reject if average tag distance is greater than 5 meters away
-            else if (mt2.avgTagDist > 5.0)
+            else if (mt2.avgTagDist > 3.2)
             {
                 doRejectUpdate = true;
             }
 
             if (!doRejectUpdate)
             {
-                final double kBase = 0.5;
+                final double kBase = 0.4;
                 final double kProportional = 2.0;
                 double[ ] array =
                 {
