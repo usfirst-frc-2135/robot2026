@@ -60,7 +60,7 @@ public class AutoScore2A extends SequentialCommandGroup
           ),
         new WaitCommand(0.150),
         new LogCommand(getName(),"Launch fuel"),
-        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(3.5),
+        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(7.0),
         new StopLaunching(intake, hopper, kicker, launcher),
 
         new LogCommand(getName(),"Drive third path while acquiring"),
