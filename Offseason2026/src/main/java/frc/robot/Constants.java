@@ -77,43 +77,44 @@ public final class Constants
    ****************************************************************************/
   public static final class Ports
   {
-    public static final String kCANCarnivore         = "canivore1";
-    public static final String kCANRio               = "rio";
+    public static final String kCANCarnivore              = "canivore1";
+    public static final String kCANRio                    = "rio";
 
     // CANivore CAN IDs - Swerve
-    public static final int    kCANID_DriveLF        = 1; // Kraken X60
-    public static final int    kCANID_SteerLF        = 2; // Kraken X60
-    public static final int    kCANID_CANcoderLF     = 3; // CANcoder
+    public static final int    kCANID_DriveLF             = 1; // Kraken X60
+    public static final int    kCANID_SteerLF             = 2; // Kraken X60
+    public static final int    kCANID_CANcoderLF          = 3; // CANcoder
 
-    public static final int    kCANID_DriveRF        = 4; // Kraken X60
-    public static final int    kCANID_SteerRF        = 5; // Kraken X60
-    public static final int    kCANID_CANcoderRF     = 6; // CANcoder
+    public static final int    kCANID_DriveRF             = 4; // Kraken X60
+    public static final int    kCANID_SteerRF             = 5; // Kraken X60
+    public static final int    kCANID_CANcoderRF          = 6; // CANcoder
 
-    public static final int    kCANID_DriveLR        = 7; // Kraken X60
-    public static final int    kCANID_SteerLR        = 8; // Kraken X60
-    public static final int    kCANID_CANcoderLR     = 9; // CANcoder
+    public static final int    kCANID_DriveLR             = 7; // Kraken X60
+    public static final int    kCANID_SteerLR             = 8; // Kraken X60
+    public static final int    kCANID_CANcoderLR          = 9; // CANcoder
 
-    public static final int    kCANID_DriveRR        = 10; // Kraken X60
-    public static final int    kCANID_SteerRR        = 11; // Kraken X60
-    public static final int    kCANID_CANcoderRR     = 12; // CANcoder
+    public static final int    kCANID_DriveRR             = 10; // Kraken X60
+    public static final int    kCANID_SteerRR             = 11; // Kraken X60
+    public static final int    kCANID_CANcoderRR          = 12; // CANcoder
 
-    public static final int    kCANID_Pigeon2        = 13; // Pigeon2 IMU
+    public static final int    kCANID_Pigeon2             = 13; // Pigeon2 IMU
 
     // RoboRIO CAN IDs
-    public static final int    kCANID_IntakeRoller   = 15; // Kraken X44 (Intake)
-    public static final int    kCANID_IntakeRotary   = 16; // Kraken X44 (Intake rotary)
-    public static final int    kCANID_IntakeCANcoder = 17; // CANcoder (intake)
+    public static final int    kCANID_IntakeRoller        = 15; // Kraken X44 (Intake)
+    public static final int    kCANID_IntakeRotary        = 16; // Kraken X44 (Intake rotary)
+    public static final int    kCANID_IntakeCANcoder_rack = 17; // CANcoder (intake)
 
-    public static final int    kCANID_HopperRoller   = 19; // Kraken X44 (Hopper) 
+    public static final int    kCANID_HopperRoller        = 20; // Kraken X44 (Hopper) 
 
-    public static final int    kCANID_KickerRoller   = 21; // Kraken X44 (Kicker)
-    public static final int    kCANID_LauncherLeft   = 22; // Kraken X60 (Launcher)
-    public static final int    kCANID_LauncherRight  = 23; // Kraken X60 (Launcher)
+    public static final int    kCANID_KickerRoller        = 22; // Kraken X44 (Kicker)
+    public static final int    kCANID_LauncherLeft        = 23; // Kraken X60 (Launcher)
+    public static final int    kCANID_LauncherRight       = 25; // Kraken X60 (Launcher)
 
-    public static final int    kCANID_ClimberLeft    = 25; // Kraken X60 (Climber telescope)
-    public static final int    kCANID_ClimberRight   = 26; // Kraken X60 (Climber telescope)
+    public static final int    kCANID_DrumRoller1         = 26; // Kraken X60 (Climber telescope)
+    public static final int    kCANID_DrumRoller2         = 27; // Kraken X60 (Climber telescope)
+    public static final int    kCANID_HoodRack            = 28;
 
-    public static final int    kCANID_CANdle         = 0;
+    public static final int    kCANID_CANdle              = 0;
   }
 
   /****************************************************************************
