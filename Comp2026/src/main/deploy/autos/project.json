@@ -43,10 +43,37 @@
               "input_signature": "{\"solverVersion\":17,\"driveType\":\"swerve\",\"preview\":null,\"tankDirection\":null,\"handoffModes\":[\"radius\",\"radius\",\"radius\",\"radius\",\"radius\",\"radius\"],\"pathElements\":[{\"type\":\"waypoint\",\"xMeters\":4.4,\"yMeters\":7.43,\"handoffRadiusMeters\":\"auto\",\"rotationRadians\":0,\"profiledRotation\":true},{\"type\":\"waypoint\",\"xMeters\":5.4418206963702955,\"yMeters\":7.4103133611696315,\"handoffRadiusMeters\":\"auto\",\"rotationRadians\":-0.5235987755982988,\"profiledRotation\":true},{\"type\":\"waypoint\",\"xMeters\":6.551947278648776,\"yMeters\":7.325732368896926,\"handoffRadiusMeters\":0.5,\"rotationRadians\":-1.0471975511965976,\"profiledRotation\":true},{\"type\":\"waypoint\",\"xMeters\":7.59,\"yMeters\":7.167142857142856,\"handoffRadiusMeters\":\"auto\",\"rotationRadians\":-1.5708,\"profiledRotation\":true},{\"type\":\"waypoint\",\"xMeters\":7.63036,\"yMeters\":6,\"handoffRadiusMeters\":0.45,\"rotationRadians\":-1.5708,\"profiledRotation\":true},{\"type\":\"waypoint\",\"xMeters\":7.62,\"yMeters\":4.84,\"handoffRadiusMeters\":0.45,\"rotationRadians\":-1.5708,\"profiledRotation\":true}],\"scalarConstraints\":{\"minVelocityMps\":null,\"minVelocityDegPerSec\":null,\"endTranslationTolerance\":null,\"endRotationTolerance\":null,\"maxVelocityMps\":null,\"maxAccelerationMps2\":null,\"maxVelocityDegPerSec\":null,\"maxAccelerationDegPerSec\":null},\"rangedConstraints\":[{\"key\":\"max_velocity_meters_per_sec\",\"value\":2.25,\"startOrdinal\":1,\"endOrdinal\":1},{\"key\":\"max_velocity_meters_per_sec\",\"value\":2.7,\"startOrdinal\":6,\"endOrdinal\":6}],\"config\":{\"endTranslationTolerance\":0.05,\"endRotationTolerance\":3,\"maxVelocityMps\":2,\"maxAccelerationMps2\":5,\"handoffRadiusMeters\":0.45,\"maxVelocityDegPerSec\":720,\"maxAccelerationDegPerSec\":1500,\"autoVelocityVelocitySafetyFactor\":1,\"autoVelocityAccelerationSafetyFactor\":1},\"options\":{\"velocitySafetyFactor\":1,\"accelerationSafetyFactor\":1,\"sampleStepMeters\":null,\"mergeToleranceMps\":0.3,\"includeGeneratedRadiiInCacheKey\":false}}"
             }
           }
+        ],
+        "linked_targets": [
+          {
+            "element_index": 0,
+            "target_id": "target-d37112f4"
+          },
+          {
+            "element_index": 5,
+            "target_id": "target-7997dfc3"
+          }
         ]
       }
     }
   ],
   "path_groups": [],
-  "linked_targets": []
+  "linked_targets": [
+    {
+      "target_id": "target-d37112f4",
+      "display_name": "Start1",
+      "kind": "waypoint",
+      "x_meters": 4.4,
+      "y_meters": 7.43,
+      "rotation_radians": 0
+    },
+    {
+      "target_id": "target-7997dfc3",
+      "display_name": "NZ1",
+      "kind": "waypoint",
+      "x_meters": 7.62,
+      "y_meters": 4.84,
+      "rotation_radians": -1.5708
+    }
+  ]
 }
