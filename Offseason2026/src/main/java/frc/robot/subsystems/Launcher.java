@@ -60,7 +60,10 @@ public class Launcher extends SubsystemBase
   private static final double kHoodFullDown      = -1.0;      // Hood actuator servo all the way down
   private static final double kHoodFullUp        = 1.0;       // Hood actuator servo all the way up
 
-  private static final double kLauncherGearRatio = (18.0 / 24.0);
+  private static final double kFlywheelOneRatio = (1.0 / 1.0);
+  private static final double kFlywheelTwoRatio = (0.75 / 1.0);
+  private static final double kLauncherRollerRatio = (0.67 / 1.0);
+  private static final double kLauncherRotaryRatio = (5.0 / 1.0);
 
   /** Launcher (RPM) modes */
   private enum LauncherMode
