@@ -102,7 +102,7 @@ public class Intake extends SubsystemBase
   //      Practice -130.4  -126.4     4.2       5.2
   private static final double       kRotaryAngleStowed    = Robot.isComp( ) ? -124.7 : -126.4; // Four degrees from hardstops
   private static final double       kRotaryAngleIndexing  = -75.0;
-  private static final double       kRotaryAngleSixty     = -60.0;
+  private static final double       kRotaryAngleSixty     = -45.0;
   private static final double       kRotaryAngleThirty    = -30.0;
   private static final double       kRotaryAngleProtected = -15.0;
   private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
@@ -715,8 +715,8 @@ public class Intake extends SubsystemBase
                 getMoveToAngleCommand(INRollerMode.HOLD, this::getSixtyAngle),    //
                 new WaitCommand(0.15),                                    //
                 getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle), //
-                new WaitCommand(0.15),                                    //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)    //
+                new WaitCommand(0.15)                                   //
+            // getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)    //
             )                                                                     //
         )).withName(kSubsystemName + "IndexingCommand");
   }
