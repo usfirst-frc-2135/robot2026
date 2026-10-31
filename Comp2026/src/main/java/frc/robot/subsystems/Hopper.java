@@ -83,6 +83,9 @@ public class Hopper extends SubsystemBase
 
     // Update network table publishers
 
+    if (!m_rollerValid)
+      return;
+
     // If rollermode is acquire and m_pulsemode is active
     if (m_rollerMode == HPRollerMode.ACQUIRE && m_pulseMode)
     {
@@ -152,6 +155,12 @@ public class Hopper extends SubsystemBase
    */
   public void printFaults( )
   {
+    if (!m_rollerValid)
+    {
+      DataLogManager.log(String.format("%s: printFaults() skipped; roller is invalid", getSubsystem( )));
+      return;
+    }
+
     PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
 
     m_rollerMotor.clearStickyFaults( );
@@ -170,6 +179,12 @@ public class Hopper extends SubsystemBase
    */
   private void setRollerMode(HPRollerMode mode)
   {
+    if (!m_rollerValid)
+    {
+      m_rollerMode = HPRollerMode.STOP;
+      return;
+    }
+
     double output = 0.0;
 
     if (mode == HPRollerMode.HOLD)

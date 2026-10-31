@@ -1,7 +1,7 @@
 //
 // Kicker Subystem - takes in Notes and delivers them to the other subsystems
 //
-// The kicker is composed of one motorized mechanism: a roller roller.
+// The kicker is composed of one motorized mechanism: a roller.
 //
 package frc.robot.subsystems;
 
@@ -89,6 +89,9 @@ public class Kicker extends SubsystemBase
   {
     // This method will be called once per scheduler run during simulation
 
+    if (!m_rollerValid)
+      return;
+
     // Set input motor voltage from the motor setting
     m_rollerMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
 
@@ -137,6 +140,12 @@ public class Kicker extends SubsystemBase
    */
   public void printFaults( )
   {
+    if (!m_rollerValid)
+    {
+      DataLogManager.log(String.format("%s: printFaults() skipped; roller is invalid", getSubsystem( )));
+      return;
+    }
+
     PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
 
     m_rollerMotor.clearStickyFaults( );
@@ -155,6 +164,12 @@ public class Kicker extends SubsystemBase
    */
   private void setRollerMode(KKRollerMode mode)
   {
+    if (!m_rollerValid)
+    {
+      DataLogManager.log(String.format("%s: setRollerMode(%s) skipped; roller is invalid", getSubsystem( ), mode));
+      return;
+    }
+
     double output = 0.0;
 
     if (mode == KKRollerMode.HOLD)
@@ -197,7 +212,7 @@ public class Kicker extends SubsystemBase
    * 
    * @param mode
    *          roller mode to apply
-   * @return continuous command that runs kicker roller motors
+   * @return instant command that sets kicker roller mode
    */
   public Command getRollerModeCommand(KKRollerMode mode)
   {
