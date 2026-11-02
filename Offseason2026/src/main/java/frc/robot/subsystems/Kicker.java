@@ -62,9 +62,9 @@ public class Kicker extends SubsystemBase
 
     // Roller motor init
     m_rollerLwValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorLw, kSubsystemName + "Roller Lw",
-        CTREConfigs6.kickerRollerFXConfig(false));
+        CTREConfigs6.kickerRollerFXConfig(true));
     m_rollerUpValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorUp, kSubsystemName + "Roller Up",
-        CTREConfigs6.kickerRollerFXConfig(false));
+        CTREConfigs6.kickerRollerFXConfig(true));
     m_rollerAlert.set(!m_rollerLwValid);
 
     initDashboard( );

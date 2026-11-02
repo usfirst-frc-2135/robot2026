@@ -97,7 +97,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     inRotaryConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
-    inRotaryConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    inRotaryConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     inRotaryConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // Open Loop settings

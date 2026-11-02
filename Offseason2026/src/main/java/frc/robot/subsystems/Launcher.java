@@ -133,11 +133,11 @@ public class Launcher extends SubsystemBase
     setSubsystem("Launcher");
 
     m_launcherLLwValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotorLw, kSubsystemName + "Left Lw",
-        CTREConfigs6.launcherFXConfig(false));
-    m_launcherLUpValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotorUp, kSubsystemName + "Left Up",
-        CTREConfigs6.launcherFXConfig(false));
-    m_launcherRValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right",
         CTREConfigs6.launcherFXConfig(true));
+    m_launcherLUpValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotorUp, kSubsystemName + "Left Up",
+        CTREConfigs6.launcherFXConfig(true));
+    m_launcherRValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right",
+        CTREConfigs6.launcherFXConfig(false));
     //m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
     m_launcherLLwValid = m_launcherLLwValid && m_launcherLUpValid && m_launcherRValid;
 
