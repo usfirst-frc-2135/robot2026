@@ -68,7 +68,7 @@ public class Hopper extends SubsystemBase
     m_rollerLValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorL, kSubsystemName + "Roller L",
         CTREConfigs6.hopperRollerFXConfig(false));
     m_rollerRValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorR, kSubsystemName + "Roller R",
-        CTREConfigs6.hopperRollerFXConfig(false));
+        CTREConfigs6.hopperRollerFXConfig(true));
     m_rollerAlert.set(!m_rollerLValid);
 
     initDashboard( );

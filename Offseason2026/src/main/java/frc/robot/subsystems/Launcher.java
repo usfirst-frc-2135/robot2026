@@ -75,18 +75,21 @@ public class Launcher extends SubsystemBase
   private final TalonFX                       m_leftMotorLw          = new TalonFX(Ports.kCANID_LauncherLeftLw);
   private final TalonFX                       m_leftMotorUp          = new TalonFX(Ports.kCANID_LauncherLeftUp);
   private final TalonFX                       m_rightMotor           = new TalonFX(Ports.kCANID_LauncherRight);
-  private final Servo                         m_hoodLeft             = new Servo(0);
-  private final Servo                         m_hoodRight            = new Servo(1);
+  private final TalonFX                       m_LauncherHood         = new TalonFX(Ports.kCANID_LauncherHood);
+  // private final Servo                         m_hoodLeft             = new Servo(0);
+  // private final Servo                         m_hoodRight            = new Servo(1);
 
   // Alerts
   private final Alert                         m_leftAlert            =
-      new Alert(String.format("%s: Left motor init failed!", getSubsystem( )), AlertType.kError);
+      new Alert(String.format("%s: Left motorLw init failed!", getSubsystem( )), AlertType.kError);
   private final Alert                         m_rightAlert           =
       new Alert(String.format("%s: Right motor init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
   private final TalonFXSimState               m_leftMotorLwSim       = new TalonFXSimState(m_leftMotorLw);
+  private final TalonFXSimState               m_leftMotorUpSim       = new TalonFXSimState(m_leftMotorUp);
   private final TalonFXSimState               m_rightMotorSim        = new TalonFXSimState(m_rightMotor);
+  private final TalonFXSimState               m_LauncherHoodSim        = new TalonFXSimState(m_LauncherHood);
   private final FlywheelSim                   m_leftFlywheelSim      = new FlywheelSim(
       LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60Foc(1), kMOI, kLauncherGearRatio), DCMotor.getKrakenX60Foc(1), 0.0);
   private final FlywheelSim                   m_rightFlywheelSim     = new FlywheelSim(
@@ -100,6 +103,7 @@ public class Launcher extends SubsystemBase
   private boolean                             m_launcherLLwValid;
   private boolean                             m_launcherLUpValid;
   private boolean                             m_launcherRValid;
+  private boolean                             m_launcherHoodValid;
   private boolean                             m_isAtRequestedRPM     = false; // Indicates launcher RPM is close to requested
   private boolean                             m_isAtRequestedRPMPrev = false;
 
@@ -137,6 +141,9 @@ public class Launcher extends SubsystemBase
     //m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
     m_launcherLLwValid = m_launcherLLwValid && m_launcherLUpValid && m_launcherRValid;
 
+    m_launcherHoodValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_LauncherHood, kSubsystemName + "Right",
+        CTREConfigs6.launcherFXConfig(true));
+
     m_leftAlert.set(!m_launcherLLwValid && !m_launcherLUpValid);
     m_rightAlert.set(!m_launcherRValid);
 
@@ -149,8 +156,8 @@ public class Launcher extends SubsystemBase
     StatusSignal<Current> m_leftSupplyCur = m_leftMotorLw.getSupplyCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightSupplyCur = m_rightMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
 
-    m_hoodLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
-    m_hoodRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
+    // m_hoodLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
+    // m_hoodRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
 
     DataLogManager
         .log(String.format("%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f rightSupplyCur: %.1f",
@@ -350,8 +357,8 @@ public class Launcher extends SubsystemBase
   private void setHoodAngle(double position)
   {
     // Linear actuator uses servo speed method for position control
-    m_hoodLeft.setSpeed(position);
-    m_hoodRight.setSpeed(position);
+    // m_hoodLeft.setSpeed(position);
+    // m_hoodRight.setSpeed(position);
   }
 
   ////////////////////////////////////////////////////////////////////////////
