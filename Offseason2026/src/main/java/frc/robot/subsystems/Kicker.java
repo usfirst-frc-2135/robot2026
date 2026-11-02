@@ -33,7 +33,7 @@ public class Kicker extends SubsystemBase
   private static final double   kRollerSpeedExpel   = -0.4;
 
   // Declare device objects
-  private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_KickerRoller);
+  private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_KickerRollerLw);
 
   // Alerts
   private final Alert           m_rollerAlert       =

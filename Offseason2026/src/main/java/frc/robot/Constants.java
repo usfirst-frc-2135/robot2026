@@ -100,18 +100,21 @@ public final class Constants
     public static final int    kCANID_Pigeon2        = 13; // Pigeon2 IMU
 
     // RoboRIO CAN IDs
-    public static final int    kCANID_IntakeRoller   = 15; // Kraken X44 (Intake)
-    public static final int    kCANID_IntakeRotary   = 16; // Kraken X44 (Intake rotary)
-    public static final int    kCANID_IntakeCANcoder = 17; // CANcoder (intake)
+    public static final int    kCANID_IntakeRollerL  = 15; // Kraken X60 (Intake roller left)
+    public static final int    kCANID_IntakeRollerR  = 16; // Kraken X60 (Intake roller right)
+    public static final int    kCANID_IntakeRack     = 17; // Kraken X44 (Intake rack)
+    public static final int    kCANID_IntakeCANcoder = 18; // CANcoder (intake) TODO: Change to 18 when we add a second CANcoder for the intake rack
 
-    public static final int    kCANID_HopperRoller   = 19; // Kraken X44 (Hopper) 
+    public static final int    kCANID_HopperRollerL  = 20; // Kraken X60 (Hopper roller left)
+    public static final int    kCANID_HopperRollerR  = 21; // Kraken X60 (Hopper roller right)
 
-    public static final int    kCANID_KickerRoller   = 21; // Kraken X44 (Kicker)
-    public static final int    kCANID_LauncherLeft   = 22; // Kraken X60 (Launcher)
-    public static final int    kCANID_LauncherRight  = 23; // Kraken X60 (Launcher)
+    public static final int    kCANID_KickerRollerLw = 22; // Kraken X60 (Kicker roller lower)
+    public static final int    kCANID_KickerRollerUp = 23; // Kraken X60 (Kicker roller upper)
 
-    public static final int    kCANID_ClimberLeft    = 25; // Kraken X60 (Climber telescope)
-    public static final int    kCANID_ClimberRight   = 26; // Kraken X60 (Climber telescope)
+    public static final int    kCANID_LauncherLeftLw = 25; // Kraken X60 (Launcher left lower)
+    public static final int    kCANID_LauncherLeftUp = 26; // Kraken X60 (Launcher left upper)
+    public static final int    kCANID_LauncherRight  = 27; // Kraken X60 (Launcher right)
+    public static final int    kCANID_LauncherHood   = 28; // Kraken X44 (Launcher hood rack and pinion)
 
     public static final int    kCANID_CANdle         = 0;
   }

@@ -35,7 +35,7 @@ public class Hopper extends SubsystemBase
   private static final double   kPulseModeDuration  = 0.5;
 
   // Declare device objects
-  private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_HopperRoller);
+  private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_HopperRollerL);
 
   // Alerts
   private final Alert           m_rollerAlert       =

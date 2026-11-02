@@ -111,8 +111,8 @@ public class Intake extends SubsystemBase
   private static final double       kRotaryAngleMax       = kRotaryAngleDeployed + 3.0;
 
   // Declare device objects
-  private final TalonFX             m_rollerMotor         = new TalonFX(Ports.kCANID_IntakeRoller);
-  private final TalonFX             m_rotaryMotor         = new TalonFX(Ports.kCANID_IntakeRotary);
+  private final TalonFX             m_rollerMotor         = new TalonFX(Ports.kCANID_IntakeRollerL);
+  private final TalonFX             m_rotaryMotor         = new TalonFX(Ports.kCANID_IntakeRack);
   private final CANcoder            m_CANcoder            = new CANcoder(Ports.kCANID_IntakeCANcoder);
 
   // Alerts

@@ -72,7 +72,7 @@ public class Launcher extends SubsystemBase
   }
 
   // Devices  objects
-  private final TalonFX                       m_leftMotor            = new TalonFX(Ports.kCANID_LauncherLeft);
+  private final TalonFX                       m_leftMotor            = new TalonFX(Ports.kCANID_LauncherLeftLw);
   private final TalonFX                       m_rightMotor           = new TalonFX(Ports.kCANID_LauncherRight);
   private final Servo                         m_hoodLeft             = new Servo(0);
   private final Servo                         m_hoodRight            = new Servo(1);
