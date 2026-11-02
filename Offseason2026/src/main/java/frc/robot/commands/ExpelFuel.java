@@ -34,10 +34,10 @@ public class ExpelFuel extends SequentialCommandGroup
         // @formatter:off
         
         new LogCommand(getName(), "Stop rollers and Deploy intake rotary"),
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getDeployedAngle),
+        intake.getMoveToLengthCommand(INConsts.INRollerMode.STOP, intake::getDeployedLength),
 
         new LogCommand(getName(), "Expel rollers and Hold intake rotary in same position"),        
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.EXPEL, intake::getCurrentAngle),
+        intake.getMoveToLengthCommand(INConsts.INRollerMode.EXPEL, intake::getCurrentLength),
 
         new LogCommand(getName(), "Run Hopper Rollers"), 
         hopper.getRollerModeCommand(HPConsts.HPRollerMode.EXPEL),
