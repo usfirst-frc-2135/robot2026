@@ -29,7 +29,7 @@ public final class CTREConfigs6
    * 
    * @return inRollerConfig
    */
-  public static TalonFXConfiguration intakeRollerFXConfig( )
+  public static TalonFXConfiguration intakeRollerFXConfig(boolean inverted)
   {
     TalonFXConfiguration inRollerConfig = new TalonFXConfiguration( );
 
@@ -44,8 +44,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     inRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;   // Percentage
-    inRollerConfig.MotorOutput.Inverted =
-        Robot.isComp( ) ? InvertedValue.CounterClockwise_Positive : InvertedValue.Clockwise_Positive;
+    inRollerConfig.MotorOutput.Inverted = (inverted) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     inRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     return inRollerConfig;
@@ -65,7 +64,7 @@ public final class CTREConfigs6
    *          gear box ratio
    * @return inRotaryConfig
    */
-  public static TalonFXConfiguration intakeRotaryFXConfig(double min, double max, int ccPort, double gearRatio)
+  public static TalonFXConfiguration intakeRackFXConfig(double gearRatio)
   {
     TalonFXConfiguration inRotaryConfig = new TalonFXConfiguration( );
 
@@ -83,8 +82,8 @@ public final class CTREConfigs6
     inRotaryConfig.CurrentLimits.StatorCurrentLimitEnable = false;
 
     // Feedback settings
-    inRotaryConfig.Feedback.FeedbackRemoteSensorID = ccPort;
-    inRotaryConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    // inRotaryConfig.Feedback.FeedbackRemoteSensorID = ccPort;
+    // inRotaryConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
     inRotaryConfig.Feedback.SensorToMechanismRatio = 1.0;
     inRotaryConfig.Feedback.RotorToSensorRatio = gearRatio;
 
@@ -98,7 +97,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     inRotaryConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
-    inRotaryConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    inRotaryConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     inRotaryConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // Open Loop settings
@@ -119,10 +118,10 @@ public final class CTREConfigs6
     inRotaryConfig.Slot0.kD = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
     // Software limit switches
-    inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations
-    inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    inRotaryConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = max;  // Rotations
-    inRotaryConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations
+    // inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    // inRotaryConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = max;  // Rotations
+    // inRotaryConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
     return inRotaryConfig;
   }
@@ -154,7 +153,7 @@ public final class CTREConfigs6
    * 
    * @return hpRollerConfig
    */
-  public static TalonFXConfiguration hopperRollerFXConfig( )
+  public static TalonFXConfiguration hopperRollerFXConfig(boolean inverted)
   {
     TalonFXConfiguration hpRollerConfig = new TalonFXConfiguration( );
 
@@ -169,8 +168,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     hpRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;  // Percentage
-    hpRollerConfig.MotorOutput.Inverted =
-        Robot.isComp( ) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    hpRollerConfig.MotorOutput.Inverted = (inverted) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     hpRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     // Open Loop settings
@@ -185,7 +183,7 @@ public final class CTREConfigs6
    * 
    * @return kkRollerConfig
    */
-  public static TalonFXConfiguration kickerRollerFXConfig( )
+  public static TalonFXConfiguration kickerRollerFXConfig(boolean inverted)
   {
     TalonFXConfiguration kkRollerConfig = new TalonFXConfiguration( );
 
@@ -200,7 +198,7 @@ public final class CTREConfigs6
 
     // Motor output settings
     kkRollerConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
-    kkRollerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    kkRollerConfig.MotorOutput.Inverted = (inverted) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     kkRollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     return kkRollerConfig;

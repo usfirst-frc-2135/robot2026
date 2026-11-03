@@ -30,7 +30,7 @@ public class StopIntaking extends SequentialCommandGroup
         // @formatter:off
 
         new LogCommand(getName(), "Stop rollers and Hold the intake rotary"),
-        intake.getMoveToAngleCommand(INConsts.INRollerMode.STOP, intake::getProtectedAngle),
+        intake.getMoveToLengthCommand(INConsts.INRollerMode.STOP, intake::getDeployedLength),
 
         new LogCommand(getName(), "Stop Hopper Rollers"), 
         hopper.getRollerModeCommand(HPConsts.HPRollerMode.STOP)

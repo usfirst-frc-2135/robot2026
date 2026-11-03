@@ -33,19 +33,21 @@ public class Kicker extends SubsystemBase
   private static final double   kRollerSpeedExpel   = -0.4;
 
   // Declare device objects
-  private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_KickerRoller);
+  private final TalonFX         m_rollerMotorLw     = new TalonFX(Ports.kCANID_KickerRollerLw);
+  private final TalonFX         m_rollerMotorUp     = new TalonFX(Ports.kCANID_KickerRollerUp);
 
   // Alerts
   private final Alert           m_rollerAlert       =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
-  private final TalonFXSimState m_rollerMotorSim    = m_rollerMotor.getSimState( );
+  private final TalonFXSimState m_rollerMotorLwSim  = m_rollerMotorLw.getSimState( );
 
   // Declare module variables
 
   // Roller variables
-  private boolean               m_rollerValid;        // Health indicator for motor 
+  private boolean               m_rollerLwValid;        // Health indicator for motor 
+  private boolean               m_rollerUpValid;        // Health indicator for motor 
 
   // Network tables publisher objects
 
@@ -59,10 +61,11 @@ public class Kicker extends SubsystemBase
     setSubsystem(kSubsystemName);
 
     // Roller motor init
-    m_rollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotor, kSubsystemName + "Roller",
-        CTREConfigs6.kickerRollerFXConfig( ));
-
-    m_rollerAlert.set(!m_rollerValid);
+    m_rollerLwValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorLw, kSubsystemName + "Roller Lw",
+        CTREConfigs6.kickerRollerFXConfig(true));
+    m_rollerUpValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorUp, kSubsystemName + "Roller Up",
+        CTREConfigs6.kickerRollerFXConfig(true));
+    m_rollerAlert.set(!m_rollerLwValid);
 
     initDashboard( );
     initialize( );
@@ -90,13 +93,13 @@ public class Kicker extends SubsystemBase
     // This method will be called once per scheduler run during simulation
 
     // Set input motor voltage from the motor setting
-    m_rollerMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    m_rollerMotorLwSim.setSupplyVoltage(RobotController.getInputVoltage( ));
 
     // update for 20 msec loop
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
-    m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
+    m_rollerMotorLwSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotorLw.get( ));
+    m_rollerMotorLwSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotorLw.get( ));
 
     // SimBattery estimates loaded battery voltages
 
@@ -137,9 +140,9 @@ public class Kicker extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotorLw, kSubsystemName + "Roller");
 
-    m_rollerMotor.clearStickyFaults( );
+    m_rollerMotorLw.clearStickyFaults( );
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -159,7 +162,8 @@ public class Kicker extends SubsystemBase
 
     if (mode == KKRollerMode.HOLD)
     {
-      DataLogManager.log(String.format("%s: Roller mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_rollerMotor.get( )));
+      DataLogManager
+          .log(String.format("%s: Roller mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_rollerMotorLw.get( )));
     }
     else
     {
@@ -179,7 +183,7 @@ public class Kicker extends SubsystemBase
       }
 
       DataLogManager.log(String.format("%s: Roller mode is now - %s", getSubsystem( ), mode));
-      m_rollerMotor.set(output);
+      m_rollerMotorLw.set(output);
     }
   }
 

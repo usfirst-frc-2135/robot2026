@@ -35,19 +35,21 @@ public class Hopper extends SubsystemBase
   private static final double   kPulseModeDuration  = 0.5;
 
   // Declare device objects
-  private final TalonFX         m_rollerMotor       = new TalonFX(Ports.kCANID_HopperRoller);
+  private final TalonFX         m_rollerMotorL      = new TalonFX(Ports.kCANID_HopperRollerL);
+  private final TalonFX         m_rollerMotorR      = new TalonFX(Ports.kCANID_HopperRollerR);
 
   // Alerts
   private final Alert           m_rollerAlert       =
       new Alert(String.format("%s: Roller motor init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
-  private final TalonFXSimState m_rollerMotorSim    = m_rollerMotor.getSimState( );
+  private final TalonFXSimState m_rollerMotorLSim   = m_rollerMotorL.getSimState( );
   private final Timer           m_pulseTimer        = new Timer( );
   // Declare module variables
 
   // Roller variables
-  private boolean               m_rollerValid;        // Health indicator for motor 
+  private boolean               m_rollerLValid;        // Health indicator for motor 
+  private boolean               m_rollerRValid;        // Health indicator for motor 
   private HPRollerMode          m_rollerMode        = HPRollerMode.STOP;
   private boolean               m_pulseMode         = false;
 
@@ -63,10 +65,11 @@ public class Hopper extends SubsystemBase
     setSubsystem(kSubsystemName);
 
     // Roller motor init
-    m_rollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotor, kSubsystemName + "Roller",
-        CTREConfigs6.hopperRollerFXConfig( ));
-
-    m_rollerAlert.set(!m_rollerValid);
+    m_rollerLValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorL, kSubsystemName + "Roller L",
+        CTREConfigs6.hopperRollerFXConfig(true));
+    m_rollerRValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorR, kSubsystemName + "Roller R",
+        CTREConfigs6.hopperRollerFXConfig(false));
+    m_rollerAlert.set(!m_rollerLValid);
 
     initDashboard( );
     initialize( );
@@ -87,11 +90,11 @@ public class Hopper extends SubsystemBase
     if (m_rollerMode == HPRollerMode.ACQUIRE && m_pulseMode)
     {
       // If timer is less than 0.5 then acquire else do expel to alternate motor direction
-      m_rollerMotor.set((getMantissa(m_pulseTimer.get( )) < kPulseModeDuration) ? kRollerSpeedAcquire : kRollerSpeedExpel);
+      m_rollerMotorL.set((getMantissa(m_pulseTimer.get( )) < kPulseModeDuration) ? kRollerSpeedAcquire : kRollerSpeedExpel);
     }
     if (m_rollerMode == HPRollerMode.ACQUIRE && !m_pulseMode)
     {
-      m_rollerMotor.set(kRollerSpeedAcquire);
+      m_rollerMotorL.set(kRollerSpeedAcquire);
     }
   }
 
@@ -105,13 +108,13 @@ public class Hopper extends SubsystemBase
     // This method will be called once per scheduler run during simulation
 
     // Set input motor voltage from the motor setting
-    m_rollerMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    m_rollerMotorLSim.setSupplyVoltage(RobotController.getInputVoltage( ));
 
     // update for 20 msec loop
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
-    m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
+    m_rollerMotorLSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotorL.get( ));
+    m_rollerMotorLSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotorL.get( ));
 
     // SimBattery estimates loaded battery voltages
 
@@ -152,9 +155,9 @@ public class Hopper extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotorL, kSubsystemName + "Roller");
 
-    m_rollerMotor.clearStickyFaults( );
+    m_rollerMotorL.clearStickyFaults( );
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -174,7 +177,7 @@ public class Hopper extends SubsystemBase
 
     if (mode == HPRollerMode.HOLD)
     {
-      DataLogManager.log(String.format("%s: Roller mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_rollerMotor.get( )));
+      DataLogManager.log(String.format("%s: Roller mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_rollerMotorL.get( )));
     }
     else
     {
@@ -197,7 +200,7 @@ public class Hopper extends SubsystemBase
       }
 
       DataLogManager.log(String.format("%s: Roller mode is now - %s", getSubsystem( ), mode));
-      m_rollerMotor.set(output);
+      m_rollerMotorL.set(output);
     }
     m_rollerMode = mode;
   }
