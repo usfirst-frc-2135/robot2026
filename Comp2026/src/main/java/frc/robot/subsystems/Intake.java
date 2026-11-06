@@ -708,17 +708,17 @@ public class Intake extends SubsystemBase
   public Command getIndexingCommand( )
   {
     return new SequentialCommandGroup( //
-        getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),     //
-        new WaitCommand(0.15),                                            //
-        getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingLow),           //
-        new RepeatCommand(                                                        //
-            new SequentialCommandGroup(                                           //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingMedium),    //
-                new WaitCommand(0.15),                                    //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingHigh), //
-                new WaitCommand(0.15)                                   //
-            // getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)    //
-            )                                                                     //
+        getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),       //
+        new WaitCommand(0.15),                                              //
+        getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingLow),             //
+        new RepeatCommand(                                                          //
+            new SequentialCommandGroup(                                             //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingMedium),  //
+                new WaitCommand(0.15),                                      //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingHigh),    //
+                new WaitCommand(0.15)                                       //
+            // getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)       //
+            )                                                                       //
         )).withName(kSubsystemName + "IndexingCommand");
   }
 }
