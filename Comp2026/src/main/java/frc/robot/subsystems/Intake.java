@@ -152,7 +152,7 @@ public class Intake extends SubsystemBase
   private double                    m_ccDegrees           = 0.0;  // CANcoder angle in degrees
 
   // Manual mode config parameters
-  private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0)).withEnableFOC(false);
+  private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0)).withEnableFOC(true);
   private RotaryMode                m_rotaryMode          = RotaryMode.INIT;    // Manual movement mode with joysticks
 
   // Motion Magic config parameters    // Manual movement mode with joysticks
@@ -206,7 +206,8 @@ public class Intake extends SubsystemBase
     m_CANcoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
 
     // Status signals
-    m_rotaryAngle.setUpdateFrequency(50);
+    m_rotaryAngle.setUpdateFrequency(100);
+    m_ccAngle.setUpdateFrequency(200);
 
     StatusSignal<Current> m_rotarySupplyCur = m_rotaryMotor.getSupplyCurrent( );                      // Default 4Hz (250ms)
     BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur);  // Default 4Hz (250ms)
