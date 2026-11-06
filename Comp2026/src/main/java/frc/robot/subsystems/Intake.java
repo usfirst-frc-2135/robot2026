@@ -92,7 +92,7 @@ public class Intake extends SubsystemBase
   /** Rotary Motion Magic movement parameters */
 
   private static final double       kToleranceDegrees     = 3.0;      // PID tolerance in degrees
-  private static final double       kMMDebounceTime       = 0.060;    // Seconds to debounce a final position check
+  private static final double       kMMDebounceTime       = 0.030;    // Seconds to debounce a final position check
   private static final double       kMMMoveTimeout        = 1.5;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
@@ -101,9 +101,9 @@ public class Intake extends SubsystemBase
   //      Comp     -124.7  -120.7     5.1       6.1
   //      Practice -130.4  -126.4     4.2       5.2
   private static final double       kRotaryAngleStowed    = Robot.isComp( ) ? -124.7 : -126.4; // Four degrees from hardstops
-  private static final double       kRotaryAngleIndexing  = -75.0;
-  private static final double       kRotaryAngleSixty     = -45.0;
-  private static final double       kRotaryAngleThirty    = -30.0;
+  private static final double       kRotaryAngle_75       = -75.0;
+  private static final double       kRotaryAngle_45       = -45.0;
+  private static final double       kRotaryAngle_30       = -30.0;
   private static final double       kRotaryAngleProtected = -15.0;
   private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
@@ -587,21 +587,21 @@ public class Intake extends SubsystemBase
    * 
    * Return intake angle for indexing states
    * 
-   * @return indexing state angle
+   * @return indexing state angles
    */
-  public double getIndexingAngle( )
+  public double getIndexingHigh( )
   {
-    return kRotaryAngleIndexing;
+    return kRotaryAngle_75;
   }
 
-  public double getSixtyAngle( )
+  public double getIndexingMedium( )
   {
-    return kRotaryAngleSixty;
+    return kRotaryAngle_45;
   }
 
-  public double getThirtyAngle( )
+  public double getIndexingLow( )
   {
-    return kRotaryAngleThirty;
+    return kRotaryAngle_30;
   }
 
   /****************************************************************************
@@ -710,12 +710,12 @@ public class Intake extends SubsystemBase
     return new SequentialCommandGroup( //
         getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),     //
         new WaitCommand(0.15),                                            //
-        getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),           //
+        getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingLow),           //
         new RepeatCommand(                                                        //
             new SequentialCommandGroup(                                           //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getSixtyAngle),    //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingMedium),    //
                 new WaitCommand(0.15),                                    //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle), //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingHigh), //
                 new WaitCommand(0.15)                                   //
             // getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)    //
             )                                                                     //
