@@ -175,7 +175,7 @@ public class RobotContainer
   private final HashMap<String, String> autoMap        = new HashMap<>(Map.ofEntries(                 //
       Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START1.toString( ), "Start1_Stop"),
       Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "Start2_Stop"),
-      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "STart3_Stop"),
+      Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "Start3_Stop"),
 
       Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1"),
       Map.entry(AutoChooser.AUTOSCORE1A.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A"),

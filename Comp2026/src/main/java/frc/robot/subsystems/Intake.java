@@ -75,8 +75,8 @@ public class Intake extends SubsystemBase
 
   // Intake rotary constants
   private static final double  kRotaryGearRatio    = 36.0;   // Simulation
-  private static final double  kRotaryLengthMeters = 0.3;    // Simulation
-  private static final double  kRotaryWeightKg     = 4.0;    // Simulation
+  private static final double  kRotaryLengthMeters = 0.239;  // Simulation
+  private static final double  kRotaryWeightKg     = 3.0;    // Simulation
   private static final Voltage kRotaryManualVolts  = Volts.of(3.5); // Motor voltage during manual operation (joystick)
 
   /** Rotary manual move parameters */
@@ -92,7 +92,7 @@ public class Intake extends SubsystemBase
   /** Rotary Motion Magic movement parameters */
 
   private static final double       kToleranceDegrees     = 3.0;      // PID tolerance in degrees
-  private static final double       kMMDebounceTime       = 0.060;    // Seconds to debounce a final position check
+  private static final double       kMMDebounceTime       = 0.030;    // Seconds to debounce a final position check
   private static final double       kMMMoveTimeout        = 1.5;      // Seconds allowed for a Motion Magic movement
 
   // Rotary angles - Motion Magic move parameters    
@@ -101,9 +101,9 @@ public class Intake extends SubsystemBase
   //      Comp     -124.7  -120.7     5.1       6.1
   //      Practice -130.4  -126.4     4.2       5.2
   private static final double       kRotaryAngleStowed    = Robot.isComp( ) ? -124.7 : -126.4; // Four degrees from hardstops
-  private static final double       kRotaryAngleIndexing  = -75.0;
-  private static final double       kRotaryAngleSixty     = -45.0;
-  private static final double       kRotaryAngleThirty    = -30.0;
+  private static final double       kRotaryAngle_75       = -75.0;
+  private static final double       kRotaryAngle_45       = -45.0;
+  private static final double       kRotaryAngle_30       = -30.0;
   private static final double       kRotaryAngleProtected = -15.0;
   private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
 
@@ -152,7 +152,7 @@ public class Intake extends SubsystemBase
   private double                    m_ccDegrees           = 0.0;  // CANcoder angle in degrees
 
   // Manual mode config parameters
-  private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0)).withEnableFOC(false);
+  private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0)).withEnableFOC(true);
   private RotaryMode                m_rotaryMode          = RotaryMode.INIT;    // Manual movement mode with joysticks
 
   // Motion Magic config parameters    // Manual movement mode with joysticks
@@ -206,7 +206,8 @@ public class Intake extends SubsystemBase
     m_CANcoderSim.Orientation = ChassisReference.CounterClockwise_Positive;
 
     // Status signals
-    m_rotaryAngle.setUpdateFrequency(50);
+    m_rotaryAngle.setUpdateFrequency(100);
+    m_ccAngle.setUpdateFrequency(200);
 
     StatusSignal<Current> m_rotarySupplyCur = m_rotaryMotor.getSupplyCurrent( );                      // Default 4Hz (250ms)
     BaseStatusSignal.setUpdateFrequencyForAll(10, m_rotarySupplyCur);  // Default 4Hz (250ms)
@@ -586,21 +587,21 @@ public class Intake extends SubsystemBase
    * 
    * Return intake angle for indexing states
    * 
-   * @return indexing state angle
+   * @return indexing state angles
    */
-  public double getIndexingAngle( )
+  public double getIndexingHigh( )
   {
-    return kRotaryAngleIndexing;
+    return kRotaryAngle_75;
   }
 
-  public double getSixtyAngle( )
+  public double getIndexingMedium( )
   {
-    return kRotaryAngleSixty;
+    return kRotaryAngle_45;
   }
 
-  public double getThirtyAngle( )
+  public double getIndexingLow( )
   {
-    return kRotaryAngleThirty;
+    return kRotaryAngle_30;
   }
 
   /****************************************************************************
@@ -707,17 +708,17 @@ public class Intake extends SubsystemBase
   public Command getIndexingCommand( )
   {
     return new SequentialCommandGroup( //
-        getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),     //
-        new WaitCommand(0.15),                                            //
-        getMoveToAngleCommand(INRollerMode.HOLD, this::getThirtyAngle),           //
-        new RepeatCommand(                                                        //
-            new SequentialCommandGroup(                                           //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getSixtyAngle),    //
-                new WaitCommand(0.15),                                    //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingAngle), //
-                new WaitCommand(0.15)                                   //
-            // getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)    //
-            )                                                                     //
+        getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),       //
+        new WaitCommand(0.15),                                              //
+        getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingLow),             //
+        new RepeatCommand(                                                          //
+            new SequentialCommandGroup(                                             //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingMedium),  //
+                new WaitCommand(0.15),                                      //
+                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingHigh),    //
+                new WaitCommand(0.15)                                       //
+            // getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)       //
+            )                                                                       //
         )).withName(kSubsystemName + "IndexingCommand");
   }
 }

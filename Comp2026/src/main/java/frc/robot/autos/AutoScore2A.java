@@ -50,7 +50,7 @@ public class AutoScore2A extends SequentialCommandGroup
               new WaitCommand(0.15),
               drivetrain.getPathCommand(ppAuto.get(0))
             ),
-            new AcquireFuel(intake,hopper)
+            new AcquireFuel(intake, hopper)
           ),
         new LogCommand(getName(),"Drive return path while stop intaking and prime the launcher"),
         new ParallelCommandGroup(
