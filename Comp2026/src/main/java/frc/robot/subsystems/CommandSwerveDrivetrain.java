@@ -432,7 +432,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     /* Swerve constants */
     private static final double            kAimingKp            = 0.012;
     private static final double            kDrivingKp           = 0.6;
-    private static final double            kOptimalDistance     = Units.inchesToMeters(138.0);
+    private static final double            kOptimalDistance     = Units.inchesToMeters(141.0);
 
     /* Get the network tables instance */
     private final NetworkTableInstance     inst                 = NetworkTableInstance.getDefault( );
