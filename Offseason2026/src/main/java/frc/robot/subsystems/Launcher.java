@@ -7,9 +7,11 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.MathUtil;
@@ -27,7 +29,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -60,7 +61,8 @@ public class Launcher extends SubsystemBase
   private static final double kHoodFullDown      = -1.0;      // Hood actuator servo all the way down
   private static final double kHoodFullUp        = 1.0;       // Hood actuator servo all the way up
 
-  private static final double kLauncherGearRatio = (18.0 / 24.0);
+  private static final double kLauncherGearRatio = (24.0 / 24.0);
+  private static final double kHoodGearRatio     = (60.0 / 24.0) * (36.0 / 18.);
 
   /** Launcher (RPM) modes */
   private enum LauncherMode
@@ -75,21 +77,24 @@ public class Launcher extends SubsystemBase
   private final TalonFX                       m_leftMotorLw          = new TalonFX(Ports.kCANID_LauncherLeftLw);
   private final TalonFX                       m_leftMotorUp          = new TalonFX(Ports.kCANID_LauncherLeftUp);
   private final TalonFX                       m_rightMotor           = new TalonFX(Ports.kCANID_LauncherRight);
-  private final TalonFX                       m_LauncherHood         = new TalonFX(Ports.kCANID_LauncherHood);
-  // private final Servo                         m_hoodLeft             = new Servo(0);
-  // private final Servo                         m_hoodRight            = new Servo(1);
+  private final TalonFX                       m_hoodMotor            = new TalonFX(Ports.kCANID_LauncherHood);
 
   // Alerts
-  private final Alert                         m_leftAlert            =
-      new Alert(String.format("%s: Left motorLw init failed!", getSubsystem( )), AlertType.kError);
+  private final Alert                         m_leftLwAlert          =
+      new Alert(String.format("%s: Left motor Lower init failed!", getSubsystem( )), AlertType.kError);
+  private final Alert                         m_leftUpAlert          =
+      new Alert(String.format("%s: Left motor Upper init failed!", getSubsystem( )), AlertType.kError);
   private final Alert                         m_rightAlert           =
       new Alert(String.format("%s: Right motor init failed!", getSubsystem( )), AlertType.kError);
+  private final Alert                         m_hoodAlert            =
+      new Alert(String.format("%s: Hood motor init failed!", getSubsystem( )), AlertType.kError);
 
   // Simulation objects
   private final TalonFXSimState               m_leftMotorLwSim       = new TalonFXSimState(m_leftMotorLw);
-  private final TalonFXSimState               m_leftMotorUpSim       = new TalonFXSimState(m_leftMotorUp);
+  // private final TalonFXSimState               m_leftMotorUpSim       = new TalonFXSimState(m_leftMotorUp);
   private final TalonFXSimState               m_rightMotorSim        = new TalonFXSimState(m_rightMotor);
-  private final TalonFXSimState               m_LauncherHoodSim        = new TalonFXSimState(m_LauncherHood);
+  // private final TalonFXSimState               m_hoodMotorSim         = new TalonFXSimState(m_hoodMotor);
+
   private final FlywheelSim                   m_leftFlywheelSim      = new FlywheelSim(
       LinearSystemId.createFlywheelSystem(DCMotor.getKrakenX60Foc(1), kMOI, kLauncherGearRatio), DCMotor.getKrakenX60Foc(1), 0.0);
   private final FlywheelSim                   m_rightFlywheelSim     = new FlywheelSim(
@@ -103,7 +108,7 @@ public class Launcher extends SubsystemBase
   private boolean                             m_launcherLLwValid;
   private boolean                             m_launcherLUpValid;
   private boolean                             m_launcherRValid;
-  private boolean                             m_launcherHoodValid;
+  private boolean                             m_hoodMotorValid;
   private boolean                             m_isAtRequestedRPM     = false; // Indicates launcher RPM is close to requested
   private boolean                             m_isAtRequestedRPMPrev = false;
 
@@ -132,20 +137,25 @@ public class Launcher extends SubsystemBase
     setName("Launcher");
     setSubsystem("Launcher");
 
-    m_launcherLLwValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotorLw, kSubsystemName + "Left Lw",
+    m_launcherLLwValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotorLw, kSubsystemName + "Left_Lw",
         CTREConfigs6.launcherFXConfig(true));
-    m_launcherLUpValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotorUp, kSubsystemName + "Left Up",
+    m_launcherLUpValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotorUp, kSubsystemName + "Left_Up",
         CTREConfigs6.launcherFXConfig(true));
     m_launcherRValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right",
         CTREConfigs6.launcherFXConfig(false));
-    //m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
+
+    m_leftMotorUp.setControl(new Follower(m_leftMotorLw.getDeviceID( ), MotorAlignmentValue.Aligned));
+    m_rightMotor.setControl(new Follower(m_leftMotorLw.getDeviceID( ), MotorAlignmentValue.Opposed));
+
     m_launcherLLwValid = m_launcherLLwValid && m_launcherLUpValid && m_launcherRValid;
 
-    m_launcherHoodValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_LauncherHood, kSubsystemName + "Right",
-        CTREConfigs6.launcherFXConfig(true));
+    m_hoodMotorValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_hoodMotor, kSubsystemName + "Hood",
+        CTREConfigs6.hoodFXConfig(kHoodGearRatio));
 
-    m_leftAlert.set(!m_launcherLLwValid && !m_launcherLUpValid);
+    m_leftLwAlert.set(!m_launcherLLwValid);
+    m_leftUpAlert.set(!m_launcherLUpValid);
     m_rightAlert.set(!m_launcherRValid);
+    m_hoodAlert.set(!m_hoodMotorValid);
 
     // Initialize status signal objects
     m_leftVelocity = m_leftMotorLw.getRotorVelocity( );
@@ -155,9 +165,6 @@ public class Launcher extends SubsystemBase
 
     StatusSignal<Current> m_leftSupplyCur = m_leftMotorLw.getSupplyCurrent( ); // Default 4Hz (250ms)
     StatusSignal<Current> m_rightSupplyCur = m_rightMotor.getSupplyCurrent( ); // Default 4Hz (250ms)
-
-    // m_hoodLeft.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
-    // m_hoodRight.setBoundsMicroseconds(2000, 1800, 1500, 1200, 1000);
 
     DataLogManager
         .log(String.format("%s: Update (Hz) leftVelocity: %.1f rightVelocity: %.1f leftSupplyCur: %.1f rightSupplyCur: %.1f",
@@ -270,10 +277,15 @@ public class Launcher extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotorLw, "LauncherLeft");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotorLw, "LauncherLeftLw");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotorUp, "LauncherLeftUp");
     PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rightMotor, "LauncherRight");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_hoodMotor, "LauncherHood");
+
     m_leftMotorLw.clearStickyFaults( );
+    m_leftMotorUp.clearStickyFaults( );
     m_rightMotor.clearStickyFaults( );
+    m_hoodMotor.clearStickyFaults( );
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -337,7 +349,7 @@ public class Launcher extends SubsystemBase
   private void setLauncherVelocity(double rps)
   {
     m_leftMotorLw.setControl(m_requestVelocity.withVelocity(rps));
-    m_rightMotor.setControl(m_requestVelocity.withVelocity(rps));
+    // m_rightMotor.setControl(m_requestVelocity.withVelocity(rps));
   }
 
   /****************************************************************************
@@ -347,7 +359,7 @@ public class Launcher extends SubsystemBase
   private void setLauncherStopped( )
   {
     m_leftMotorLw.setControl(m_requestVolts.withOutput(0.0));
-    m_rightMotor.setControl(m_requestVolts.withOutput(0.0));
+    // m_rightMotor.setControl(m_requestVolts.withOutput(0.0));
   }
 
   /****************************************************************************
@@ -356,9 +368,7 @@ public class Launcher extends SubsystemBase
    */
   private void setHoodAngle(double position)
   {
-    // Linear actuator uses servo speed method for position control
-    // m_hoodLeft.setSpeed(position);
-    // m_hoodRight.setSpeed(position);
+
   }
 
   ////////////////////////////////////////////////////////////////////////////

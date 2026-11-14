@@ -3,18 +3,13 @@
 
 package frc.robot.lib.phoenix;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.signals.UpdateModeValue;
-
-import frc.robot.Robot;
 
 /****************************************************************************
  * 
@@ -82,18 +77,18 @@ public final class CTREConfigs6
     inRotaryConfig.CurrentLimits.StatorCurrentLimitEnable = false;
 
     // Feedback settings
-    // inRotaryConfig.Feedback.FeedbackRemoteSensorID = ccPort;
-    // inRotaryConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    inRotaryConfig.Feedback.SensorToMechanismRatio = 1.0;
-    inRotaryConfig.Feedback.RotorToSensorRatio = gearRatio;
+    // inRotaryConfig.Feedback.FeedbackRemoteSensorID
+    // inRotaryConfig.Feedback.FeedbackSensorSource
+    inRotaryConfig.Feedback.SensorToMechanismRatio = gearRatio;
+    inRotaryConfig.Feedback.RotorToSensorRatio = 1.0;
 
     // Hardware limit switches - NONE
     // inRotaryConfig.HardwareLimitSwitch.*
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
-    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 27.0 / gearRatio;  // Rotations / second
-    inRotaryConfig.MotionMagic.MotionMagicAcceleration = 80.0 / gearRatio;    // Rotations / second ^ 2
-    inRotaryConfig.MotionMagic.MotionMagicJerk = 1600.0 / gearRatio;          // Rotations / second ^ 3
+    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 25.0;      // Rotations / second
+    inRotaryConfig.MotionMagic.MotionMagicAcceleration = 100.0;       // Rotations / second ^ 2
+    inRotaryConfig.MotionMagic.MotionMagicJerk = 1000.0;              // Rotations / second ^ 3
 
     // Motor output settings
     inRotaryConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
@@ -109,40 +104,19 @@ public final class CTREConfigs6
     inRotaryConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine; // Feedforward: Mechanism is an arm and needs cosine
     inRotaryConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
     inRotaryConfig.Slot0.kS = 0.07;                                 // Feedforward: Voltage or duty cycle to overcome static friction
-    inRotaryConfig.Slot0.kG = -0.45;                                // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
+    inRotaryConfig.Slot0.kG = 0.0;                                  // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
     inRotaryConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
-    inRotaryConfig.Slot0.kP = 1.5 * gearRatio;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
-    inRotaryConfig.Slot0.kI = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per accumulated unit
-    inRotaryConfig.Slot0.kD = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+    inRotaryConfig.Slot0.kP = 2.0;                                  // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    inRotaryConfig.Slot0.kI = 0.0;                                  // Feedback: Voltage or duty cycle per accumulated unit
+    inRotaryConfig.Slot0.kD = 0.0;                                  // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
     // Software limit switches
     // inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations
     // inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     // inRotaryConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = max;  // Rotations
     // inRotaryConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-
-    return inRotaryConfig;
-  }
-
-  /****************************************************************************
-   * 
-   * Intake rotary CANcoder
-   * 
-   * @return inRotaryConfig
-   */
-  public static CANcoderConfiguration intakeRotaryCCConfig( )
-  {
-    CANcoderConfiguration inRotaryConfig = new CANcoderConfiguration( );
-
-    inRotaryConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    inRotaryConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-
-    if (Robot.isReal( ))
-      inRotaryConfig.MagnetSensor.MagnetOffset = (Robot.isComp( )) ? 0.35961914 : 0.1104;
-    else
-      inRotaryConfig.MagnetSensor.MagnetOffset = -0.25;                   // Simulated CANcoder default in rotations
 
     return inRotaryConfig;
   }
@@ -257,67 +231,72 @@ public final class CTREConfigs6
 
   /****************************************************************************
    * 
-   * Climber motors (2 - one for left and right) - Kraken X60 (2)
+   * Launcher hood motor - Kraken X44
    * 
-   * @param inverted
-   *          motor inversion request
-   * @param min
-   *          minimum deployment distance
-   * @param max
-   *          maximum deployement distance (must be greater than min)
+   * @param gearRatio
+   *          gear box ratio
+   * @return launcherHoodConfig
    */
-  public static TalonFXConfiguration climberFXConfig(boolean inverted, double min, double max)
+  public static TalonFXConfiguration hoodFXConfig(double gearRatio)
   {
-    TalonFXConfiguration climberConfig = new TalonFXConfiguration( );
+    TalonFXConfiguration launcherHoodConfig = new TalonFXConfiguration( );
 
     // Closed Loop settings
-    // exConfig.ClosedLoopGeneral.*
-    // exConfig.ClosedLoopRamps.*
+    // launcherHoodConfig.ClosedLoopGeneral.*
+    // launcherHoodConfig.ClosedLoopRamps.*                           // Seconds to ramp
 
     // Current limit settings
-    climberConfig.CurrentLimits.SupplyCurrentLimit = 40.0;        // Amps
-    climberConfig.CurrentLimits.SupplyCurrentLowerLimit = 40.0;   // Amps
-    climberConfig.CurrentLimits.SupplyCurrentLowerTime = 0.001;   // Seconds
-    climberConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    launcherHoodConfig.CurrentLimits.SupplyCurrentLimit = 50.0;       // Amps
+    launcherHoodConfig.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  // Amps
+    launcherHoodConfig.CurrentLimits.SupplyCurrentLowerTime = 0.200;  // Seconds
+    launcherHoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    climberConfig.CurrentLimits.StatorCurrentLimit = 400.0;       // Amps
-    climberConfig.CurrentLimits.StatorCurrentLimitEnable = false;
+    launcherHoodConfig.CurrentLimits.StatorCurrentLimit = 400.0;      // Amps
+    launcherHoodConfig.CurrentLimits.StatorCurrentLimitEnable = false;
 
     // Feedback settings
-    // climberConfig.Feedback.*
+    // launcherHoodConfig.Feedback.FeedbackRemoteSensorID
+    // launcherHoodConfig.Feedback.FeedbackSensorSource
+    launcherHoodConfig.Feedback.SensorToMechanismRatio = gearRatio;
+    launcherHoodConfig.Feedback.RotorToSensorRatio = 1.0;
 
     // Hardware limit switches - NONE
-    // climberConfig.HardwareLimitSwitch.*
+    // launcherHoodConfig.HardwareLimitSwitch.*
 
-    // Motion Magic settings
-    climberConfig.MotionMagic.MotionMagicCruiseVelocity = 79.75;  // Rotations / second
-    climberConfig.MotionMagic.MotionMagicAcceleration = 159.5;    // Rotations / second ^ 2
-    climberConfig.MotionMagic.MotionMagicJerk = 3544;             // Rotations / second ^ 3
+    // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
+    launcherHoodConfig.MotionMagic.MotionMagicCruiseVelocity = 25.0;      // Rotations / second
+    launcherHoodConfig.MotionMagic.MotionMagicAcceleration = 100.0;       // Rotations / second ^ 2
+    launcherHoodConfig.MotionMagic.MotionMagicJerk = 1000.0;              // Rotations / second ^ 3
 
     // Motor output settings
-    climberConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;   // Percentage
-    climberConfig.MotorOutput.Inverted = (inverted) ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-    climberConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    launcherHoodConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
+    launcherHoodConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    launcherHoodConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // Open Loop settings
-    // climberConfig.OpenLoopRamps.*                              // Seconds to ramp
+    // launcherHoodConfig.OpenLoopRamps.*                               // Seconds to ramp
 
-    // Slot settings
-    climberConfig.Slot0.kS = 0.0;                                 // Feedforward: Voltage or duty cylce to overcome static friction
-    climberConfig.Slot0.kG = 0.0;                                 // Feedforward: Voltage or duty cylce to overcome gravity (arbitrary feedforward)
-    climberConfig.Slot0.kV = 0.1129;                              // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
+    // Slot settings - remote/fused CANcoder affects all feedback constants by the gearRatio
+    // kG = (0.40 + 0.25) / 2
+    // kS = (0.40 - 0.25) / 2
+    launcherHoodConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine; // Feedforward: Mechanism is an arm and needs cosine
+    launcherHoodConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+    launcherHoodConfig.Slot0.kS = 0.07;                                 // Feedforward: Voltage or duty cycle to overcome static friction
+    launcherHoodConfig.Slot0.kG = 0.0;                                  // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
+    launcherHoodConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
-    climberConfig.Slot0.kP = 9.60;                                // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
-    climberConfig.Slot0.kI = 0.0;                                 // Feedback: Voltage or duty cycle per accumulated unit
-    climberConfig.Slot0.kD = 0.0;                                 // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+    // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
+    launcherHoodConfig.Slot0.kP = 2.0;                                  // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    launcherHoodConfig.Slot0.kI = 0.0;                                  // Feedback: Voltage or duty cycle per accumulated unit
+    launcherHoodConfig.Slot0.kD = 0.0;                                  // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
     // Software limit switches
-    // climberConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;   // Rotations
-    // climberConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    // climberConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = max;   // Rotations
-    // climberConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // launcherHoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations
+    // launcherHoodConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    // launcherHoodConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = max;  // Rotations
+    // launcherHoodConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
-    return climberConfig;
+    return launcherHoodConfig;
   }
 
   /****************************************************************************

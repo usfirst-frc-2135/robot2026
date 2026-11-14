@@ -103,7 +103,6 @@ public final class Constants
     public static final int    kCANID_IntakeRollerL  = 15; // Kraken X60 (Intake roller left)
     public static final int    kCANID_IntakeRollerR  = 16; // Kraken X60 (Intake roller right)
     public static final int    kCANID_IntakeRack     = 17; // Kraken X44 (Intake rack)
-    public static final int    kCANID_IntakeCANcoder = 18; // CANcoder (intake) TODO: Change to 18 when we add a second CANcoder for the intake rack
 
     public static final int    kCANID_HopperRollerL  = 20; // Kraken X60 (Hopper roller left)
     public static final int    kCANID_HopperRollerR  = 21; // Kraken X60 (Hopper roller right)

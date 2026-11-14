@@ -5,7 +5,9 @@
 //
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.wpilibj.Alert;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -65,11 +68,17 @@ public class Hopper extends SubsystemBase
     setSubsystem(kSubsystemName);
 
     // Roller motor init
-    m_rollerLValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorL, kSubsystemName + "Roller L",
+    m_rollerLValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorL, kSubsystemName + "Roller_L",
         CTREConfigs6.hopperRollerFXConfig(true));
-    m_rollerRValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorR, kSubsystemName + "Roller R",
+    m_rollerRValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorR, kSubsystemName + "Roller_R",
         CTREConfigs6.hopperRollerFXConfig(false));
-    m_rollerAlert.set(!m_rollerLValid);
+
+    if (m_rollerLValid && m_rollerRValid)
+    {
+      m_rollerMotorR.setControl(new Follower(m_rollerMotorL.getDeviceID( ), MotorAlignmentValue.Opposed));
+    }
+
+    m_rollerAlert.set(!m_rollerLValid || !m_rollerRValid);
 
     initDashboard( );
     initialize( );
@@ -133,9 +142,9 @@ public class Hopper extends SubsystemBase
     // Initialize network tables publishers
 
     // Add commands
-    // SmartDashboard.putData("HopperStop", getRollerModeCommand(HPRollerMode.STOP));
-    // SmartDashboard.putData("HopperAcquire", getRollerModeCommand(HPRollerMode.ACQUIRE));
-    // SmartDashboard.putData("HopperExpel", getRollerModeCommand(HPRollerMode.EXPEL));
+    SmartDashboard.putData("HopperStop", getRollerModeCommand(HPRollerMode.STOP));
+    SmartDashboard.putData("HopperAcquire", getRollerModeCommand(HPRollerMode.ACQUIRE));
+    SmartDashboard.putData("HopperExpel", getRollerModeCommand(HPRollerMode.EXPEL));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -155,9 +164,11 @@ public class Hopper extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotorL, kSubsystemName + "Roller");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotorL, kSubsystemName + "Roller_L");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotorR, kSubsystemName + "Roller_R");
 
     m_rollerMotorL.clearStickyFaults( );
+    m_rollerMotorR.clearStickyFaults( );
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -200,7 +211,8 @@ public class Hopper extends SubsystemBase
       }
 
       DataLogManager.log(String.format("%s: Roller mode is now - %s", getSubsystem( ), mode));
-      m_rollerMotorL.set(output);
+      if (m_rollerLValid)
+        m_rollerMotorL.set(output);
     }
     m_rollerMode = mode;
   }

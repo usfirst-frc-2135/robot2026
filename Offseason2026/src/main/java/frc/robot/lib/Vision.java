@@ -319,7 +319,6 @@ public class Vision
   /****************************************************************************
    * 
    * * Find Goal Pose for a given current pose
-   * TODO: use AprilTag ID until we have real poses
    * 
    * 1) Get the closest AprilTag
    * 5) Return the flipped goal pose based on red or blue alliance
