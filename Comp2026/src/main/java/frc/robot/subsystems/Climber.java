@@ -129,7 +129,7 @@ public class Climber extends SubsystemBase
 
   // Manual mode config parameters
   private VoltageOut                  m_requestVolts      = new VoltageOut(Volts.of(0));
-  private ClimberMode                 m_mode              = ClimberMode.INIT;       // Manual movement mode with joysticks
+  private ClimberMode                 m_mode              = ClimberMode.STOP;       // Manual movement mode with joysticks
 
   // Motion Magic mode config parameters
   private MotionMagicVoltage          m_mmRequestVolts    = new MotionMagicVoltage(0).withSlot(0).withEnableFOC(false);
@@ -206,6 +206,11 @@ public class Climber extends SubsystemBase
       if (m_curLength < 0)
         setClimberPosition(0.0);
     }
+    else
+    {
+      m_calibrated = false;
+      m_mode = ClimberMode.STOP;
+    }
 
     // Update network table publishers
     m_calibratedPub.set((m_calibrated));
@@ -221,6 +226,9 @@ public class Climber extends SubsystemBase
   public void simulationPeriodic( )
   {
     // This method will be called once per scheduler run during simulation
+
+    if (!m_climberValid)
+      return;
 
     // Set input motor voltage from the motor setting
     m_climberSim.setSupplyVoltage(RobotController.getInputVoltage( ));
@@ -293,7 +301,7 @@ public class Climber extends SubsystemBase
     }
     else
     {
-      DataLogManager.log(String.format("%s: m_climberValid is FALSE!", getSubsystem( )));
+      DataLogManager.log(String.format("%s: printFaults() skipped; climber is invalid", getSubsystem( )));
     }
   }
 
@@ -484,6 +492,14 @@ public class Climber extends SubsystemBase
    */
   private boolean calibrateIsFinished( )
   {
+    if (!m_climberValid)
+    {
+      DataLogManager.log(String.format("%s: Calibration aborted; climber is invalid", getSubsystem( )));
+      m_calibrated = false;
+      setVoltage(Volts.of(0.0));
+      return true;
+    }
+
     boolean calibrated = m_stalled.calculate(m_supplyCur.getValue( ).in(Amps) > kCalibrateStallAmps);
 
     if (calibrated && !m_calibrated)

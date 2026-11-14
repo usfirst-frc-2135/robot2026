@@ -228,12 +228,12 @@ public class RobotContainer
    */
   private void updateAutoChooserCallback(AutoChooser option)
   {
-    Robot.reloadAutonomousCommand(option.toString( ));
+    Robot.reloadAutonomousCommand((option != null) ? option.toString( ) : "AutoChooser:null");
   }
 
   private void updateStartChooserCallback(StartPose option)
   {
-    Robot.reloadAutonomousCommand(option.toString( ));
+    Robot.reloadAutonomousCommand((option != null) ? option.toString( ) : "StartChooser:null");
   }
 
   /****************************************************************************
@@ -268,7 +268,7 @@ public class RobotContainer
     // Add a button that allows running autonomous commands in teleop
     SmartDashboard.putData("AutoChooserRun", new InstantCommand(( ) ->
     {
-      if (m_autoCommand.isScheduled( ))
+      if (m_autoCommand != null && m_autoCommand.isScheduled( ))
       {
         m_autoCommand.cancel( );
       }
@@ -448,6 +448,12 @@ public class RobotContainer
    */
   void resetOdometryToInitialPose(PathPlannerPath initialPath)
   {
+    if (initialPath == null)
+    {
+      DataLogManager.log("getAuto: ERROR! - initial path is null, cannot reset odometry");
+      return;
+    }
+
     if (DriverStation.getAlliance( ).orElse(Alliance.Blue) == Alliance.Red)
     {
       initialPath = initialPath.flipPath( );
@@ -457,8 +463,15 @@ public class RobotContainer
     try
     {
       Optional<Pose2d> startPose = initialPath.getStartingHolonomicPose( );
-      m_drivetrain.resetPoseAndLimelight(startPose.get( ));
-      DataLogManager.log(String.format("getAuto: starting pose %s", startPose));
+      if (startPose.isPresent( ))
+      {
+        m_drivetrain.resetPoseAndLimelight(startPose.get( ));
+        DataLogManager.log(String.format("getAuto: starting pose %s", startPose));
+      }
+      else
+      {
+        DataLogManager.log("getAuto: ERROR! - starting pose is missing");
+      }
     }
     catch (Exception nullException)
     {
@@ -477,6 +490,19 @@ public class RobotContainer
   {
     AutoChooser autoOption = m_autoChooser.getSelected( );
     StartPose startOption = m_startChooser.getSelected( );
+
+    if (autoOption == null)
+    {
+      autoOption = AutoChooser.AUTOSTOP;
+      DataLogManager.log("getAuto: WARNING - AutoMode selection was null, defaulting to AUTOSTOP");
+    }
+
+    if (startOption == null)
+    {
+      startOption = StartPose.START1;
+      DataLogManager.log("getAuto: WARNING - AutoStart selection was null, defaulting to START1");
+    }
+
     double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
 
     // Cancel any autos that were already running
@@ -494,6 +520,13 @@ public class RobotContainer
 
     String autoKey = autoOption.toString( ) + startOption.toString( );
     String autoName = autoMap.get(autoKey);
+
+    if (autoName == null)
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - no auto mapped for key: %s", autoKey));
+      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoMapMissing");
+    }
+
     DataLogManager.log(String.format("========================================================================"));
     DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
     DataLogManager.log(String.format("========================================================================"));

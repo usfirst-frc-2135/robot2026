@@ -184,6 +184,12 @@ public class Launcher extends SubsystemBase
         m_isAtRequestedRPMPrev = m_isAtRequestedRPM;
       }
     }
+    else
+    {
+      m_isAtRequestedRPM = false;
+      m_isAtRequestedRPMPrev = false;
+      m_atRequestedRPMPub.set(false);
+    }
   }
 
   /****************************************************************************
@@ -258,6 +264,12 @@ public class Launcher extends SubsystemBase
    */
   public void printFaults( )
   {
+    if (!m_launcherValid)
+    {
+      DataLogManager.log(String.format("%s: printFaults() skipped; launcher is invalid", getSubsystem( )));
+      return;
+    }
+
     PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotor, "LauncherLeft");
     PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rightMotor, "LauncherRight");
     m_leftMotor.clearStickyFaults( );
@@ -324,6 +336,9 @@ public class Launcher extends SubsystemBase
    */
   private void setLauncherVelocity(double rps)
   {
+    if (!m_launcherValid)
+      return;
+
     m_leftMotor.setControl(m_requestVelocity.withVelocity(rps));
     m_rightMotor.setControl(m_requestVelocity.withVelocity(rps));
   }
@@ -334,6 +349,9 @@ public class Launcher extends SubsystemBase
    */
   private void setLauncherStopped( )
   {
+    if (!m_launcherValid)
+      return;
+
     m_leftMotor.setControl(m_requestVolts.withOutput(0.0));
     m_rightMotor.setControl(m_requestVolts.withOutput(0.0));
   }

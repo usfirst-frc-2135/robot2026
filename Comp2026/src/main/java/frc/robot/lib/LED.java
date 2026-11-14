@@ -213,12 +213,24 @@ public class LED
    */
   private void updateColorChooserCallback(COLOR option)
   {
-    setLEDs(option, m_animationChooser.getSelected( ), kFrameRate);
+    COLOR newColor = (option != null) ? option : COLOR.OFF;
+    ANIMATION animation = m_animationChooser.getSelected( );
+    if (animation == null)
+    {
+      animation = ANIMATION.SOLID;
+    }
+    setLEDs(newColor, animation, kFrameRate);
   }
 
   private void updateAnimationChooserCallback(ANIMATION option)
   {
-    setLEDs(m_colorChooser.getSelected( ), option, kFrameRate);
+    COLOR color = m_colorChooser.getSelected( );
+    if (color == null)
+    {
+      color = COLOR.OFF;
+    }
+    ANIMATION newAnimation = (option != null) ? option : ANIMATION.SOLID;
+    setLEDs(color, newAnimation, kFrameRate);
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -239,8 +251,15 @@ public class LED
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).candlePrintFaults(m_candle, "CANdle");
-    m_candle.clearStickyFaults( );
+    if (m_candleValid)
+    {
+      PhoenixUtil6.getInstance( ).candlePrintFaults(m_candle, "CANdle");
+      m_candle.clearStickyFaults( );
+    }
+    else
+    {
+      DataLogManager.log(String.format("%s: CANdle invalid, skipping fault dump", getName( )));
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////

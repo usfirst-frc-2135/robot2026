@@ -323,13 +323,23 @@ public class Intake extends SubsystemBase
    */
   public void printFaults( )
   {
+    if (m_rollerValid)
+  {
     PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rotaryMotor, kSubsystemName + "Rotary");
-    PhoenixUtil6.getInstance( ).canCoderPrintFaults(m_CANcoder, kSubsystemName + "CANcoder");
-
     m_rollerMotor.clearStickyFaults( );
+    }
+
+    if (m_rotaryValid)
+    {
+      PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rotaryMotor, kSubsystemName + "Rotary");
     m_rotaryMotor.clearStickyFaults( );
+    }
+
+    if (m_canCoderValid)
+    {
+      PhoenixUtil6.getInstance( ).canCoderPrintFaults(m_CANcoder, kSubsystemName + "CANcoder");
     m_CANcoder.clearStickyFaults( );
+  }
   }
 
   private final static Voltage kManualKG = Volts.of(-0.45);
