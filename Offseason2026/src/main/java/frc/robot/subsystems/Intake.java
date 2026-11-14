@@ -1,8 +1,8 @@
 //
 // Intake Subystem - takes in Notes and delivers them to the other subsystems
 //
-// The intake is composed of two motorized mechanisms: Rack joint and a roller roller.
-// The Rack joint uses an external CANcoder for measuring rotation.
+// The intake is composed of two motorized mechanisms: Rack and pinion and a roller roller.
+// The Rack and pinion uses an the internal TalonFX encoder for measuring rotation.
 //
 package frc.robot.subsystems;
 
@@ -13,9 +13,11 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -57,9 +59,8 @@ public class Intake extends SubsystemBase
 {
   // Constants
   private static final String  kSubsystemName      = "Intake";
-  private static final double  kRackGearRatio      = (26 / 8) * (28 / 8) * (20 / 20);    // Gear reduction
-  private static final double  kGearDiameterInches = 1.0;   // 20T Gear diameter in inches
-  private static final double  kRolloutRatio       = kGearDiameterInches * Math.PI / kRackGearRatio; // inches per shaft rotation
+  private static final double  kRackGearRatio      = (40.0 / 8.0) * (50.0 / 22.0) * (18.0 / 18.0);    // Gear reduction
+  private static final double  kGearDiameterInches = 1.0;                                             // 10T 10DP Gear diameter in inches
 
   // Intake roller constants
   private static final double  kRollerSpeedAcquire = 0.9;    // Motor direction for positive input
@@ -85,7 +86,6 @@ public class Intake extends SubsystemBase
   private static final double       kMMMoveTimeout      = 1.5;      // Seconds allowed for a Motion Magic movement
 
   // Rack angles - Motion Magic move parameters    
-  //    Measured hardstops and pre-defined positions (0 inches is retracted into robot):
   private static final double       kRackLengthStowed   = 0.0;
   private static final double       kRackLengthDeployed = 12.0;       // At hardstops
 
@@ -107,7 +107,6 @@ public class Intake extends SubsystemBase
 
   // Simulation objects
   private final TalonFXSimState     m_rollerMotorLSim   = m_rollerMotorL.getSimState( );
-  private final TalonFXSimState     m_rollerMotorRSim   = m_rollerMotorR.getSimState( );
   private final TalonFXSimState     m_rackSim           = m_rackMotor.getSimState( );
 
   // Mechanism2d
@@ -121,13 +120,13 @@ public class Intake extends SubsystemBase
   // Declare module variables
 
   // Roller variables
-  private boolean                   m_rollerValidL;        // Health indicator for motor 
-  private boolean                   m_rollerValidR;        // Health indicator for motor 
+  private boolean                   m_rollerLValid;        // Health indicator for motor 
+  private boolean                   m_rollerRValid;        // Health indicator for motor 
 
   // Rack variables
-  private boolean                   m_rackValid;                // Health indicator for motor 
-  private double                    m_currentInches     = 0.0;  // Current length in inches
-  private double                    m_goalInches        = 0.0;  // Goal length in inches
+  private boolean                   m_rackValid;                  // Health indicator for motor 
+  private double                    m_currentInches     = 0.0;    // Current length in inches
+  private double                    m_targetInches      = 0.0;  // Target length in inches
 
   // Manual mode config parameters
   private VoltageOut                m_requestVolts      = new VoltageOut(Volts.of(0)).withEnableFOC(false);
@@ -141,7 +140,7 @@ public class Intake extends SubsystemBase
 
   // Network tables publisher objects
   private DoublePublisher           m_rackInchesPub;
-  private DoublePublisher           m_goalInchesPub;
+  private DoublePublisher           m_targetInchesPub;
 
   /****************************************************************************
    * 
@@ -153,24 +152,25 @@ public class Intake extends SubsystemBase
     setSubsystem(kSubsystemName);
 
     // Roller motor init
-    m_rollerValidL = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorL, kSubsystemName + "Roller L",
+    m_rollerLValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorL, kSubsystemName + "Roller_L",
         CTREConfigs6.intakeRollerFXConfig(false));
-    m_rollerValidR = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorR, kSubsystemName + "Roller R",
+    m_rollerRValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorR, kSubsystemName + "Roller_R",
         CTREConfigs6.intakeRollerFXConfig(true));
+    if (m_rollerLValid && m_rollerRValid)
+      m_rollerMotorR.setControl(new Follower(m_rollerMotorL.getDeviceID( ), MotorAlignmentValue.Opposed));
 
     // Initialize Rack motor
     m_rackValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rackMotor, kSubsystemName + "Rack",
         CTREConfigs6.intakeRackFXConfig(kRackGearRatio));
 
-    m_rollerAlertL.set(!m_rollerValidL);
-    m_rollerAlertR.set(!m_rollerValidR);
+    m_rollerAlertL.set(!m_rollerLValid);
+    m_rollerAlertR.set(!m_rollerRValid);
     m_rackAlert.set(!m_rackValid);
 
     // Initialize status signal objects
     m_rackLength = m_rackMotor.getPosition( );
 
     // Initialize the intake status signals
-    m_currentInches = (m_rackLength.getValue( ).in(Rotations) * kRolloutRatio);
     if (m_rackValid)
     {
       m_rackMotor.setPosition(m_currentInches);
@@ -205,12 +205,12 @@ public class Intake extends SubsystemBase
     {
       BaseStatusSignal.refreshAll(m_rackLength);
     }
-    m_currentInches = Units.rotationsToDegrees((m_rackValid) ? m_rackLength.getValue( ).in(Rotations) : 0.0);
+    m_currentInches = (m_rackValid) ? m_rackLength.getValue( ).in(Rotations) * Math.PI * kGearDiameterInches : 0.0;
 
     // Update network table publishers
 
     m_rackInchesPub.set(m_currentInches);
-    m_goalInchesPub.set(m_goalInches);
+    m_targetInchesPub.set(m_targetInches);
   }
 
   /****************************************************************************
@@ -253,7 +253,7 @@ public class Intake extends SubsystemBase
 
     // Initialize network tables publishers
     m_rackInchesPub = table.getDoubleTopic("rackInches").publish( );
-    m_goalInchesPub = table.getDoubleTopic("targetInches").publish( );
+    m_targetInchesPub = table.getDoubleTopic("targetInches").publish( );
 
     SmartDashboard.putData("INRackMech", m_rackMech);
 
@@ -279,8 +279,8 @@ public class Intake extends SubsystemBase
     setRollerMode(INRollerMode.STOP);
     setRackStopped( );
 
-    m_goalInches = m_currentInches;
-    DataLogManager.log(String.format("%s: Subsystem initialized! Goal Degrees: %.1f", getSubsystem( ), m_goalInches));
+    m_targetInches = m_currentInches;
+    DataLogManager.log(String.format("%s: Subsystem initialized! target Degrees: %.1f", getSubsystem( ), m_targetInches));
   }
 
   /****************************************************************************
@@ -341,7 +341,7 @@ public class Intake extends SubsystemBase
           ((rangeLimited) ? " - RANGE LIMITED" : "")));
     }
 
-    m_goalInches = m_currentInches;
+    m_targetInches = m_currentInches;
 
     if (m_rackValid)
     {
@@ -376,33 +376,33 @@ public class Intake extends SubsystemBase
     }
 
     // Decide if a new angle request
-    if (holdLength || newLength != m_goalInches || !MathUtil.isNear(newLength, m_currentInches, kToleranceDegrees))
+    if (holdLength || newLength != m_targetInches || !MathUtil.isNear(newLength, m_currentInches, kToleranceDegrees))
     {
       // Validate the angle request
       if (isMoveValid(newLength))
       {
-        m_goalInches = newLength;
+        m_targetInches = newLength;
         m_mmMoveIsFinished = false;
         m_mmWithinTolerance.calculate(false); // Reset the debounce filter
 
-        double goalRotations = Units.degreesToRotations(m_goalInches);
+        double targetRotations = Units.degreesToRotations(m_targetInches);
         if (m_rackValid)
         {
-          m_rackMotor.setControl(m_mmRequestVolts.withPosition(goalRotations));
+          m_rackMotor.setControl(m_mmRequestVolts.withPosition(targetRotations));
         }
         DataLogManager.log(String.format("%s: MM Length move: %.1f -> %.1f degrees (%.3f -> %.3f rot)", getSubsystem( ),
-            m_currentInches, m_goalInches, Units.degreesToRotations(m_currentInches), goalRotations));
+            m_currentInches, m_targetInches, Units.degreesToRotations(m_currentInches), targetRotations));
       }
       else
       {
-        DataLogManager.log(String.format("%s: MM Length move goal %.1f degrees is OUT OF RANGE! [%.1f, %.1f deg]",
-            getSubsystem( ), m_goalInches, kRackLengthMin, kRackLengthMax));
+        DataLogManager.log(String.format("%s: MM Length move target %.1f degrees is OUT OF RANGE! [%.1f, %.1f deg]",
+            getSubsystem( ), m_targetInches, kRackLengthMin, kRackLengthMax));
       }
     }
     else
     {
       m_mmMoveIsFinished = true;
-      DataLogManager.log(String.format("%s: MM Length already achieved -goal %s degrees", getSubsystem( ), m_goalInches));
+      DataLogManager.log(String.format("%s: MM Length already achieved -target %s degrees", getSubsystem( ), m_targetInches));
     }
   }
 
@@ -424,11 +424,11 @@ public class Intake extends SubsystemBase
   public boolean moveToLengthIsFinished(boolean holdLength)
   {
     boolean timedOut = m_mmMoveTimer.hasElapsed(kMMMoveTimeout);
-    double error = m_goalInches - m_currentInches;
+    double error = m_targetInches - m_currentInches;
 
     if (m_rackValid)
     {
-      m_rackMotor.setControl(m_mmRequestVolts.withPosition(Units.degreesToRotations(m_goalInches)));
+      m_rackMotor.setControl(m_mmRequestVolts.withPosition(Units.degreesToRotations(m_targetInches)));
     }
 
     if (holdLength)
@@ -586,7 +586,7 @@ public class Intake extends SubsystemBase
    * @param mode
    *          roller mode to apply
    * @param angle
-   *          double supplier that provides the goal angle
+   *          double supplier that provides the target angle
    * @param holdLength
    *          boolen to indicate whether the command ever finishes
    * @return continuous command that runs intake motors
@@ -609,7 +609,7 @@ public class Intake extends SubsystemBase
    * @param mode
    *          roller mode to apply
    * @param angle
-   *          double supplier that provides the goal distance value
+   *          double supplier that provides the target distance value
    * @return continuous command that runs intake motors
    */
   public Command getMoveToLengthCommand(INRollerMode mode, DoubleSupplier angle)
@@ -624,7 +624,7 @@ public class Intake extends SubsystemBase
    * @param mode
    *          roller mode to apply
    * @param angle
-   *          double supplier that provides the goal distance value
+   *          double supplier that provides the target distance value
    * @return continuous command that runs intake motors
    */
   public Command getHoldLengthCommand(INRollerMode mode, DoubleSupplier angle)

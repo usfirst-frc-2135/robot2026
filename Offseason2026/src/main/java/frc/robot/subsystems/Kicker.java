@@ -5,13 +5,16 @@
 //
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -61,11 +64,15 @@ public class Kicker extends SubsystemBase
     setSubsystem(kSubsystemName);
 
     // Roller motor init
-    m_rollerLwValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorLw, kSubsystemName + "Roller Lw",
+    m_rollerLwValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorLw, kSubsystemName + "Roller_Lw",
         CTREConfigs6.kickerRollerFXConfig(true));
-    m_rollerUpValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorUp, kSubsystemName + "Roller Up",
+    m_rollerUpValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotorUp, kSubsystemName + "Roller_Up",
         CTREConfigs6.kickerRollerFXConfig(true));
-    m_rollerAlert.set(!m_rollerLwValid);
+
+    if (m_rollerLwValid && m_rollerUpValid)
+      m_rollerMotorUp.setControl(new Follower(m_rollerMotorLw.getDeviceID( ), MotorAlignmentValue.Aligned));
+
+    m_rollerAlert.set(!m_rollerLwValid || !m_rollerUpValid);
 
     initDashboard( );
     initialize( );
@@ -118,9 +125,9 @@ public class Kicker extends SubsystemBase
     // Initialize network tables publishers
 
     // Add commands
-    // SmartDashboard.putData("KickerStop", getRollerModeCommand(KKRollerMode.STOP));
-    // SmartDashboard.putData("KickerAcquire", getRollerModeCommand(KKRollerMode.ACQUIRE));
-    // SmartDashboard.putData("KickerExpel", getRollerModeCommand(KKRollerMode.EXPEL));
+    SmartDashboard.putData("KickerStop", getRollerModeCommand(KKRollerMode.STOP));
+    SmartDashboard.putData("KickerAcquire", getRollerModeCommand(KKRollerMode.ACQUIRE));
+    SmartDashboard.putData("KickerExpel", getRollerModeCommand(KKRollerMode.EXPEL));
   }
 
   // Put methods for controlling this subsystem here. Call these from Commands.
@@ -140,9 +147,11 @@ public class Kicker extends SubsystemBase
    */
   public void printFaults( )
   {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotorLw, kSubsystemName + "Roller");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotorLw, kSubsystemName + "Roller_Lw");
+    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotorUp, kSubsystemName + "Roller_Up");
 
     m_rollerMotorLw.clearStickyFaults( );
+    m_rollerMotorUp.clearStickyFaults( );
   }
 
   ////////////////////////////////////////////////////////////////////////////
