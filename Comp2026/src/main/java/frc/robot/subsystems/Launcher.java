@@ -51,8 +51,10 @@ public class Launcher extends SubsystemBase
   private static final String kSubsystemName     = "Launcher";
 
   private static final double kMOI               = 0.005;     // Simulation - Moment of Inertia
+  private static final double kScoreRPMMin       = 0.0;       // Minimum allowed score RPM from driver adjustments
+  private static final double kScoreRPMMax       = 4000.0;    // Maximum allowed score RPM from driver adjustments
   private static final double kLauncherAutoRPM   = 3170.0;    // RPM to score for autonomous
-  private static final double kLauncherTeleopRPM = 3150.0;    // RPM to score for autonomous
+  private static final double kLauncherTeleopRPM = 3150.0;    // RPM to score for teleop
   private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
   private static final double kLauncherPrimedRPM = 2400.0;    // RPM to pass 
   private static final double kRPMStepSize       = 50.0;      // RPM step size for increment/decrement
@@ -74,8 +76,8 @@ public class Launcher extends SubsystemBase
   // Devices  objects
   private final TalonFX                       m_leftMotor            = new TalonFX(Ports.kCANID_LauncherLeft);
   private final TalonFX                       m_rightMotor           = new TalonFX(Ports.kCANID_LauncherRight);
-  private final Servo                         m_hoodLeft             = new Servo(0);
-  private final Servo                         m_hoodRight            = new Servo(1);
+  private final Servo                         m_hoodLeft             = new Servo(Ports.kPWM_LauncherHoodLeft);
+  private final Servo                         m_hoodRight            = new Servo(Ports.kPWM_LauncherHoodRight);
 
   // Alerts
   private final Alert                         m_leftAlert            =
@@ -215,9 +217,9 @@ public class Launcher extends SubsystemBase
     m_leftMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocityRPM( ) / 60.0);
     m_rightMotorSim.setRotorVelocity(m_rightFlywheelSim.getAngularVelocityRPM( ) / 60.0);
 
-    // SimBattery estimates loaded battery voltages
-    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_leftFlywheelSim.getCurrentDrawAmps( )));
-    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_rightFlywheelSim.getCurrentDrawAmps( )));
+    // SimBattery estimates loaded battery voltage from total launcher current draw
+    double totalCurrentDrawAmps = m_leftFlywheelSim.getCurrentDrawAmps( ) + m_rightFlywheelSim.getCurrentDrawAmps( );
+    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(totalCurrentDrawAmps));
   }
 
   /****************************************************************************
@@ -300,7 +302,7 @@ public class Launcher extends SubsystemBase
         m_launcherRPM = 0.0;
         break;
       case SCORE :
-        m_launcherRPM = m_ScoreRPMEntry.get(0.0);
+        m_launcherRPM = MathUtil.clamp(m_ScoreRPMEntry.get(0.0), kScoreRPMMin, kScoreRPMMax);
         break;
       case PASS :
         m_launcherRPM = kLauncherPassRPM;
@@ -406,7 +408,8 @@ public class Launcher extends SubsystemBase
    */
   public void decrementTeleopRPM( )
   {
-    m_ScoreRPMEntry.set(m_ScoreRPMEntry.get( ) - kRPMStepSize);
+    double requestedRPM = m_ScoreRPMEntry.get( ) - kRPMStepSize;
+    m_ScoreRPMEntry.set(MathUtil.clamp(requestedRPM, kScoreRPMMin, kScoreRPMMax));
   }
 
   /****************************************************************************
@@ -415,7 +418,8 @@ public class Launcher extends SubsystemBase
    */
   public void incrementTeleopRPM( )
   {
-    m_ScoreRPMEntry.set(m_ScoreRPMEntry.get( ) + kRPMStepSize);
+    double requestedRPM = m_ScoreRPMEntry.get( ) + kRPMStepSize;
+    m_ScoreRPMEntry.set(MathUtil.clamp(requestedRPM, kScoreRPMMin, kScoreRPMMax));
   }
 
   ////////////////////////////////////////////////////////////////////////////
