@@ -1,7 +1,7 @@
 //
-// Intake Subystem - takes in Notes and delivers them to the other subsystems
+// Intake Subsystem - takes in Notes and delivers them to the other subsystems
 //
-// The intake is composed of two motorized mechanisms: rotary joint and a roller roller.
+// The intake is composed of two motorized mechanisms: a rotary joint and a roller.
 // The rotary joint uses an external CANcoder for measuring rotation.
 //
 package frc.robot.subsystems;
@@ -105,7 +105,7 @@ public class Intake extends SubsystemBase
   private static final double       kRotaryAngle_45       = -45.0;
   private static final double       kRotaryAngle_30       = -30.0;
   private static final double       kRotaryAngleProtected = -15.0;
-  private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 5.1 : 4.2;       // One degrees from hardstops
+  private static final double       kRotaryAngleDeployed  = Robot.isComp( ) ? 5.1 : 4.2;       // One degree from hardstops
 
   private static final double       kRotaryAngleMin       = kRotaryAngleStowed - 3.0;
   private static final double       kRotaryAngleMax       = kRotaryAngleDeployed + 3.0;
@@ -155,7 +155,7 @@ public class Intake extends SubsystemBase
   private VoltageOut                m_requestVolts        = new VoltageOut(Volts.of(0)).withEnableFOC(true);
   private RotaryMode                m_rotaryMode          = RotaryMode.INIT;    // Manual movement mode with joysticks
 
-  // Motion Magic config parameters    // Manual movement mode with joysticks
+  // Motion Magic config parameters
   private MotionMagicVoltage        m_mmRequestVolts      = new MotionMagicVoltage(0).withSlot(0).withEnableFOC(false);
   private Debouncer                 m_mmWithinTolerance   = new Debouncer(kMMDebounceTime, DebounceType.kRising);
   private Timer                     m_mmMoveTimer         = new Timer( );       // Movement timer
@@ -248,6 +248,9 @@ public class Intake extends SubsystemBase
   public void simulationPeriodic( )
   {
     // This method will be called once per scheduler run during simulation
+    // NOTE: Intake rotary uses a physics model (arm + CANcoder), while intake
+    // roller simulation is intentionally lightweight because it is a simple,
+    // lightly loaded roller.
 
     // Set input motor voltage from the motor setting
     m_rotarySim.setSupplyVoltage(RobotController.getInputVoltage( ));
@@ -265,6 +268,7 @@ public class Intake extends SubsystemBase
     m_CANcoderSim.setRawPosition(Units.radiansToRotations(m_armSim.getAngleRads( )));
     m_CANcoderSim.setVelocity(Units.radiansToRotations(m_armSim.getVelocityRadPerSec( )));
 
+    // Roller sim intentionally mirrors commanded output to sensor state.
     m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
     m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
 
@@ -295,10 +299,10 @@ public class Intake extends SubsystemBase
     SmartDashboard.putData("IntakeStop", getMoveToAngleCommand(INRollerMode.STOP, this::getCurrentAngle));
     SmartDashboard.putData("IntakeAcquire", getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getCurrentAngle));
     SmartDashboard.putData("IntakeExpel", getMoveToAngleCommand(INRollerMode.EXPEL, this::getCurrentAngle));
-    SmartDashboard.putData("IntakeHold", getMoveToAngleCommand(INRollerMode.HOLD, this::getCurrentAngle));
+    SmartDashboard.putData("IntakeUnchanged", getMoveToAngleCommand(INRollerMode.UNCHANGED, this::getCurrentAngle));
 
-    SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.HOLD, this::getDeployedAngle));
-    SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle));
+    SmartDashboard.putData("IntakeDeploy", getMoveToAngleCommand(INRollerMode.UNCHANGED, this::getDeployedAngle));
+    SmartDashboard.putData("IntakeRetract", getMoveToAngleCommand(INRollerMode.UNCHANGED, this::getStowedAngle));
     SmartDashboard.putData("IntakeIndexing", getIndexingCommand( ));
   }
 
@@ -324,22 +328,22 @@ public class Intake extends SubsystemBase
   public void printFaults( )
   {
     if (m_rollerValid)
-  {
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
-    m_rollerMotor.clearStickyFaults( );
+    {
+      PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
+      m_rollerMotor.clearStickyFaults( );
     }
 
     if (m_rotaryValid)
     {
       PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rotaryMotor, kSubsystemName + "Rotary");
-    m_rotaryMotor.clearStickyFaults( );
+      m_rotaryMotor.clearStickyFaults( );
     }
 
     if (m_canCoderValid)
     {
       PhoenixUtil6.getInstance( ).canCoderPrintFaults(m_CANcoder, kSubsystemName + "CANcoder");
-    m_CANcoder.clearStickyFaults( );
-  }
+      m_CANcoder.clearStickyFaults( );
+    }
   }
 
   private final static Voltage kManualKG = Volts.of(-0.45);
@@ -441,7 +445,7 @@ public class Intake extends SubsystemBase
       else
       {
         DataLogManager.log(String.format("%s: MM Angle move goal %.1f degrees is OUT OF RANGE! [%.1f, %.1f deg]", getSubsystem( ),
-            m_goalDegrees, kRotaryAngleMin, kRotaryAngleMax));
+            newAngle, kRotaryAngleMin, kRotaryAngleMax));
       }
     }
     else
@@ -514,9 +518,15 @@ public class Intake extends SubsystemBase
    */
   private void setRollerMode(INRollerMode mode)
   {
+    if (!m_rollerValid)
+    {
+      DataLogManager.log(String.format("%s: setRollerMode(%s) skipped; roller is invalid", getSubsystem( ), mode));
+      return;
+    }
+
     double output = 0.0;
 
-    if (mode == INRollerMode.HOLD)
+    if (mode == INRollerMode.UNCHANGED)
     {
       DataLogManager.log(String.format("%s: Roller mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_rollerMotor.get( )));
     }
@@ -665,7 +675,7 @@ public class Intake extends SubsystemBase
    * @param angle
    *          double supplier that provides the goal angle
    * @param holdAngle
-   *          boolen to indicate whether the command ever finishes
+   *          boolean indicating whether the command should run continuously
    * @return continuous command that runs intake motors
    */
   private Command getMMAngleCommand(INRollerMode mode, DoubleSupplier angle, boolean holdAngle)
@@ -686,7 +696,7 @@ public class Intake extends SubsystemBase
    * @param mode
    *          roller mode to apply
    * @param angle
-   *          double supplier that provides the goal distance value
+   *          double supplier that provides the goal angle value
    * @return continuous command that runs intake motors
    */
   public Command getMoveToAngleCommand(INRollerMode mode, DoubleSupplier angle)
@@ -701,7 +711,7 @@ public class Intake extends SubsystemBase
    * @param mode
    *          roller mode to apply
    * @param angle
-   *          double supplier that provides the goal distance value
+   *          double supplier that provides the goal angle value
    * @return continuous command that runs intake motors
    */
   public Command getHoldAngleCommand(INRollerMode mode, DoubleSupplier angle)
@@ -713,21 +723,21 @@ public class Intake extends SubsystemBase
    * 
    * Create indexing sequence for pushing fuel to launcher
    * 
-   * @return command that runs moves intake arm while intaking
+   * @return command that moves the intake arm while intaking
    */
   public Command getIndexingCommand( )
   {
     return new SequentialCommandGroup( //
         getMoveToAngleCommand(INRollerMode.ACQUIRE, this::getProtectedAngle),       //
         new WaitCommand(0.15),                                              //
-        getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingLow),             //
+        getMoveToAngleCommand(INRollerMode.UNCHANGED, this::getIndexingLow),             //
         new RepeatCommand(                                                          //
             new SequentialCommandGroup(                                             //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingMedium),  //
+                getMoveToAngleCommand(INRollerMode.UNCHANGED, this::getIndexingMedium),  //
                 new WaitCommand(0.15),                                      //
-                getMoveToAngleCommand(INRollerMode.HOLD, this::getIndexingHigh),    //
+                getMoveToAngleCommand(INRollerMode.UNCHANGED, this::getIndexingHigh),    //
                 new WaitCommand(0.15)                                       //
-            // getMoveToAngleCommand(INRollerMode.HOLD, this::getStowedAngle)       //
+            // getMoveToAngleCommand(INRollerMode.UNCHANGED, this::getStowedAngle)       //
             )                                                                       //
         )).withName(kSubsystemName + "IndexingCommand");
   }

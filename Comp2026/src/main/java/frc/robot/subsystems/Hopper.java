@@ -1,7 +1,7 @@
 //
-// Hopper Subystem - takes in Notes and delivers them to the other subsystems
+// Hopper Subsystem - takes in Notes and delivers them to the other subsystems
 //
-// The hopper is composed of one motorized mechanism: a roller roller.
+// The hopper is composed of one motorized mechanism: a roller.
 //
 package frc.robot.subsystems;
 
@@ -23,7 +23,7 @@ import frc.robot.lib.phoenix.PhoenixUtil6;
 
 /****************************************************************************
  * 
- * Hopper subsystem to control the hopper roller and rotary mechanism and provide command factories
+ * Hopper subsystem to control the hopper roller mechanism and provide command factories
  */
 public class Hopper extends SubsystemBase
 {
@@ -86,13 +86,13 @@ public class Hopper extends SubsystemBase
     if (!m_rollerValid)
       return;
 
-    // If rollermode is acquire and m_pulsemode is active
+    // If roller mode is ACQUIRE and pulse mode is active
     if (m_rollerMode == HPRollerMode.ACQUIRE && m_pulseMode)
     {
-      // If timer is less than 0.5 then acquire else do expel to alternate motor direction
+      // For the first half-second acquire, then reverse to expel for pulsing behavior
       m_rollerMotor.set((getMantissa(m_pulseTimer.get( )) < kPulseModeDuration) ? kRollerSpeedAcquire : kRollerSpeedExpel);
     }
-    if (m_rollerMode == HPRollerMode.ACQUIRE && !m_pulseMode)
+    else if (m_rollerMode == HPRollerMode.ACQUIRE && !m_pulseMode)
     {
       m_rollerMotor.set(kRollerSpeedAcquire);
     }
@@ -106,17 +106,20 @@ public class Hopper extends SubsystemBase
   public void simulationPeriodic( )
   {
     // This method will be called once per scheduler run during simulation
+    // NOTE: Hopper roller simulation is intentionally lightweight.
+    // This is a simple, lightly loaded roller, so we mirror commanded output
+    // into simulated sensor state without a detailed mechanical plant model.
 
     // Set input motor voltage from the motor setting
     m_rollerMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
 
-    // update for 20 msec loop
+    // No detailed plant update here by design.
 
-    // Finally, we set our simulated encoder's readings and simulated battery voltage
+    // Finally, set simulated sensor readings for the roller motor
     m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
     m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
 
-    // SimBattery estimates loaded battery voltages
+    // Battery loading from this roller is intentionally omitted in sim.
 
   }
 
@@ -187,7 +190,7 @@ public class Hopper extends SubsystemBase
 
     double output = 0.0;
 
-    if (mode == HPRollerMode.HOLD)
+    if (mode == HPRollerMode.UNCHANGED)
     {
       DataLogManager.log(String.format("%s: Roller mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_rollerMotor.get( )));
     }
@@ -240,7 +243,7 @@ public class Hopper extends SubsystemBase
    * Update the pulse mode value for external control of motor pulsing
    * 
    * @param mode
-   *          requested mode
+   *          requested pulse-mode state
    */
   public void setPulseMode(boolean mode)
   {
@@ -258,13 +261,13 @@ public class Hopper extends SubsystemBase
    * 
    * @param mode
    *          roller mode to apply
-   * @return continuous command that runs hopper roller motors
+   * @return instant command that sets hopper roller mode
    */
   public Command getRollerModeCommand(HPRollerMode mode)
   {
     return new InstantCommand(                          // Command with all phases declared
         ( ) -> setRollerMode(mode),                     // Init method
-        this                                            // Subsytem required
+        this                                            // Subsystem required
     );
   }
 

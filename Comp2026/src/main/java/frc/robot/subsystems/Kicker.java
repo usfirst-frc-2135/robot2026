@@ -1,5 +1,5 @@
 //
-// Kicker Subystem - takes in Notes and delivers them to the other subsystems
+// Kicker Subsystem - takes in Notes and delivers them to the other subsystems
 //
 // The kicker is composed of one motorized mechanism: a roller.
 //
@@ -22,7 +22,7 @@ import frc.robot.lib.phoenix.PhoenixUtil6;
 
 /****************************************************************************
  * 
- * Kicker subsystem to control the kicker roller and rotary mechanism and provide command factories
+ * Kicker subsystem to control the kicker roller mechanism and provide command factories
  */
 public class Kicker extends SubsystemBase
 {
@@ -88,6 +88,9 @@ public class Kicker extends SubsystemBase
   public void simulationPeriodic( )
   {
     // This method will be called once per scheduler run during simulation
+    // NOTE: Kicker roller simulation is intentionally lightweight.
+    // This mechanism is a lightly loaded, simple roller, so we only mirror
+    // commanded output to simulated sensor state for software bring-up.
 
     if (!m_rollerValid)
       return;
@@ -95,13 +98,13 @@ public class Kicker extends SubsystemBase
     // Set input motor voltage from the motor setting
     m_rollerMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
 
-    // update for 20 msec loop
+    // No detailed plant update here by design.
 
-    // Finally, we set our simulated encoder's readings and simulated battery voltage
+    // Finally, set simulated sensor readings for the roller motor.
     m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
     m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
 
-    // SimBattery estimates loaded battery voltages
+    // Battery loading from this roller is intentionally omitted in sim.
 
   }
 
@@ -172,7 +175,7 @@ public class Kicker extends SubsystemBase
 
     double output = 0.0;
 
-    if (mode == KKRollerMode.HOLD)
+    if (mode == KKRollerMode.UNCHANGED)
     {
       DataLogManager.log(String.format("%s: Roller mode is unchanged - %s (%.3f)", getSubsystem( ), mode, m_rollerMotor.get( )));
     }
@@ -218,7 +221,7 @@ public class Kicker extends SubsystemBase
   {
     return new InstantCommand(                          // Command with all phases declared
         ( ) -> setRollerMode(mode),                     // Init method
-        this                                            // Subsytem required
+        this                                            // Subsystem required
     );
   }
 

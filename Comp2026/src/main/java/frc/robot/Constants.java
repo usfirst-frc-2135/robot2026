@@ -131,7 +131,7 @@ public final class Constants
       STOP,    // Stop all rotation
       ACQUIRE, // Speed for acquiring a game piece
       EXPEL,   // Speed for expelling a game piece
-      HOLD     // Maintain existing speed setting
+      UNCHANGED // Maintain existing speed setting
     }
   }
 
@@ -146,7 +146,7 @@ public final class Constants
       STOP,     // Stop all rotation
       ACQUIRE,  // Speed for moving a game piece toward launcher
       EXPEL,    // Speed for moving a game piece toward intake (to expel)
-      HOLD      // Maintain existing speed setting
+      UNCHANGED // Maintain existing speed setting
     }
   }
 
@@ -161,7 +161,7 @@ public final class Constants
       STOP,     // Stop all rotation
       ACQUIRE,  // Speed for moving a game piece toward launcher
       EXPEL,    // Speed for moving a game piece toward intake (to expel)
-      HOLD      // Maintain existing speed setting
+      UNCHANGED // Maintain existing speed setting
     }
   }
 
