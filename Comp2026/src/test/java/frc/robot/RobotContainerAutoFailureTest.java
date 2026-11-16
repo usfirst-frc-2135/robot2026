@@ -27,13 +27,13 @@ class RobotContainerAutoFailureTest
   @Test
   void evaluateLoadedPathFallbackReasonReturnsEmptyWhenPathListNull( )
   {
-    assertEquals("AutoPathListEmpty", RobotContainer.evaluateLoadedPathFallbackReason(null));
+    assertEquals("PPPathListEmpty", RobotContainer.evaluateLoadedPathFallbackReason(null));
   }
 
   @Test
   void evaluateLoadedPathFallbackReasonReturnsEmptyWhenPathListEmpty( )
   {
-    assertEquals("AutoPathListEmpty", RobotContainer.evaluateLoadedPathFallbackReason(Collections.emptyList( )));
+    assertEquals("PPPathListEmpty", RobotContainer.evaluateLoadedPathFallbackReason(Collections.emptyList( )));
   }
 
   @Test

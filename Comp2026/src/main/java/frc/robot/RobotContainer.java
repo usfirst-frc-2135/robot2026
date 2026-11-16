@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import frc.robot.autos.AutoScore1A;
 import frc.robot.autos.AutoScore1B;
 import frc.robot.autos.AutoScore2A;
 import frc.robot.autos.AutoScore2B;
+import frc.robot.autos.AutoScore3A;
 import frc.robot.autos.AutoTest;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.ClimbTower;
@@ -589,6 +591,30 @@ public class RobotContainer
 
   /****************************************************************************
    *
+   * Finalize autonomous command with shared status publish, preview pose reset,
+   * and optional wrapped execution flow.
+   */
+  private Command finalizeAutonomousCommand(AutoSelectionContext selection, Command baseAutoCommand, Optional<Pose2d> initialPose)
+  {
+    m_autoCommand = baseAutoCommand;
+
+    DataLogManager.log(String.format("getAuto: autoMode %s (%s)", selection.autoKey, m_autoCommand.getName( )));
+    publishAutoHealthStatus("OK", "Ready", selection.autoKey, selection.autoName, m_autoCommand.getName( ));
+
+    // Update robot pose to where we want immediately so it displays correctly in dashboard
+    resetOdometryToInitialPose(initialPose);
+
+    // Build the autonomous command to run
+    if (selection.autoOption != AutoChooser.AUTOSTOP)
+    {
+      m_autoCommand = buildFullAutoCommand(m_autoCommand, selection.delay, ( ) -> resetOdometryToInitialPose(initialPose));
+    }
+
+    return m_autoCommand;
+  }
+
+  /****************************************************************************
+   *
    * Shared autonomous selection context resolved from chooser state and dashboard delay.
    */
   private static final class AutoSelectionContext
@@ -650,7 +676,7 @@ public class RobotContainer
     catch (ParseException | IOException e)
     {
       DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file (%s)", e.toString( )));
-      return m_autoCommand = getAutoStopFallback("AutoPathLoadError", selection.autoKey, selection.autoName);
+      return m_autoCommand = getAutoStopFallback("PathPlannerPathLoadError", selection.autoKey, selection.autoName);
     }
 
     String loadedPathFallbackReason = evaluateLoadedPathFallbackReason(m_ppPathList);
@@ -687,22 +713,16 @@ public class RobotContainer
         break;
     }
 
-    DataLogManager.log(String.format("getAuto: autoMode %s (%s)", selection.autoKey, m_autoCommand.getName( )));
-    publishAutoHealthStatus("OK", "Ready", selection.autoKey, selection.autoName, m_autoCommand.getName( ));
-
-    Optional<Pose2d> initialPose = getPathPlannerInitialPose(m_ppPathList);
-
-    // Update robot pose to where we want immediately so it displays correctly in dashboard
-    resetOdometryToInitialPose(initialPose);
-
-    // Build the autonomous command to run
-    if (selection.autoOption != AutoChooser.AUTOSTOP)
+    try
     {
-      Command baseAutoCommand = m_autoCommand;
-      m_autoCommand = buildFullAutoCommand(baseAutoCommand, selection.delay, ( ) -> resetOdometryToInitialPose(initialPose));
+      Optional<Pose2d> initialPose = getPathPlannerInitialPose(m_ppPathList);
+      return finalizeAutonomousCommand(selection, m_autoCommand, initialPose);
     }
-
-    return m_autoCommand;
+    catch (RuntimeException e)
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - PathPlanner build failed (%s)", e.toString( )));
+      return m_autoCommand = getAutoStopFallback("PathPlannerBuildError", selection.autoKey, selection.autoName);
+    }
   }
 
   /****************************************************************************
@@ -711,25 +731,79 @@ public class RobotContainer
    */
   private Command buildBLineAutonomousCommand(AutoSelectionContext selection)
   {
-    var path = getBLinePathName( );
-    Optional<Pose2d> initialPose = getBLineInitialPose(path);
-    DataLogManager.log(String.format("getAuto: autoMode %s (%s)", selection.autoKey, path));
+    List<String> bLinePathNames = new ArrayList<String>( );
+    List<Path> bLinePaths = new ArrayList<Path>( );
+    Optional<Pose2d> initialPose;
+
+    // Get list of paths within the auto file for all autos except AUTOSTOP
+
+    bLinePathNames = getBLinePathList(selection.autoKey);
+
+    if (bLinePathNames == null || bLinePathNames.isEmpty( ))
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - BLine path name list is empty for key %s", selection.autoKey));
+      return m_autoCommand = getAutoStopFallback("BLinePathListEmpty", selection.autoKey, selection.autoName);
+    }
+
+    for (String pathName : bLinePathNames)
+    {
+      try
+      {
+        Path path = new Path(pathName);
+        bLinePaths.add(path);
+      }
+      catch (Exception e)
+      {
+        DataLogManager.log(String.format("getAuto: ERROR - exception when reading the BLine path file (%s)", e.toString( )));
+        return m_autoCommand = getAutoStopFallback("BLinePathLoadError", selection.autoKey, selection.autoName);
+      }
+    }
+
+    if (bLinePaths.isEmpty( ))
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - no BLine paths were built for key %s", selection.autoKey));
+      return m_autoCommand = getAutoStopFallback("BLinePathListEmpty", selection.autoKey, selection.autoName);
+    }
+
+    initialPose = Optional.ofNullable(bLinePaths.get(0).getStartPose( ));
+
+    DataLogManager.log(String.format("getAuto: %s contains %s paths in list", selection.autoName, bLinePaths.size( )));
 
     try
     {
-      Command blineCommand = buildBLineCommand(path);
-
-      // m_autoCommand = new AutoScore3A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-      m_autoCommand = buildFullAutoCommand(blineCommand, selection.delay, ( ) -> resetOdometryToInitialPose(initialPose));
-      publishAutoHealthStatus("OK", "Ready", selection.autoKey, selection.autoName, m_autoCommand.getName( ));
+      Command baseAutoCommand = new AutoScore3A(bLinePaths, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+      return finalizeAutonomousCommand(selection, baseAutoCommand, initialPose);
     }
     catch (RuntimeException e)
     {
       DataLogManager.log(String.format("getAuto: ERROR - BLine build failed (%s)", e.toString( )));
       return m_autoCommand = getAutoStopFallback(evaluateBLineBuildFallbackReason(e), selection.autoKey, selection.autoName);
     }
+  }
 
-    return m_autoCommand;
+  /****************************************************************************
+   *
+   * Test seam for resolving the BLine path key.
+   */
+  ArrayList<String> getBLinePathList(String autoKey)
+  {
+    ArrayList<String> pathList = new ArrayList<String>( );
+
+    switch (autoKey)
+    {
+      default :
+      case "AUTOSCORE3ASTART1" :
+        pathList.add("Start1_AutoStop");
+        break;
+      case "AUTOSCORE3ASTART2" :
+        pathList.add("Start2_AutoStop");
+        break;
+      case "AUTOSCORE3ASTART3" :
+        pathList.add("Start3_AutoStop");
+        break;
+    }
+
+    return pathList;
   }
 
   /****************************************************************************
@@ -878,35 +952,6 @@ public class RobotContainer
 
   /****************************************************************************
    *
-   * Test seam for resolving the BLine path key.
-   */
-  String getBLinePathName( )
-  {
-    return "first-straight";
-  }
-
-  /****************************************************************************
-   *
-   * Test seam for building the BLine autonomous command.
-   */
-  Command buildBLineCommand(String pathName)
-  {
-    Path firstStraight = new Path(pathName);
-    return m_drivetrain.getPathBuilder( ).withPoseReset(m_drivetrain::resetPoseAndLimelight).build(firstStraight);
-  }
-
-  /****************************************************************************
-   *
-   * Test seam for extracting initial pose from BLine autonomous selection.
-   */
-  Optional<Pose2d> getBLineInitialPose(String pathName)
-  {
-    // TODO: Resolve initial pose from BLine path API when available.
-    return Optional.empty( );
-  }
-
-  /****************************************************************************
-   *
    * Test seam: evaluate map-lookup fallback reason without touching hardware.
    *
    * @return null when no fallback is needed; otherwise fallback reason token.
@@ -930,7 +975,7 @@ public class RobotContainer
   {
     if (pathList == null || pathList.isEmpty( ))
     {
-      return "AutoPathListEmpty";
+      return "PPPathListEmpty";
     }
     return null;
   }
