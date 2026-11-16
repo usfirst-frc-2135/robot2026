@@ -204,9 +204,9 @@ public class RobotContainer
       Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_NZ3_L3"),
 
       // BLine paths for AUTOSCORE3A - 2 cycles of scoring fuel - 2 paths (out to neutral zone and back to launch, looping path back to score)
-      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START1.toString( ), "Start1_NZ1_L1_D_L2A"),
-      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START2.toString( ), "Start2_L2A_L2A_OP_L2B"),
-      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_OP_L2B"),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START1.toString( ), "AutoScore3A_Start1"),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START2.toString( ), "AutoScore3A_Start2"),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START3.toString( ), "AutoScore3A_Start3"),
 
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_T1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_T2"),
@@ -793,13 +793,16 @@ public class RobotContainer
     {
       default :
       case "AUTOSCORE3ASTART1" :
-        pathList.add("Start1_AutoStop");
+        pathList.add("S1_L1");
+        pathList.add("L1_L1");
         break;
       case "AUTOSCORE3ASTART2" :
-        pathList.add("Start2_AutoStop");
+        pathList.add("S2_L2");
+        pathList.add("L2_L2");
         break;
       case "AUTOSCORE3ASTART3" :
-        pathList.add("Start3_AutoStop");
+        pathList.add("S3_L3");
+        pathList.add("L3_L3");
         break;
     }
 
