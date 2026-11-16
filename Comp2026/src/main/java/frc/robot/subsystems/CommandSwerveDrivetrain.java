@@ -303,7 +303,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public FollowPath.Builder getPathBuilder() {
-        return pathBuilder; 
+        return pathBuilder.withDefaultShouldFlip(); 
     }
 
     /**

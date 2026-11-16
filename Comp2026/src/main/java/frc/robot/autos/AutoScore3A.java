@@ -25,7 +25,7 @@ public class AutoScore3A extends SequentialCommandGroup
    * Autonomous command to:
    * 1 - Leave the starting line
    * 
-   * @param ppAuto
+   * @param blineAuto
    *          list of auto paths to follow
    * @param drivetrain
    *          swerve drivetrain subsystem
@@ -43,7 +43,7 @@ public class AutoScore3A extends SequentialCommandGroup
         new LogCommand(getName(), "Acquire fuel, score once, acquire fuel again and score"),
         new LogCommand(getName(),"Drive path while acquiring"),
         new ParallelCommandGroup(
-          drivetrain.getPathBuilder( ).withDefaultShouldFlip().build(blineAuto.get(0)),
+          drivetrain.getPathBuilder( ).build(blineAuto.get(0)),
             new AcquireFuel(intake,hopper)
           ),
         new LogCommand(getName(),"stop intaking and prime the launcher"),
@@ -56,7 +56,7 @@ public class AutoScore3A extends SequentialCommandGroup
 
         new LogCommand(getName(),"Drive return path while intaking "),
         new ParallelCommandGroup(
-            drivetrain.getPathBuilder( ).withDefaultShouldFlip().build(blineAuto.get(1)),
+            drivetrain.getPathBuilder( ).build(blineAuto.get(1)),
             new AcquireFuel(intake,hopper)
           ),
         new ParallelCommandGroup(
