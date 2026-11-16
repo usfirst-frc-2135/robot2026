@@ -27,8 +27,8 @@ public final class Constants
   public static final String        kPracticeSN           = "032B1F7E";
 
   // Game controller definitions
-  public static final int           kDriverPadPort        = 0;
-  public static final int           kOperatorPadPort      = 1;
+  public static final int           kDriverPad            = 0;
+  public static final int           kOperatorPad          = 1;
 
   public static final double        kStickDeadband        = 0.15;
   public static final double        kTriggerThreshold     = 0.25;

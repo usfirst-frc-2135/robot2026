@@ -80,56 +80,64 @@ import frc.robot.subsystems.Telemetry;
  */
 public class RobotContainer
 {
-  private final boolean                               m_macOSXSim     = false;  // Enables Mac OS X controller compatibility in simulation
+  private final boolean                               m_macOSXSim       = false;  // Enables Mac OS X controller compatibility in simulation
+
+  // Autonomous health/status observability for pit and development debugging
+  private static final String                         kAutoHealthState  = "AutoHealthState";
+  private static final String                         kAutoHealthReason = "AutoHealthReason";
+  private static final String                         kAutoHealthKey    = "AutoHealthAutoKey";
+  private static final String                         kAutoHealthName   = "AutoHealthAutoName";
+  private static final String                         kAutoHealthCmd    = "AutoHealthCommand";
+  private static final String                         kAutoHealthTime   = "AutoHealthTimestamp";
 
   // Gamepad controllers
-  private static final CommandXboxController          m_driverPad     = new CommandXboxController(Constants.kDriverPadPort);
-  private static final CommandXboxController          m_operatorPad   = new CommandXboxController(Constants.kOperatorPadPort);
+  private static final CommandXboxController          m_driverPad       = new CommandXboxController(Constants.kDriverPad);
+  private static final CommandXboxController          m_operatorPad     = new CommandXboxController(Constants.kOperatorPad);
 
-  private static final LinearVelocity                 kMaxSpeed       = TunerConstants.kSpeedAt12Volts;       // Maximum top speed
-  private static final AngularVelocity                kMaxAngularRate = RotationsPerSecond.of(1.0); // Max 1.0 rot per second
-  private static final double                         kSlowSwerve     = 0.30;                                 // Throttle max swerve speeds for finer control
-  private static final double                         kHeadingKp      = 6.0;
-  private static final double                         kHeadingKi      = 0.0;
-  private static final double                         kHeadingKd      = 0.0;
+  private static final LinearVelocity                 kMaxSpeed         = TunerConstants.kSpeedAt12Volts;       // Maximum top speed
+  private static final AngularVelocity                kMaxAngularRate   = RotationsPerSecond.of(1.0); // Max 1.0 rot per second
+  private static final double                         kSlowSwerve       = 0.30;                                 // Throttle max swerve speeds for finer control
+  private static final double                         kHeadingKp        = 6.0;
+  private static final double                         kHeadingKi        = 0.0;
+  private static final double                         kHeadingKd        = 0.0;
 
   // Setting up bindings for necessary control of the swerve drive platform
-  private final SwerveRequest.FieldCentric            drive           = new SwerveRequest.FieldCentric( ) //
+  private final SwerveRequest.FieldCentric            drive             = new SwerveRequest.FieldCentric( ) //
       .withDeadband(kMaxSpeed.times(0.1))                 //
       .withRotationalDeadband(kMaxAngularRate.times(0.1)) //
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);       // We want field-centric driving in open loop
-  private final SwerveRequest.SwerveDriveBrake        brake           = new SwerveRequest.SwerveDriveBrake( );
-  private final SwerveRequest.FieldCentricFacingAngle facing          = new SwerveRequest.FieldCentricFacingAngle( )  //
+  private final SwerveRequest.SwerveDriveBrake        brake             = new SwerveRequest.SwerveDriveBrake( );
+  private final SwerveRequest.FieldCentricFacingAngle facing            = new SwerveRequest.FieldCentricFacingAngle( )  //
       .withDeadband(kMaxSpeed.times(0.1))                 //
       .withRotationalDeadband(kMaxAngularRate.times(0.1)) //
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);       // We want field-centric driving in open loop
   @SuppressWarnings("unused")
-  private final SwerveRequest.PointWheelsAt           point           = new SwerveRequest.PointWheelsAt( );
-  private final SwerveRequest.RobotCentric            aim             = new SwerveRequest.RobotCentric( );
-  private final SwerveRequest.Idle                    idle            = new SwerveRequest.Idle( );
+  private final SwerveRequest.PointWheelsAt           point             = new SwerveRequest.PointWheelsAt( );
+  private final SwerveRequest.RobotCentric            aim               = new SwerveRequest.RobotCentric( );
+  private final SwerveRequest.Idle                    idle              = new SwerveRequest.Idle( );
   @SuppressWarnings("unused")
-  private final SwerveRequest.RobotCentric            forwardStraight = new SwerveRequest.RobotCentric( )     //
+  private final SwerveRequest.RobotCentric            forwardStraight   = new SwerveRequest.RobotCentric( )     //
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-  private final Telemetry                             logger          = new Telemetry(kMaxSpeed.in(MetersPerSecond));
+  private final Telemetry                             logger            = new Telemetry(kMaxSpeed.in(MetersPerSecond));
 
   // Utility classes for LED and HID controls
-  private final LED                                   m_led           = new LED( );
-  private final HID                                   m_hid           = new HID(m_driverPad.getHID( ), m_operatorPad.getHID( ));
-  private final Vision                                m_vision        = new Vision( );
+  private final LED                                   m_led             = new LED( );
+  private final HID                                   m_hid             = new HID(m_driverPad.getHID( ), m_operatorPad.getHID( ));
+  private final Vision                                m_vision          = new Vision( );
   private MatchState                                  m_matchState;
 
   // The robot's shared subsystems
-  private final Power                                 m_power         = new Power( );
+  private final Power                                 m_power           = new Power( );
 
   // These subsystems may use LED or vision and must be created afterward
-  private final CommandSwerveDrivetrain               m_drivetrain    = TunerConstants.createDrivetrain( );
-  private final Intake                                m_intake        = new Intake( );
-  private final Hopper                                m_hopper        = new Hopper( );
-  private final Kicker                                m_kicker        = new Kicker( );
-  private final Launcher                              m_launcher      = new Launcher( );
+  private final CommandSwerveDrivetrain               m_drivetrain      = TunerConstants.createDrivetrain( );
+  private final Intake                                m_intake          = new Intake( );
+  private final Hopper                                m_hopper          = new Hopper( );
+  private final Kicker                                m_kicker          = new Kicker( );
+  private final Launcher                              m_launcher        = new Launcher( );
   // private final Climber                               m_climberLeft   = new Climber("Left", "CL-", false);
-  private final Climber                               m_climberRight  = new Climber("Right", "CR-", false);
+  private final Climber                               m_climberRight    = new Climber("Right", "CR-", false);
 
   // Selected autonomous command
   private Command                                     m_autoCommand;  // Selected autonomous command
@@ -248,6 +256,7 @@ public class RobotContainer
     SmartDashboard.putData("AutoMode", m_autoChooser);
     SmartDashboard.putData("AutoStart", m_startChooser);
     SmartDashboard.putNumber("AutoDelay", 0.0);
+    publishAutoHealthStatus("INIT", "RobotContainerInit", "none", "none", "none");
 
     // Configure autonomous sendable chooser
     m_autoChooser.setDefaultOption("0 - AutoStop", AutoChooser.AUTOSTOP);
@@ -273,10 +282,8 @@ public class RobotContainer
         m_autoCommand.cancel( );
       }
 
-      if ((m_autoCommand = getAutonomousCommand( )) != null)
-      {
-        CommandScheduler.getInstance( ).schedule(m_autoCommand);
-      }
+      m_autoCommand = getAutonomousCommand( );  // Must always return a valid command, even if it's just AutoStop
+      CommandScheduler.getInstance( ).schedule(m_autoCommand);
     }));
 
     // Add main command scheduler to dashboard
@@ -328,8 +335,6 @@ public class RobotContainer
     //
     // Driver - POV buttons
     //
-    // m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
-    // m_driverPad.pov(180).onTrue(new ClimbTower(m_climberRight));
     m_driverPad.pov(0).onTrue(new PrepareToClimb(m_intake, m_climberRight));
     m_driverPad.pov(90).onTrue(new ClimbTower(m_climberRight));
     m_driverPad.pov(180).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
@@ -446,36 +451,30 @@ public class RobotContainer
    * 
    * Reset odometery to initial pose in the first autonomous path
    */
-  void resetOdometryToInitialPose(PathPlannerPath initialPath)
+  void resetOdometryToInitialPose(Optional<Pose2d> initialPose)
   {
-    if (initialPath == null)
+    if (initialPose == null)
     {
-      DataLogManager.log("getAuto: ERROR! - initial path is null, cannot reset odometry");
+      DataLogManager.log("getAuto: ERROR! - initial pose container is null, cannot reset odometry");
       return;
-    }
-
-    if (DriverStation.getAlliance( ).orElse(Alliance.Blue) == Alliance.Red)
-    {
-      initialPath = initialPath.flipPath( );
     }
 
     // Set field centric robot position to start of auto sequence
     try
     {
-      Optional<Pose2d> startPose = initialPath.getStartingHolonomicPose( );
-      if (startPose.isPresent( ))
+      if (initialPose.isPresent( ))
       {
-        m_drivetrain.resetPoseAndLimelight(startPose.get( ));
-        DataLogManager.log(String.format("getAuto: starting pose %s", startPose));
+        m_drivetrain.resetPoseAndLimelight(initialPose.get( ));
+        DataLogManager.log(String.format("getAuto: starting pose %s", initialPose));
       }
       else
       {
         DataLogManager.log("getAuto: ERROR! - starting pose is missing");
       }
     }
-    catch (Exception nullException)
+    catch (Exception e)
     {
-      DataLogManager.log(String.format("getAuto: ERROR! - starting pose is missing"));
+      DataLogManager.log(String.format("getAuto: ERROR! - failed to read/reset starting pose (%s)", e.toString( )));
     }
 
   }
@@ -487,6 +486,132 @@ public class RobotContainer
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand( )
+  {
+    // NOTE: This method is intentionally called from Robot.disabledPeriodic() to preload auto.
+    // It may parse/read path files and construct command graphs, which can take noticeable time.
+    // Keep autonomousInit() schedule-only to avoid delayed robot response at auto start.
+    //
+    // IMPORTANT POLICY: Never return null from this method. Always return a valid command,
+    // falling back to AutoStop/idle on any error.
+    AutoSelectionContext selection = resolveAutoSelectionContext( );
+
+    // Get auto name using created key
+
+    String fallbackReason = evaluateAutoMapFallbackReason(selection.autoName);
+    if (fallbackReason != null)
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - no auto mapped for key: %s", selection.autoKey));
+      return m_autoCommand = getAutoStopFallback(fallbackReason, selection.autoKey, "missing");
+    }
+
+    DataLogManager.log(String.format("========================================================================"));
+    DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", selection.autoKey, selection.autoName));
+    DataLogManager.log(String.format("========================================================================"));
+
+    if (selection.autoOption != AutoChooser.AUTOSCORE3A)
+    {
+      return buildPathPlannerAutonomousCommand(selection);
+    }
+
+    // BLine autonomous option
+    return buildBLineAutonomousCommand(selection);
+  }
+
+  /****************************************************************************
+   * 
+   * Build a valid fallback autonomous command that keeps the robot still.
+   *
+   * IMPORTANT POLICY: Autonomous command selection must never return null.
+   * On any error condition, return an explicit AutoStop/idle command and log why.
+   */
+  private Command getAutoStopFallback(String reason, String autoKey, String autoName)
+  {
+    publishAutoHealthStatus("FALLBACK", reason, autoKey, autoName, "AutoStop-" + reason);
+    DataLogManager.log(String.format("getAuto: FALLBACK to AutoStop - %s (key=%s name=%s)", reason, autoKey, autoName));
+    return m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop-" + reason);
+  }
+
+  /****************************************************************************
+   *
+   * Publish autonomous health status for pit and development diagnostics.
+   */
+  private void publishAutoHealthStatus(String state, String reason, String autoKey, String autoName, String commandName)
+  {
+    SmartDashboard.putString(kAutoHealthState, state);
+    SmartDashboard.putString(kAutoHealthReason, reason);
+    SmartDashboard.putString(kAutoHealthKey, autoKey);
+    SmartDashboard.putString(kAutoHealthName, autoName);
+    SmartDashboard.putString(kAutoHealthCmd, commandName);
+    SmartDashboard.putNumber(kAutoHealthTime, edu.wpi.first.wpilibj.Timer.getFPGATimestamp( ));
+  }
+
+  private Command buildPreRunCommand(Runnable preRunHook)
+  {
+    Command preRunCommand;
+    if (preRunHook != null)
+    {
+      preRunCommand = new InstantCommand(preRunHook, m_drivetrain);
+    }
+    else
+    {
+      preRunCommand = new InstantCommand(( ) ->
+      {
+        // No pre-run action for this autonomous command.
+      }, m_drivetrain);
+    }
+    return preRunCommand;
+  }
+
+  /****************************************************************************
+   *
+   * Wrap a base autonomous command with common start/end markers and delay behavior.
+   * Optionally run a pre-run hook immediately before the delay and base command.
+   */
+  private Command buildFullAutoCommand(Command baseAutoCommand, double delay, Runnable preRunHook)
+  {
+    if (baseAutoCommand == null)
+    {
+      DataLogManager.log("getAuto: WARNING - baseAutoCommand was null in wrapper; substituting AutoStop");
+      baseAutoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop-WrappedNull");
+    }
+
+    Command preRunCommand = buildPreRunCommand(preRunHook);
+
+    return new SequentialCommandGroup(                                                                //
+        new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                  //
+        preRunCommand,                                                                                //
+        new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
+        new WaitCommand(delay),                                                                       //
+        baseAutoCommand,                                                                              //
+        new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                     //
+    );
+  }
+
+  /****************************************************************************
+   *
+   * Shared autonomous selection context resolved from chooser state and dashboard delay.
+   */
+  private static final class AutoSelectionContext
+  {
+    final AutoChooser autoOption;
+    final double      delay;
+    final String      autoKey;
+    final String      autoName;
+
+    AutoSelectionContext(AutoChooser autoOption, double delay, String autoKey, String autoName)
+    {
+      this.autoOption = autoOption;
+      this.delay = delay;
+      this.autoKey = autoKey;
+      this.autoName = autoName;
+    }
+  }
+
+  /****************************************************************************
+   *
+   * Resolve chooser selections into a shared autonomous selection context.
+   */
+  private AutoSelectionContext resolveAutoSelectionContext( )
   {
     AutoChooser autoOption = m_autoChooser.getSelected( );
     StartPose startOption = m_startChooser.getSelected( );
@@ -504,141 +629,104 @@ public class RobotContainer
     }
 
     double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
-
-    // Cancel any autos that were already running
-
-    if (m_autoCommand != null)
-    {
-      if (m_autoCommand.isScheduled( ))
-      {
-        m_autoCommand.cancel( );
-      }
-      m_autoCommand = null;
-    }
-
-    // Get auto name using created key
-
     String autoKey = autoOption.toString( ) + startOption.toString( );
     String autoName = autoMap.get(autoKey);
 
-    if (autoName == null)
+    return new AutoSelectionContext(autoOption, delay, autoKey, autoName);
+  }
+
+  /****************************************************************************
+   *
+   * Build autonomous command for PathPlanner-backed autos.
+   */
+  private Command buildPathPlannerAutonomousCommand(AutoSelectionContext selection)
+  {
+    // Get list of paths within the auto file for all autos except AUTOSTOP
+
+    try
     {
-      DataLogManager.log(String.format("getAuto: ERROR - no auto mapped for key: %s", autoKey));
-      return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoMapMissing");
+      m_ppPathList = loadPathGroupFromAutoFile(selection.autoName);
+    }
+    catch (ParseException | IOException e)
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file (%s)", e.toString( )));
+      return m_autoCommand = getAutoStopFallback("AutoPathLoadError", selection.autoKey, selection.autoName);
     }
 
-    DataLogManager.log(String.format("========================================================================"));
-    DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", autoKey, autoName));
-    DataLogManager.log(String.format("========================================================================"));
-
-    if (autoOption != AutoChooser.AUTOSCORE3A)
+    String loadedPathFallbackReason = evaluateLoadedPathFallbackReason(m_ppPathList);
+    if (loadedPathFallbackReason != null)
     {
-      // Get list of paths within the auto file for all autos except AUTOSTOP
-
-      try
-      {
-        m_ppPathList = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
-      }
-      catch (ParseException | IOException e)
-      {
-        DataLogManager.log(String.format("getAuto: ERROR - parse or IO exception when reading the auto file"));
-        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-      }
-
-      if (m_ppPathList.isEmpty( ))
-      {
-        DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
-        return m_autoCommand = m_drivetrain.applyRequest(( ) -> idle);
-      }
-
-      DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
-
-      // {
-      //   // Debug only: print states of first path
-      //   List<PathPlannerTrajectory.State> states = m_initialPath.getTrajectory(new ChassisSpeeds( ), new Rotation2d( )).getStates( );
-      //   for (int i = 0; i < states.size( ); i++)
-      //     DataLogManager.log(String.format("autoCommand: Auto path state: (%d) %s", i, states.get(i).getTargetHolonomicPose( )));
-      // }
-
-      // Create the correct base command and pass the path list
-
-      switch (autoOption)
-      {
-        default :
-        case AUTOSTOP :
-          m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
-          break;
-        case AUTOTEST :
-          m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
-          break;
-        case AUTOSCORE1A :
-          m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-          break;
-        case AUTOSCORE1B :
-          m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-          break;
-        case AUTOSCORE2A :
-          m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-          break;
-        case AUTOSCORE2B :
-          m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-          break;
-      }
-
-      DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
-
-      // Build a new sequential command from the base command that allows for a delay and handles odometry
-
-      // Update robot pose to where we want immediately so it displays correctly in dashboard
-      resetOdometryToInitialPose(m_ppPathList.get(0));
-
-      // Build the autonomous command to run
-      if (autoOption != AutoChooser.AUTOSTOP)
-      {
-        m_autoCommand = new SequentialCommandGroup(                                                       //
-            new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
-            new InstantCommand(( ) ->      // Update pose again right before we run the command
-            {
-              resetOdometryToInitialPose(m_ppPathList.get(0));
-            }, m_drivetrain),                                                                             //
-            new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
-            new WaitCommand(delay),                                                                       //
-            m_autoCommand,                                                                                //
-            new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
-        );
-      }
+      DataLogManager.log(String.format("getAuto: ERROR - auto path list is empty"));
+      return m_autoCommand = getAutoStopFallback(loadedPathFallbackReason, selection.autoKey, selection.autoName);
     }
-    else  // BLine autonomous option
+
+    DataLogManager.log(String.format("getAuto: %s contains %s paths in list", selection.autoName, m_ppPathList.size( )));
+
+    // Create the correct base command and pass the path list
+
+    switch (selection.autoOption)
     {
-      var path = "first-straight";
-      DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, path));
-      // DataLogManager.log(String.format("getAuto: autoMode %s (%s)", autoKey, m_autoCommand.getName( )));
-      // DataLogManager.log(String.format("getAuto: %s contains %s paths in list", autoName, m_ppPathList.size( )));
+      default :
+      case AUTOSTOP :
+        m_autoCommand = m_drivetrain.applyRequest(( ) -> idle).withName("AutoStop");
+        break;
+      case AUTOTEST :
+        m_autoCommand = new AutoTest(m_ppPathList, m_drivetrain);
+        break;
+      case AUTOSCORE1A :
+        m_autoCommand = new AutoScore1A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+        break;
+      case AUTOSCORE1B :
+        m_autoCommand = new AutoScore1B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+        break;
+      case AUTOSCORE2A :
+        m_autoCommand = new AutoScore2A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+        break;
+      case AUTOSCORE2B :
+        m_autoCommand = new AutoScore2B(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+        break;
+    }
 
-      Path firstStraight = new Path(path);
+    DataLogManager.log(String.format("getAuto: autoMode %s (%s)", selection.autoKey, m_autoCommand.getName( )));
+    publishAutoHealthStatus("OK", "Ready", selection.autoKey, selection.autoName, m_autoCommand.getName( ));
 
-      m_autoCommand = m_drivetrain.getPathBuilder( ).withPoseReset(m_drivetrain::resetPoseAndLimelight).build(firstStraight);
+    Optional<Pose2d> initialPose = getPathPlannerInitialPose(m_ppPathList);
+
+    // Update robot pose to where we want immediately so it displays correctly in dashboard
+    resetOdometryToInitialPose(initialPose);
+
+    // Build the autonomous command to run
+    if (selection.autoOption != AutoChooser.AUTOSTOP)
+    {
+      Command baseAutoCommand = m_autoCommand;
+      m_autoCommand = buildFullAutoCommand(baseAutoCommand, selection.delay, ( ) -> resetOdometryToInitialPose(initialPose));
+    }
+
+    return m_autoCommand;
+  }
+
+  /****************************************************************************
+   *
+   * Build autonomous command for BLine-backed autos.
+   */
+  private Command buildBLineAutonomousCommand(AutoSelectionContext selection)
+  {
+    var path = getBLinePathName( );
+    Optional<Pose2d> initialPose = getBLineInitialPose(path);
+    DataLogManager.log(String.format("getAuto: autoMode %s (%s)", selection.autoKey, path));
+
+    try
+    {
+      Command blineCommand = buildBLineCommand(path);
 
       // m_autoCommand = new AutoScore3A(m_ppPathList, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-
-      // Build a new sequential command from the base command that allows for a delay and handles odometry
-
-      // Update robot pose to where we want immediately so it displays correctly in dashboard
-      // resetOdometryToInitialPose(m_ppPathList.get(0));
-
-      // Build the autonomous command to run
-      m_autoCommand = new SequentialCommandGroup(                                                       //
-          new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                 //
-          new InstantCommand(( ) ->      // Update pose again right before we run the command
-          {
-            // resetOdometryToInitialPose(m_ppPathList.get(0));
-          }, m_drivetrain),                                                                             //
-          new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
-          new WaitCommand(delay),                                                                       //
-          m_autoCommand,                                                                                //
-          new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                    //
-      );
-
+      m_autoCommand = buildFullAutoCommand(blineCommand, selection.delay, ( ) -> resetOdometryToInitialPose(initialPose));
+      publishAutoHealthStatus("OK", "Ready", selection.autoKey, selection.autoName, m_autoCommand.getName( ));
+    }
+    catch (RuntimeException e)
+    {
+      DataLogManager.log(String.format("getAuto: ERROR - BLine build failed (%s)", e.toString( )));
+      return m_autoCommand = getAutoStopFallback(evaluateBLineBuildFallbackReason(e), selection.autoKey, selection.autoName);
     }
 
     return m_autoCommand;
@@ -753,4 +841,113 @@ public class RobotContainer
     m_launcher.printFaults( );
     m_climberRight.printFaults( );
   }
+
+  /****************************************************************************
+   *
+   * Test seam for loading PathPlanner auto path groups.
+   */
+  List<PathPlannerPath> loadPathGroupFromAutoFile(String autoName) throws ParseException, IOException
+  {
+    return PathPlannerAuto.getPathGroupFromAutoFile(autoName);
+  }
+
+  /****************************************************************************
+   *
+   * Test seam for extracting initial pose from PathPlanner path list.
+   */
+  Optional<Pose2d> getPathPlannerInitialPose(List<PathPlannerPath> pathList)
+  {
+    if (pathList == null || pathList.isEmpty( ))
+    {
+      return Optional.empty( );
+    }
+
+    PathPlannerPath initialPath = pathList.get(0);
+    if (initialPath == null)
+    {
+      return Optional.empty( );
+    }
+
+    if (DriverStation.getAlliance( ).orElse(Alliance.Blue) == Alliance.Red)
+    {
+      initialPath = initialPath.flipPath( );
+    }
+
+    return initialPath.getStartingHolonomicPose( );
+  }
+
+  /****************************************************************************
+   *
+   * Test seam for resolving the BLine path key.
+   */
+  String getBLinePathName( )
+  {
+    return "first-straight";
+  }
+
+  /****************************************************************************
+   *
+   * Test seam for building the BLine autonomous command.
+   */
+  Command buildBLineCommand(String pathName)
+  {
+    Path firstStraight = new Path(pathName);
+    return m_drivetrain.getPathBuilder( ).withPoseReset(m_drivetrain::resetPoseAndLimelight).build(firstStraight);
+  }
+
+  /****************************************************************************
+   *
+   * Test seam for extracting initial pose from BLine autonomous selection.
+   */
+  Optional<Pose2d> getBLineInitialPose(String pathName)
+  {
+    // TODO: Resolve initial pose from BLine path API when available.
+    return Optional.empty( );
+  }
+
+  /****************************************************************************
+   *
+   * Test seam: evaluate map-lookup fallback reason without touching hardware.
+   *
+   * @return null when no fallback is needed; otherwise fallback reason token.
+   */
+  static String evaluateAutoMapFallbackReason(String autoName)
+  {
+    if (autoName == null)
+    {
+      return "AutoMapMissing";
+    }
+    return null;
+  }
+
+  /****************************************************************************
+   *
+   * Test seam: evaluate loaded-path fallback reason without touching hardware.
+   *
+   * @return null when no fallback is needed; otherwise fallback reason token.
+   */
+  static String evaluateLoadedPathFallbackReason(List<PathPlannerPath> pathList)
+  {
+    if (pathList == null || pathList.isEmpty( ))
+    {
+      return "AutoPathListEmpty";
+    }
+    return null;
+  }
+
+  /****************************************************************************
+   *
+   * Test seam: evaluate BLine build failure without touching hardware.
+   *
+   * @return null when no fallback is needed; otherwise fallback reason token.
+   */
+  static String evaluateBLineBuildFallbackReason(Throwable error)
+  {
+    if (error != null)
+    {
+      return "BLineBuildError";
+    }
+    return null;
+  }
+
 }

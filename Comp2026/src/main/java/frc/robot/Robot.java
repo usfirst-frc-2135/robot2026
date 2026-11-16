@@ -20,15 +20,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.properties file in the
- * project.
+ * each mode, as described in the TimedRobot documentation.
  */
 public class Robot extends TimedRobot
 {
-  private static final boolean m_isComp          = detectRobot( ); // Detect which robot is in use
+  private static final boolean m_isComp          = detectRobot( ); // Detect whether this is the competition robot
   private static final String  printBarrier      = "========================================================================\n";
-  private final RobotContainer m_robotContainer  = new RobotContainer(this); // Create that robot
+  private final RobotContainer m_robotContainer  = new RobotContainer(this); // Main robot container
   private Command              m_autonomousCommand;
   private boolean              m_faultsCleared   = false;
   private static double        m_timeMark        = Timer.getFPGATimestamp( );
@@ -128,15 +126,25 @@ public class Robot extends TimedRobot
   {
     datalogMatchBanner("autonomousInit");
 
-    cancelOldAutonomousCommand( );
+    cancelAnyRunningAutonomousCommand( );
 
-    // Handle any commands that need to be scheduled when entering Teleop mode
+    // Handle any commands that need to be scheduled when entering Autonomous mode
     m_robotContainer.autoInit( );
 
-    // schedule the autonomous command selected by the RobotContainer class
+    // NOTE: Intentionally schedule only a PRELOADED auto command here.
+    // Do not call getAutonomousCommand() from autonomousInit(). Path parsing/loading can take
+    // hundreds of milliseconds and would delay robot movement at the start of autonomous.
+    // The command is prebuilt in disabledPeriodic() via detectAutoDashboardChange().
+    //
+    // Schedule the preloaded autonomous command selected by RobotContainer.
     if (m_autonomousCommand != null)
     {
+      DataLogManager.log(String.format("autonomousInit: scheduling preloaded auto command: %s", m_autonomousCommand.getName( )));
       CommandScheduler.getInstance( ).schedule(m_autonomousCommand);
+    }
+    else
+    {
+      DataLogManager.log("autonomousInit: WARNING - m_autonomousCommand is null; no autonomous command scheduled");
     }
   }
 
@@ -157,7 +165,7 @@ public class Robot extends TimedRobot
     datalogMatchBanner("teleopInit");
 
     // Make sure that the autonomous command stops running when Teleop starts running
-    cancelOldAutonomousCommand( );
+    cancelAnyRunningAutonomousCommand( );
 
     // Handle any commands that need to be scheduled when entering Teleop mode
     m_robotContainer.teleopInit( );
@@ -205,7 +213,7 @@ public class Robot extends TimedRobot
 
   /****************************************************************************
    * 
-   * Our robot detection process to differentiate between competition and beta (practice) robots
+   * Robot detection process to differentiate between competition and practice robots.
    */
   public static boolean isComp( )
   {
@@ -215,7 +223,25 @@ public class Robot extends TimedRobot
   private static boolean detectRobot( )
   {
     // Detect which robot/RoboRIO
-    String serialNum = RobotController.getSerialNumber( );
+    String serialNum = null;
+    if (RobotBase.isSimulation( ))
+    {
+      serialNum = null;
+      DataLogManager.log("robotContainer: Simulation mode detected, using simulated serial number path");
+    }
+    else
+    {
+      try
+      {
+        serialNum = RobotController.getSerialNumber( );
+      }
+      catch (Throwable t)
+      {
+        serialNum = null;
+        DataLogManager.log(String.format("robotContainer: WARNING - failed to read RoboRIO serial number (%s)", t.toString( )));
+      }
+    }
+
     String robotName = "UNKNOWN";
     boolean isComp = false;
 
@@ -241,7 +267,7 @@ public class Robot extends TimedRobot
 
   /****************************************************************************
    * 
-   * Method for printing the absolute and relative time from the previous call
+   * Print absolute and relative time from the previous marker.
    */
   public static void timeMarker(String msg)
   {
@@ -266,7 +292,7 @@ public class Robot extends TimedRobot
 
   /****************************************************************************
    * 
-   * Detect dashboard settings changes for autonomous mode
+   * Detect dashboard/settings changes that require autonomous command reload.
    */
   private void detectAutoDashboardChange( )
   {
@@ -286,18 +312,20 @@ public class Robot extends TimedRobot
 
     if (m_loadAutoCommand)
     {
+      // Intentionally preload autonomous command while disabled. This keeps autonomousInit()
+      // lightweight and avoids startup lag from path file loading/parsing at mode transition.
       m_autonomousCommand = m_robotContainer.getAutonomousCommand( );
-      m_loadAutoCommand = false; // Load only once per request
+      m_loadAutoCommand = false; // Preload only once per reload request
     }
   }
 
   /****************************************************************************
    * 
-   * Detect roboRIO user button pressed and clear all CAN device faults
+   * Detect roboRIO user-button press and dump all CAN device faults.
    */
   private void detectUserButtonPressed( )
   {
-    // If RoboRIO User button is pressed, dump all CAN faults
+    // If the roboRIO user button is pressed, dump all CAN faults.
     if (RobotController.getUserButton( ))
     {
       if (!m_faultsCleared)
@@ -314,14 +342,13 @@ public class Robot extends TimedRobot
 
   /****************************************************************************
    * 
-   * Cancel any active autonomous commands
+   * Cancel any running autonomous commands
    */
-  private void cancelOldAutonomousCommand( )
+  private void cancelAnyRunningAutonomousCommand( )
   {
     if (m_autonomousCommand != null && m_autonomousCommand.isScheduled( ))
     {
       m_autonomousCommand.cancel( );
-      m_autonomousCommand = null;
     }
   }
 
