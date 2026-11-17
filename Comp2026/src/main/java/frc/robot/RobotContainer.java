@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,7 @@ import frc.robot.lib.HID;
 import frc.robot.lib.LED;
 import frc.robot.lib.MatchState;
 import frc.robot.lib.Vision;
+import frc.robot.lib.BLine.FlippingUtil;
 import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -170,9 +172,9 @@ public class RobotContainer
   }
 
   /** Dashboard chooser for auto option selection */
-  private SendableChooser<AutoChooser>  m_autoChooser  = new SendableChooser<>( );
+  private SendableChooser<AutoChooser>             m_autoChooser  = new SendableChooser<>( );
   /** Dashboard chooser for starting pose selection */
-  private SendableChooser<StartPose>    m_startChooser = new SendableChooser<>( );
+  private SendableChooser<StartPose>               m_startChooser = new SendableChooser<>( );
 
   /**
    * Hash map of autonomous option relations to auto filenames
@@ -182,7 +184,7 @@ public class RobotContainer
    * @param value
    *          the auto filename associated with the key
    */
-  private final HashMap<String, String> autoMap        = new HashMap<>(Map.ofEntries(                 //
+  private final HashMap<String, String>            ppAutoMap      = new HashMap<>(Map.ofEntries(    //
       Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START1.toString( ), "Start1_Stop"),
       Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START2.toString( ), "Start2_Stop"),
       Map.entry(AutoChooser.AUTOSTOP.toString( ) + StartPose.START3.toString( ), "Start3_Stop"),
@@ -203,14 +205,22 @@ public class RobotContainer
       Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START2.toString( ), "Start2_L2A"),
       Map.entry(AutoChooser.AUTOSCORE2B.toString( ) + StartPose.START3.toString( ), "Start3_NZ3_L3_NZ3_L3"),
 
-      // BLine paths for AUTOSCORE3A - 2 cycles of scoring fuel - 2 paths (out to neutral zone and back to launch, looping path back to score)
-      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START1.toString( ), "AutoScore3A_Start1"),
-      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START2.toString( ), "AutoScore3A_Start2"),
-      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START3.toString( ), "AutoScore3A_Start3"),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START1.toString( ), "Start1_S1_L1_L1_L1"),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START2.toString( ), "Start2_S2_L2_L2_L2"),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START3.toString( ), "Start3_S3_L3_L3_L3"),
 
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START1.toString( ), "Start1_T1"),
       Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START2.toString( ), "Start2_T2"),
-      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_T3")       // 
+      Map.entry(AutoChooser.AUTOTEST.toString( ) + StartPose.START3.toString( ), "Start3_T3") // 
+  ));
+
+  private final HashMap<String, ArrayList<String>> bLineAutoMap   = new HashMap<>(Map.ofEntries(    //
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START1.toString( ),
+          new ArrayList<>(Arrays.asList("S1_L1", "L1_L1"))),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START2.toString( ),
+          new ArrayList<>(Arrays.asList("S1_L1", "L2_L2"))),
+      Map.entry(AutoChooser.AUTOSCORE3A.toString( ) + StartPose.START3.toString( ),
+          new ArrayList<>(Arrays.asList("S3_L3", "L3_L3"))) //
   ));
 
   /****************************************************************************
@@ -495,9 +505,11 @@ public class RobotContainer
     //
     // IMPORTANT POLICY: Never return null from this method. Always return a valid command,
     // falling back to AutoStop/idle on any error.
-    AutoSelectionContext selection = resolveAutoSelectionContext( );
+    AutoSelectionContext selection = resolveAutoSelectionContext( );  // Get auto name using created key
 
-    // Get auto name using created key
+    DataLogManager.log(String.format("========================================================================"));
+    DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", selection.autoKey, selection.autoName));
+    DataLogManager.log(String.format("========================================================================"));
 
     String fallbackReason = evaluateAutoMapFallbackReason(selection.autoName);
     if (fallbackReason != null)
@@ -505,10 +517,6 @@ public class RobotContainer
       DataLogManager.log(String.format("getAuto: ERROR - no auto mapped for key: %s", selection.autoKey));
       return m_autoCommand = getAutoStopFallback(fallbackReason, selection.autoKey, "missing");
     }
-
-    DataLogManager.log(String.format("========================================================================"));
-    DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", selection.autoKey, selection.autoName));
-    DataLogManager.log(String.format("========================================================================"));
 
     if (selection.autoOption != AutoChooser.AUTOSCORE3A)
     {
@@ -656,7 +664,7 @@ public class RobotContainer
 
     double delay = SmartDashboard.getNumber("AutoDelay", 0.0);
     String autoKey = autoOption.toString( ) + startOption.toString( );
-    String autoName = autoMap.get(autoKey);
+    String autoName = ppAutoMap.get(autoKey);
 
     return new AutoSelectionContext(autoOption, delay, autoKey, autoName);
   }
@@ -737,7 +745,7 @@ public class RobotContainer
 
     // Get list of paths within the auto file for all autos except AUTOSTOP
 
-    bLinePathNames = getBLinePathList(selection.autoKey);
+    bLinePathNames = bLineAutoMap.get(selection.autoKey);
 
     if (bLinePathNames == null || bLinePathNames.isEmpty( ))
     {
@@ -765,48 +773,20 @@ public class RobotContainer
       return m_autoCommand = getAutoStopFallback("BLinePathListEmpty", selection.autoKey, selection.autoName);
     }
 
-    initialPose = Optional.ofNullable(bLinePaths.get(0).getStartPose( ));
+    initialPose = Optional.ofNullable(FlippingUtil.flipFieldPose(bLinePaths.get(0).getStartPose( )));
 
     DataLogManager.log(String.format("getAuto: %s contains %s paths in list", selection.autoName, bLinePaths.size( )));
 
     try
     {
-      Command baseAutoCommand = new AutoScore3A(bLinePaths, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
-      return finalizeAutonomousCommand(selection, baseAutoCommand, initialPose);
+      m_autoCommand = new AutoScore3A(bLinePaths, m_drivetrain, m_intake, m_hopper, m_kicker, m_launcher);
+      return finalizeAutonomousCommand(selection, m_autoCommand, initialPose);
     }
     catch (RuntimeException e)
     {
       DataLogManager.log(String.format("getAuto: ERROR - BLine build failed (%s)", e.toString( )));
       return m_autoCommand = getAutoStopFallback(evaluateBLineBuildFallbackReason(e), selection.autoKey, selection.autoName);
     }
-  }
-
-  /****************************************************************************
-   *
-   * Test seam for resolving the BLine path key.
-   */
-  ArrayList<String> getBLinePathList(String autoKey)
-  {
-    ArrayList<String> pathList = new ArrayList<String>( );
-
-    switch (autoKey)
-    {
-      default :
-      case "AUTOSCORE3ASTART1" :
-        pathList.add("S1_L1");
-        pathList.add("L1_L1");
-        break;
-      case "AUTOSCORE3ASTART2" :
-        pathList.add("S2_L2");
-        pathList.add("L2_L2");
-        break;
-      case "AUTOSCORE3ASTART3" :
-        pathList.add("S3_L3");
-        pathList.add("L3_L3");
-        break;
-    }
-
-    return pathList;
   }
 
   /****************************************************************************

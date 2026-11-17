@@ -7,10 +7,12 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.AcquireFuel;
 import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
 import frc.robot.commands.StopIntaking;
+import frc.robot.commands.StopLaunching;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -44,16 +46,22 @@ public class AutoScore2B extends SequentialCommandGroup
         new LogCommand(getName(), "Acquire fuel, score once, acquire fuel again and score"),
         new LogCommand(getName(),"Drive path while acquiring"),
         new ParallelCommandGroup(
-            drivetrain.getPathCommand(ppAuto.get(0)),
-            new AcquireFuel(intake,hopper)
+            new SequentialCommandGroup(
+              new WaitCommand(0.15),
+              drivetrain.getPathCommand(ppAuto.get(0))
+            ),
+            new AcquireFuel(intake, hopper)
           ),
+
         new LogCommand(getName(),"stop intaking and prime the launcher"),
         new ParallelCommandGroup(
             launcher.getLauncherScoreCommand(),
             new StopIntaking(intake, hopper)
           ),
+
         new LogCommand(getName(),"Launch fuel"),
-        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(3.5),
+        new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(7.0),
+        new StopLaunching(intake, hopper, kicker, launcher),
 
         new LogCommand(getName(),"Drive return path while intaking "),
         new ParallelCommandGroup(
