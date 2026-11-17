@@ -18,7 +18,7 @@
       "translation_target": {
         "x_meters": 5.75164,
         "y_meters": 0.64982,
-        "intermediate_handoff_radius_meters": 0.307,
+        "intermediate_handoff_radius_meters": 0.338,
         "handoff_radius_source": "auto"
       },
       "rotation_target": {
@@ -31,7 +31,7 @@
       "translation_target": {
         "x_meters": 7.67739,
         "y_meters": 0.84902,
-        "intermediate_handoff_radius_meters": 0.565,
+        "intermediate_handoff_radius_meters": 0.857,
         "handoff_radius_source": "auto"
       },
       "rotation_target": {
@@ -44,7 +44,7 @@
       "translation_target": {
         "x_meters": 7.71794,
         "y_meters": 3.23332,
-        "intermediate_handoff_radius_meters": 0.699,
+        "intermediate_handoff_radius_meters": 0.898,
         "handoff_radius_source": "auto"
       },
       "rotation_target": {
@@ -57,7 +57,7 @@
       "translation_target": {
         "x_meters": 5.94579,
         "y_meters": 0.64399,
-        "intermediate_handoff_radius_meters": 0.669,
+        "intermediate_handoff_radius_meters": 1.103,
         "handoff_radius_source": "auto"
       },
       "rotation_target": {
@@ -70,7 +70,7 @@
       "translation_target": {
         "x_meters": 3.34357,
         "y_meters": 0.65416,
-        "intermediate_handoff_radius_meters": 0.394,
+        "intermediate_handoff_radius_meters": 0.713,
         "handoff_radius_source": "auto"
       },
       "rotation_target": {
@@ -108,26 +108,20 @@
         "source": "auto_velocity"
       },
       {
-        "value": 1.79,
+        "value": 2.68,
         "start_ordinal": 2,
         "end_ordinal": 2,
         "source": "auto_velocity"
       },
       {
-        "value": 1.39,
+        "value": 1.55,
         "start_ordinal": 3,
         "end_ordinal": 3,
         "source": "auto_velocity"
       },
       {
-        "value": 2.27,
+        "value": 3.22,
         "start_ordinal": 4,
-        "end_ordinal": 5,
-        "source": "auto_velocity"
-      },
-      {
-        "value": 3.5,
-        "start_ordinal": 6,
         "end_ordinal": 6,
         "source": "auto_velocity"
       }
