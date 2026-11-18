@@ -59,6 +59,7 @@ public class AutoScore3A extends SequentialCommandGroup
           ),
 
         new LogCommand(getName(),"Launch fuel"),
+        drivetrain.getAutoAlignToHubCommand().withTimeout(1.0),
         new LaunchFuel(intake, hopper, kicker, launcher).withTimeout(3.5),
         new StopLaunching(intake, hopper, kicker, launcher),
 
@@ -73,6 +74,7 @@ public class AutoScore3A extends SequentialCommandGroup
           ),
 
         new LogCommand(getName(),"Launch fuel"),
+        drivetrain.getAutoAlignToHubCommand().withTimeout(1.0),
         new LaunchFuel(intake, hopper, kicker, launcher)
         
         // @formatter:on

@@ -296,7 +296,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             () -> getState().Speeds,
             this::driveRobotRelative,
             new PIDController(2.0, 0.0, 0.0),
-            new PIDController(1.0, 0.0, 0.0),
+            new PIDController(2.0, 0.0, 0.0),
             new PIDController(0.2, 0.0, 0.0)
         ).withDefaultShouldFlip()
         .withTRatioBasedTranslationHandoffs(true);
@@ -789,7 +789,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * 
      * @return auto-align to hub command
      */
-    public Command GetAutoAlignToHub( )
+    public Command getAutoAlignToHubCommand( )
     {
         return this.applyRequest(( ) ->
         {

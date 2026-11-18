@@ -318,7 +318,7 @@ public class RobotContainer
     //
     // Driver - A, B, X, Y
     // 
-    m_driverPad.a( ).whileTrue(m_drivetrain.GetAutoAlignToHub( ));
+    m_driverPad.a( ).whileTrue(m_drivetrain.getAutoAlignToHubCommand( ));
     m_driverPad.b( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim       //
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
