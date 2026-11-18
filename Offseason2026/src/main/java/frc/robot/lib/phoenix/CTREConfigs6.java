@@ -86,7 +86,7 @@ public final class CTREConfigs6
     // inRotaryConfig.HardwareLimitSwitch.*
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
-    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 5.0;       // 25.0 Rotations / second
+    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 25.0;      // Rotations / second
     inRotaryConfig.MotionMagic.MotionMagicAcceleration = 100.0;       // Rotations / second ^ 2
     inRotaryConfig.MotionMagic.MotionMagicJerk = 1000.0;              // Rotations / second ^ 3
 
@@ -108,9 +108,9 @@ public final class CTREConfigs6
     inRotaryConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
-    inRotaryConfig.Slot0.kP = 2.0;                                  // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
-    inRotaryConfig.Slot0.kI = 0.0;                                  // Feedback: Voltage or duty cycle per accumulated unit
-    inRotaryConfig.Slot0.kD = 0.0;                                  // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+    inRotaryConfig.Slot0.kP = 2.0 * gearRatio;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    inRotaryConfig.Slot0.kI = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per accumulated unit
+    inRotaryConfig.Slot0.kD = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
     // Software limit switches
     // inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations
@@ -286,9 +286,9 @@ public final class CTREConfigs6
     launcherHoodConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
-    launcherHoodConfig.Slot0.kP = 2.0;                                  // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
-    launcherHoodConfig.Slot0.kI = 0.0;                                  // Feedback: Voltage or duty cycle per accumulated unit
-    launcherHoodConfig.Slot0.kD = 0.0;                                  // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+    launcherHoodConfig.Slot0.kP = 2.0 * gearRatio;                                  // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    launcherHoodConfig.Slot0.kI = 0.0 * gearRatio;                                  // Feedback: Voltage or duty cycle per accumulated unit
+    launcherHoodConfig.Slot0.kD = 0.1 * gearRatio;                                  // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
     // Software limit switches
     // launcherHoodConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations

@@ -6,6 +6,7 @@
 //
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -24,6 +25,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
@@ -37,6 +39,9 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,6 +54,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.INConsts.INRollerMode;
 import frc.robot.Constants.Ports;
+import frc.robot.lib.math.Conversions;
 import frc.robot.lib.phoenix.CTREConfigs6;
 import frc.robot.lib.phoenix.PhoenixUtil6;
 
@@ -62,6 +68,10 @@ public class Intake extends SubsystemBase
   private static final String  kSubsystemName      = "Intake";
   private static final double  kRackGearRatio      = (40.0 / 8.0) * (50.0 / 22.0) * (18.0 / 18.0);    // Gear reduction
   private static final double  kGearDiameterInches = 1.0;                                             // 10T 10DP Gear diameter in inches
+  private static final double  kCarriageMassKg     = 1.0;                                             // Simulation
+  private static final double  kDrumDiameterInches = 1.0;   // Drum diameter in inches
+  private static final double  kDrumRadiusMeters   = Units.inchesToMeters(kDrumDiameterInches) / 2.0;
+  private static final double  kRolloutRatio       = kDrumDiameterInches * Math.PI / kRackGearRatio;  // inches per shaft rotation
 
   // Intake roller constants
   private static final double  kRollerSpeedAcquire = 0.9;    // Motor direction for positive input
@@ -82,13 +92,13 @@ public class Intake extends SubsystemBase
 
   /** Rack Motion Magic movement parameters */
 
-  private static final double       kToleranceDegrees   = 0.5;      // PID tolerance in inches
+  private static final double       kToleranceInches    = 0.5;      // PID tolerance in inches
   private static final double       kMMDebounceTime     = 0.060;    // Seconds to debounce a final position check
   private static final double       kMMMoveTimeout      = 1.5;      // Seconds allowed for a Motion Magic movement
 
   // Rack lengths - Motion Magic move parameters    
-  private static final double       kRackLengthStowed   = 0.0;
-  private static final double       kRackLengthDeployed = 10.0;
+  private static final double       kRackLengthStowed   = 0.0;      // Min length in inches
+  private static final double       kRackLengthDeployed = 10.0;     // Max length in inches
 
   private static final double       kRackLengthMin      = kRackLengthStowed - 0.5;
   private static final double       kRackLengthMax      = kRackLengthDeployed + 0.5;
@@ -108,7 +118,10 @@ public class Intake extends SubsystemBase
 
   // Simulation objects
   private final TalonFXSimState     m_rollerMotorLSim   = m_rollerMotorL.getSimState( );
-  private final TalonFXSimState     m_rackSim           = m_rackMotor.getSimState( );
+  private final TalonFXSimState     m_rackMotorSim      = m_rackMotor.getSimState( );
+
+  private final ElevatorSim         m_rackSim           = new ElevatorSim(DCMotor.getKrakenX60(1), kRackGearRatio,
+      kCarriageMassKg, kDrumRadiusMeters, kRackLengthMin, kRackLengthMax, false, 0.0);
 
   // Mechanism2d
   private final Mechanism2d         m_rackMech          = new Mechanism2d(1.0, 1.0);
@@ -137,7 +150,7 @@ public class Intake extends SubsystemBase
   private MotionMagicVoltage        m_mmRequestVolts    = new MotionMagicVoltage(0).withSlot(0).withEnableFOC(false);
   private Debouncer                 m_mmWithinTolerance = new Debouncer(kMMDebounceTime, DebounceType.kRising);
   private Timer                     m_mmMoveTimer       = new Timer( );       // Movement timer
-  private boolean                   m_mmMoveIsFinished;                         // Movement has completed (within tolerance)
+  private boolean                   m_mmMoveIsFinished;                       // Movement has completed (within tolerance)
 
   // Network tables publisher objects
   private DoublePublisher           m_rackInchesPub;
@@ -178,7 +191,7 @@ public class Intake extends SubsystemBase
     }
 
     // Simulation object initialization
-    m_rackSim.Orientation = ChassisReference.Clockwise_Positive;
+    m_rackMotorSim.Orientation = ChassisReference.Clockwise_Positive;
 
     // Status signals
     m_rackLength.setUpdateFrequency(50);
@@ -233,22 +246,27 @@ public class Intake extends SubsystemBase
     // This method will be called once per scheduler run during simulation
 
     // Set input motor voltage from the motor setting
-    m_rackSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    m_rackMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
     m_rollerMotorLSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    m_rackSim.setInput(m_rackMotorSim.getMotorVoltage( ));
 
     // update for 20 msec loop
+    m_rackSim.update(0.020);
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    // m_rackSim.setRawRotorPosition(Conversions.radiansToInputRotations(m_armSim.getAngleRads( ), kRackGearRatio));
-    // m_rackSim.setRotorVelocity(Conversions.radiansToInputRotations(m_armSim.getVelocityRadPerSec( ), kRackGearRatio));
+    m_rackMotorSim.setRawRotorPosition(
+        Conversions.rolloutToWinchRotations(Units.metersToInches(m_rackSim.getPositionMeters( )), kRolloutRatio));
+    m_rackMotorSim.setRotorVelocity(
+        Conversions.rolloutToWinchRotations(Units.metersToInches(m_rackSim.getVelocityMetersPerSecond( )), kRolloutRatio));
 
     m_rollerMotorLSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotorL.get( ));
     m_rollerMotorLSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotorL.get( ));
 
     // SimBattery estimates loaded battery voltages
-    // RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps( )));
+    RoboRioSim
+        .setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_rackMotor.getSupplyCurrent( ).getValue( ).in(Amps)));
 
-    m_mechLigament.setAngle(-m_currentInches);
+    m_mechLigament.setLength(m_currentInches);
   }
 
   /****************************************************************************
@@ -290,7 +308,7 @@ public class Intake extends SubsystemBase
     setRackStopped( );
 
     m_targetInches = m_currentInches;
-    DataLogManager.log(String.format("%s: Subsystem initialized! target Degrees: %.1f", getSubsystem( ), m_targetInches));
+    DataLogManager.log(String.format("%s: Subsystem initialized! target inches: %.1f", getSubsystem( ), m_targetInches));
   }
 
   /****************************************************************************
@@ -307,11 +325,11 @@ public class Intake extends SubsystemBase
     m_rackMotor.clearStickyFaults( );
   }
 
-  private final static Voltage kManualKG = Volts.of(-0.45);
-
   ////////////////////////////////////////////////////////////////////////////
   ///////////////////////// MANUAL MOVEMENT //////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
+
+  // private final static Voltage kManualKG = Volts.of(-0.45);
 
   /****************************************************************************
    * 
@@ -355,8 +373,7 @@ public class Intake extends SubsystemBase
 
     if (m_rackValid)
     {
-      m_rackMotor.setControl(m_requestVolts.withOutput(
-          kRackManualVolts.times(axisValue).plus(kManualKG.times(Math.cos(Units.degreesToRadians(m_currentInches))))));
+      m_rackMotor.setControl(m_requestVolts.withOutput(kRackManualVolts.times(axisValue)));
     }
   }
 
@@ -386,7 +403,7 @@ public class Intake extends SubsystemBase
     }
 
     // Decide if a new length request
-    if (holdLength || newLength != m_targetInches || !MathUtil.isNear(newLength, m_currentInches, kToleranceDegrees))
+    if (holdLength || newLength != m_targetInches || !MathUtil.isNear(newLength, m_currentInches, kToleranceInches))
     {
       // Validate the length request
       if (isMoveValid(newLength))
@@ -395,24 +412,25 @@ public class Intake extends SubsystemBase
         m_mmMoveIsFinished = false;
         m_mmWithinTolerance.calculate(false); // Reset the debounce filter
 
-        double targetRotations = Units.degreesToRotations(m_targetInches);
+        double targetRotations = Conversions.rolloutToWinchRotations(newLength, kRolloutRatio);
+
         if (m_rackValid)
         {
           m_rackMotor.setControl(m_mmRequestVolts.withPosition(targetRotations));
         }
-        DataLogManager.log(String.format("%s: MM Length move: %.1f -> %.1f degrees (%.3f -> %.3f rot)", getSubsystem( ),
+        DataLogManager.log(String.format("%s: MM Length move: %.1f -> %.1f inches (%.3f -> %.3f rot)", getSubsystem( ),
             m_currentInches, m_targetInches, Units.degreesToRotations(m_currentInches), targetRotations));
       }
       else
       {
-        DataLogManager.log(String.format("%s: MM Length move target %.1f degrees is OUT OF RANGE! [%.1f, %.1f deg]",
+        DataLogManager.log(String.format("%s: MM Length move target %.1f inches is OUT OF RANGE! [%.1f, %.1f deg]",
             getSubsystem( ), m_targetInches, kRackLengthMin, kRackLengthMax));
       }
     }
     else
     {
       m_mmMoveIsFinished = true;
-      DataLogManager.log(String.format("%s: MM Length already achieved -target %s degrees", getSubsystem( ), m_targetInches));
+      DataLogManager.log(String.format("%s: MM Length already achieved -target %s inches", getSubsystem( ), m_targetInches));
     }
   }
 
@@ -438,17 +456,17 @@ public class Intake extends SubsystemBase
 
     if (m_rackValid)
     {
-      m_rackMotor.setControl(m_mmRequestVolts.withPosition(Units.degreesToRotations(m_targetInches)));
+      m_rackMotor.setControl(m_mmRequestVolts.withPosition(Conversions.rolloutToWinchRotations(m_targetInches, kRolloutRatio)));
     }
 
     if (holdLength)
       return false;
 
-    if (m_mmWithinTolerance.calculate(Math.abs(error) < kToleranceDegrees) || timedOut)
+    if (m_mmWithinTolerance.calculate(Math.abs(error) < kToleranceInches) || timedOut)
     {
       if (!m_mmMoveIsFinished)
         DataLogManager
-            .log(String.format("%s: MM Length move finished - Current degrees: %.1f (difference %.1f) - Time: %.3f sec %s",
+            .log(String.format("%s: MM Length move finished - Current inches: %.1f (difference %.1f) - Time: %.3f sec %s",
                 getSubsystem( ), m_currentInches, error, m_mmMoveTimer.get( ), (timedOut) ? "- Warning: TIMED OUT!" : ""));
 
       m_mmMoveIsFinished = true;

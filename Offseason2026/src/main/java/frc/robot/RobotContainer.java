@@ -360,7 +360,7 @@ public class RobotContainer
         new AcquireFuel(m_intake, m_hopper)));//
     m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
-    m_operatorPad.back( ).onTrue(new LogCommand("driverPad", "Back"));   // aka View button
+    m_operatorPad.back( ).toggleOnTrue(m_launcher.getJoystickCommand(( ) -> getLauncherHoodAxis( )));   // aka View button
     m_operatorPad.start( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
 
     //
@@ -579,6 +579,15 @@ public class RobotContainer
   private double getIntakeRotaryAxis( )
   {
     return m_operatorPad.getRightX( );
+  }
+
+  /****************************************************************************
+   * 
+   * Gamepad joystick axis interfaces
+   */
+  private double getLauncherHoodAxis( )
+  {
+    return m_operatorPad.getLeftY( );
   }
 
   /****************************************************************************

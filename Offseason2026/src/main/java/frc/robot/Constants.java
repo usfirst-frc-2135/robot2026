@@ -166,7 +166,7 @@ public final class Constants
   /****************************************************************************
    * Launcher subsystem constants
    ****************************************************************************/
-  public static final class SHConsts
+  public static final class LNConsts
   {
 
   }
