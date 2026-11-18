@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -85,9 +86,9 @@ public class Intake extends SubsystemBase
   private static final double       kMMDebounceTime     = 0.060;    // Seconds to debounce a final position check
   private static final double       kMMMoveTimeout      = 1.5;      // Seconds allowed for a Motion Magic movement
 
-  // Rack angles - Motion Magic move parameters    
+  // Rack lengths - Motion Magic move parameters    
   private static final double       kRackLengthStowed   = 0.0;
-  private static final double       kRackLengthDeployed = 12.0;       // At hardstops
+  private static final double       kRackLengthDeployed = 10.0;
 
   private static final double       kRackLengthMin      = kRackLengthStowed - 0.5;
   private static final double       kRackLengthMax      = kRackLengthDeployed + 0.5;
@@ -206,6 +207,15 @@ public class Intake extends SubsystemBase
       BaseStatusSignal.refreshAll(m_rackLength);
     }
     m_currentInches = (m_rackValid) ? m_rackLength.getValue( ).in(Rotations) * Math.PI * kGearDiameterInches : 0.0;
+
+    if (RobotState.isDisabled( ))
+    {
+      if (m_currentInches < kRackLengthMin)
+      {
+        m_currentInches = kRackLengthMin;
+        m_rackMotor.setPosition(Units.rotationsToDegrees(m_currentInches / (Math.PI * kGearDiameterInches)));
+      }
+    }
 
     // Update network table publishers
 
@@ -363,7 +373,7 @@ public class Intake extends SubsystemBase
    * @param newLength
    *          rotation to move
    * @param holdLength
-   *          hold previous angle if true
+   *          hold previous length if true
    */
   public void moveToLengthInit(INRollerMode mode, double newLength, boolean holdLength)
   {
@@ -375,10 +385,10 @@ public class Intake extends SubsystemBase
       newLength = getCurrentLength( );
     }
 
-    // Decide if a new angle request
+    // Decide if a new length request
     if (holdLength || newLength != m_targetInches || !MathUtil.isNear(newLength, m_currentInches, kToleranceDegrees))
     {
-      // Validate the angle request
+      // Validate the length request
       if (isMoveValid(newLength))
       {
         m_targetInches = newLength;
@@ -418,7 +428,7 @@ public class Intake extends SubsystemBase
    * Detect Motion Magic finished state
    * 
    * @param holdLength
-   *          hold the current angle
+   *          hold the current length
    * @return true when movement has completed
    */
   public boolean moveToLengthIsFinished(boolean holdLength)
@@ -514,7 +524,7 @@ public class Intake extends SubsystemBase
    * Validate requested move
    * 
    * @param inches
-   *          angle requested
+   *          length requested
    * @return true if move is within range
    */
   private boolean isMoveValid(double inches)
@@ -528,9 +538,9 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Return current angle
+   * Return current length
    * 
-   * @return current Rack angle
+   * @return current Rack length
    */
   public double getCurrentLength( )
   {
@@ -539,9 +549,9 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Return intake angle for stowed state - fully retracted into stowed position
+   * Return intake length for stowed state - fully retracted into stowed position
    * 
-   * @return stowed state angle
+   * @return stowed state length
    */
   public double getStowedLength( )
   {
@@ -550,9 +560,9 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Return intake angle for deployed state - ready for intaking fuel
+   * Return intake length for deployed state - ready for intaking fuel
    * 
-   * @return deployed state angle
+   * @return deployed state length
    */
   public double getDeployedLength( )
   {
@@ -585,16 +595,16 @@ public class Intake extends SubsystemBase
    * 
    * @param mode
    *          roller mode to apply
-   * @param angle
-   *          double supplier that provides the target angle
+   * @param length
+   *          double supplier that provides the target length
    * @param holdLength
    *          boolen to indicate whether the command ever finishes
    * @return continuous command that runs intake motors
    */
-  private Command getMMLengthCommand(INRollerMode mode, DoubleSupplier angle, boolean holdLength)
+  private Command getMMLengthCommand(INRollerMode mode, DoubleSupplier length, boolean holdLength)
   {
     return new FunctionalCommand(                                       // Command with all phases declared
-        ( ) -> moveToLengthInit(mode, angle.getAsDouble( ), holdLength),  // Init method
+        ( ) -> moveToLengthInit(mode, length.getAsDouble( ), holdLength),  // Init method
         ( ) -> moveToLengthExecute( ),                                   // Execute method
         interrupted -> moveToLengthEnd( ),                               // End method
         ( ) -> moveToLengthIsFinished(holdLength),                        // IsFinished method
@@ -604,32 +614,32 @@ public class Intake extends SubsystemBase
 
   /****************************************************************************
    * 
-   * Create motion magic move to angle command
+   * Create motion magic move to length command
    * 
    * @param mode
    *          roller mode to apply
-   * @param angle
+   * @param length
    *          double supplier that provides the target distance value
    * @return continuous command that runs intake motors
    */
-  public Command getMoveToLengthCommand(INRollerMode mode, DoubleSupplier angle)
+  public Command getMoveToLengthCommand(INRollerMode mode, DoubleSupplier length)
   {
-    return getMMLengthCommand(mode, angle, false).withName(kSubsystemName + "MMMoveToLength");
+    return getMMLengthCommand(mode, length, false).withName(kSubsystemName + "MMMoveToLength");
   }
 
   /****************************************************************************
    * 
-   * Create motion magic hold angle command
+   * Create motion magic hold length command
    * 
    * @param mode
    *          roller mode to apply
-   * @param angle
+   * @param length
    *          double supplier that provides the target distance value
    * @return continuous command that runs intake motors
    */
-  public Command getHoldLengthCommand(INRollerMode mode, DoubleSupplier angle)
+  public Command getHoldLengthCommand(INRollerMode mode, DoubleSupplier length)
   {
-    return getMMLengthCommand(mode, angle, true).withName(kSubsystemName + "MMHoldLength");
+    return getMMLengthCommand(mode, length, true).withName(kSubsystemName + "MMHoldLength");
   }
 
   /****************************************************************************

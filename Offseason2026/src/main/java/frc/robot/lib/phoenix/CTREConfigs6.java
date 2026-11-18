@@ -86,7 +86,7 @@ public final class CTREConfigs6
     // inRotaryConfig.HardwareLimitSwitch.*
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
-    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 25.0;      // Rotations / second
+    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 5.0;       // 25.0 Rotations / second
     inRotaryConfig.MotionMagic.MotionMagicAcceleration = 100.0;       // Rotations / second ^ 2
     inRotaryConfig.MotionMagic.MotionMagicJerk = 1000.0;              // Rotations / second ^ 3
 
