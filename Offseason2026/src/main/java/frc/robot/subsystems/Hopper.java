@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.HPConsts.HPRollerMode;
 import frc.robot.Constants.Ports;
 import frc.robot.lib.phoenix.CTREConfigs6;
@@ -122,8 +123,9 @@ public class Hopper extends SubsystemBase
     // update for 20 msec loop
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_rollerMotorLSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotorL.get( ));
-    m_rollerMotorLSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotorL.get( ));
+    m_rollerMotorLSim
+        .setRawRotorPosition((Constants.kKrakenX60 / Constants.kSecsPerMin / Constants.kSampleFreq) * m_rollerMotorL.get( ));
+    m_rollerMotorLSim.setRotorVelocity((Constants.kKrakenX60 / Constants.kSecsPerMin) * m_rollerMotorL.get( ));
 
     // SimBattery estimates loaded battery voltages
 

@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.KKConsts.KKRollerMode;
 import frc.robot.Constants.Ports;
 import frc.robot.lib.phoenix.CTREConfigs6;
@@ -105,8 +106,9 @@ public class Kicker extends SubsystemBase
     // update for 20 msec loop
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_rollerMotorLwSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotorLw.get( ));
-    m_rollerMotorLwSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotorLw.get( ));
+    m_rollerMotorLwSim
+        .setRawRotorPosition((Constants.kKrakenX60 / Constants.kSecsPerMin / Constants.kSampleFreq) * m_rollerMotorLw.get( ));
+    m_rollerMotorLwSim.setRotorVelocity((Constants.kKrakenX60 / Constants.kSecsPerMin) * m_rollerMotorLw.get( ));
 
     // SimBattery estimates loaded battery voltages
 

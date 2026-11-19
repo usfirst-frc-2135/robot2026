@@ -67,9 +67,8 @@ public class Intake extends SubsystemBase
   // Constants
   private static final String  kSubsystemName      = "Intake";
   private static final double  kRackGearRatio      = (40.0 / 8.0) * (50.0 / 22.0) * (18.0 / 18.0);    // Gear reduction
-  private static final double  kGearDiameterInches = 1.0;                                             // 10T 10DP Gear diameter in inches
-  private static final double  kCarriageMassKg     = 1.0;                                             // Simulation
-  private static final double  kDrumDiameterInches = 1.0;   // Drum diameter in inches
+  private static final double  kCarriageMassKg     = 2.0;                                             // Simulation
+  private static final double  kDrumDiameterInches = 1.0;                                             // Drum diameter in inches (10T 10DP Gear diameter in inches)
   private static final double  kDrumRadiusMeters   = Units.inchesToMeters(kDrumDiameterInches) / 2.0;
   private static final double  kRolloutRatio       = kDrumDiameterInches * Math.PI / kRackGearRatio;  // inches per shaft rotation
 
@@ -120,8 +119,8 @@ public class Intake extends SubsystemBase
   private final TalonFXSimState     m_rollerMotorLSim   = m_rollerMotorL.getSimState( );
   private final TalonFXSimState     m_rackMotorSim      = m_rackMotor.getSimState( );
 
-  private final ElevatorSim         m_rackSim           = new ElevatorSim(DCMotor.getKrakenX60(1), kRackGearRatio,
-      kCarriageMassKg, kDrumRadiusMeters, kRackLengthMin, kRackLengthMax, false, 0.0);
+  private final ElevatorSim         m_rackSim           = new ElevatorSim(DCMotor.getKrakenX60(2), kRackGearRatio,
+      kCarriageMassKg, kDrumRadiusMeters, Units.inchesToMeters(kRackLengthMin), Units.inchesToMeters(kRackLengthMax), false, 0.0);
 
   // Mechanism2d
   private final Mechanism2d         m_rackMech          = new Mechanism2d(1.0, 1.0);
@@ -129,17 +128,17 @@ public class Intake extends SubsystemBase
       .append(new MechanismLigament2d(kSubsystemName, 0.5, 0.0, 6, new Color8Bit(Color.kPurple)));
 
   // Status signals
-  private final StatusSignal<Angle> m_rackLength;    // Default 50Hz (20ms)
+  private final StatusSignal<Angle> m_rackPosition;     // Default 50Hz (20ms)
 
   // Declare module variables
 
   // Roller variables
-  private boolean                   m_rollerLValid;        // Health indicator for motor 
-  private boolean                   m_rollerRValid;        // Health indicator for motor 
+  private boolean                   m_rollerLValid;     // Health indicator for motor 
+  private boolean                   m_rollerRValid;     // Health indicator for motor
 
   // Rack variables
-  private boolean                   m_rackValid;                  // Health indicator for motor 
-  private double                    m_currentInches     = 0.0;    // Current length in inches
+  private boolean                   m_rackValid;                // Health indicator for motor
+  private double                    m_currentInches     = 0.0;  // Current length in inches
   private double                    m_targetInches      = 0.0;  // Target length in inches
 
   // Manual mode config parameters
@@ -182,25 +181,25 @@ public class Intake extends SubsystemBase
     m_rackAlert.set(!m_rackValid);
 
     // Initialize status signal objects
-    m_rackLength = m_rackMotor.getPosition( );
+    m_rackPosition = m_rackMotor.getPosition( );
 
     // Initialize the intake status signals
     if (m_rackValid)
     {
-      m_rackMotor.setPosition(m_currentInches);
+      m_rackMotor.setPosition(Conversions.rolloutToWinchRotations(m_currentInches, kRolloutRatio));
     }
 
     // Simulation object initialization
     m_rackMotorSim.Orientation = ChassisReference.Clockwise_Positive;
 
     // Status signals
-    m_rackLength.setUpdateFrequency(50);
+    m_rackPosition.setUpdateFrequency(50);
 
     StatusSignal<Current> m_rackSupplyCur = m_rackMotor.getSupplyCurrent( );                      // Default 4Hz (250ms)
     BaseStatusSignal.setUpdateFrequencyForAll(10, m_rackSupplyCur);  // Default 4Hz (250ms)
 
     DataLogManager.log(String.format("%s: Update (Hz) RackLength: %.1f RackSupplyCur: %.1f", getSubsystem( ),
-        m_rackLength.getAppliedUpdateFrequency( ), m_rackSupplyCur.getAppliedUpdateFrequency( )));
+        m_rackPosition.getAppliedUpdateFrequency( ), m_rackSupplyCur.getAppliedUpdateFrequency( )));
 
     initDashboard( );
     initialize( );
@@ -217,16 +216,17 @@ public class Intake extends SubsystemBase
 
     if (m_rackValid)
     {
-      BaseStatusSignal.refreshAll(m_rackLength);
+      BaseStatusSignal.refreshAll(m_rackPosition);
+      m_currentInches =
+          (m_rackValid) ? Conversions.rotationsToWinchRollout(m_rackPosition.getValue( ).in(Rotations), kRolloutRatio) : 0.0;
     }
-    m_currentInches = (m_rackValid) ? m_rackLength.getValue( ).in(Rotations) * Math.PI * kGearDiameterInches : 0.0;
 
     if (RobotState.isDisabled( ))
     {
-      if (m_currentInches < kRackLengthMin)
+      if (m_currentInches < 0.0)
       {
-        m_currentInches = kRackLengthMin;
-        m_rackMotor.setPosition(Units.rotationsToDegrees(m_currentInches / (Math.PI * kGearDiameterInches)));
+        m_currentInches = 0.0;
+        m_rackMotor.setPosition(Conversions.rolloutToWinchRotations(m_currentInches, kRolloutRatio));
       }
     }
 
@@ -246,8 +246,8 @@ public class Intake extends SubsystemBase
     // This method will be called once per scheduler run during simulation
 
     // Set input motor voltage from the motor setting
-    m_rackMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
     m_rollerMotorLSim.setSupplyVoltage(RobotController.getInputVoltage( ));
+    m_rackMotorSim.setSupplyVoltage(RobotController.getInputVoltage( ));
     m_rackSim.setInput(m_rackMotorSim.getMotorVoltage( ));
 
     // update for 20 msec loop
@@ -259,14 +259,15 @@ public class Intake extends SubsystemBase
     m_rackMotorSim.setRotorVelocity(
         Conversions.rolloutToWinchRotations(Units.metersToInches(m_rackSim.getVelocityMetersPerSecond( )), kRolloutRatio));
 
-    m_rollerMotorLSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotorL.get( ));
-    m_rollerMotorLSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotorL.get( ));
+    m_rollerMotorLSim
+        .setRawRotorPosition((Constants.kKrakenX60 / Constants.kSecsPerMin / Constants.kSampleFreq) * m_rollerMotorL.get( ));
+    m_rollerMotorLSim.setRotorVelocity((Constants.kKrakenX60 / Constants.kSecsPerMin) * m_rollerMotorL.get( ));
 
     // SimBattery estimates loaded battery voltages
     RoboRioSim
         .setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_rackMotor.getSupplyCurrent( ).getValue( ).in(Amps)));
 
-    m_mechLigament.setLength(m_currentInches);
+    m_mechLigament.setLength(0.05 + m_currentInches / kRackLengthDeployed / 2.0);
   }
 
   /****************************************************************************
@@ -322,6 +323,7 @@ public class Intake extends SubsystemBase
     PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rackMotor, kSubsystemName + "Rack");
 
     m_rollerMotorL.clearStickyFaults( );
+    m_rollerMotorR.clearStickyFaults( );
     m_rackMotor.clearStickyFaults( );
   }
 
@@ -418,8 +420,9 @@ public class Intake extends SubsystemBase
         {
           m_rackMotor.setControl(m_mmRequestVolts.withPosition(targetRotations));
         }
-        DataLogManager.log(String.format("%s: MM Length move: %.1f -> %.1f inches (%.3f -> %.3f rot)", getSubsystem( ),
-            m_currentInches, m_targetInches, Units.degreesToRotations(m_currentInches), targetRotations));
+        DataLogManager
+            .log(String.format("%s: MM Length move: %.1f -> %.1f inches (%.3f -> %.3f rot)", getSubsystem( ), m_currentInches,
+                m_targetInches, Conversions.rolloutToWinchRotations(m_currentInches, kRolloutRatio), targetRotations));
       }
       else
       {

@@ -37,6 +37,14 @@ public final class Constants
   public static final boolean       kRumbleOff            = false;
   public static final double        kRumbleIntensity      = 1.0;    // 0.0 is low, 1.0 is high
 
+  public static final double        kKrakenX60            = 6000.0; // Kraken X60 free speed in RPM
+  public static final double        kKrakenX60FOC         = 5800.0; // Kraken X60 free speed in RPM with FOC enabled
+  public static final double        kKrakenX44            = 7758.0; // Kraken X44 free speed in RPM
+  public static final double        kKrakenX44FOC         = 7368.0; // Kraken X44 free speed in RPM with FOC enabled
+
+  public static final double        kSecsPerMin           = 60.0;   // Seconds per minute
+  public static final double        kSampleFreq           = 50.0;   // Number of samples per second for 20 msec loop time
+
   // Phoenix firmware versions expected
   public static final int           kPhoenix6MajorVersion = 26;
 

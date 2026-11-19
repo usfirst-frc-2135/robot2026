@@ -79,16 +79,16 @@ public final class CTREConfigs6
     // Feedback settings
     // inRotaryConfig.Feedback.FeedbackRemoteSensorID
     // inRotaryConfig.Feedback.FeedbackSensorSource
-    inRotaryConfig.Feedback.SensorToMechanismRatio = gearRatio;
+    inRotaryConfig.Feedback.SensorToMechanismRatio = 1.0;
     inRotaryConfig.Feedback.RotorToSensorRatio = 1.0;
 
     // Hardware limit switches - NONE
     // inRotaryConfig.HardwareLimitSwitch.*
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
-    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 25.0;      // Rotations / second
-    inRotaryConfig.MotionMagic.MotionMagicAcceleration = 100.0;       // Rotations / second ^ 2
-    inRotaryConfig.MotionMagic.MotionMagicJerk = 1000.0;              // Rotations / second ^ 3
+    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 60.0;      // Rotations / second
+    inRotaryConfig.MotionMagic.MotionMagicAcceleration = 200.0;       // Rotations / second ^ 2
+    inRotaryConfig.MotionMagic.MotionMagicJerk = 2000.0;              // Rotations / second ^ 3
 
     // Motor output settings
     inRotaryConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
@@ -108,9 +108,9 @@ public final class CTREConfigs6
     inRotaryConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
-    inRotaryConfig.Slot0.kP = 2.0 * gearRatio;                      // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
-    inRotaryConfig.Slot0.kI = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per accumulated unit
-    inRotaryConfig.Slot0.kD = 0.0 * gearRatio;                      // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+    inRotaryConfig.Slot0.kP = 4.0;                                  // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    inRotaryConfig.Slot0.kI = 0.0;                                  // Feedback: Voltage or duty cycle per accumulated unit
+    inRotaryConfig.Slot0.kD = 0.05;                                  // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
     // Software limit switches
     // inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations

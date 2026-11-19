@@ -90,8 +90,8 @@ public class Launcher extends SubsystemBase
     PRIMED
   }
 
-  private static final double  kHoodLengthMeters = 0.10;  // Simulation
-  private static final double  kHoodWeightKg     = 1.0;    // Simulation
+  private static final double  kHoodLengthMeters = 0.10;    // Simulation
+  private static final double  kHoodWeightKg     = 1.0;     // Simulation
   private static final Voltage kHoodManualVolts  = Volts.of(1.5); // Motor voltage during manual operation (joystick)
 
   /** Hood manual move parameters */
@@ -259,7 +259,7 @@ public class Launcher extends SubsystemBase
     {
       // Calculate Motor RPM and update network tables publishers
       BaseStatusSignal.refreshAll(m_leftVelocity);
-      m_leftRPM = m_leftVelocityFilter.calculate((m_leftVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
+      m_leftRPM = m_leftVelocityFilter.calculate((m_leftVelocity.getValue( ).in(RotationsPerSecond) * Constants.kSecsPerMin));
 
       m_isAtRequestedRPM = (m_leftRPM > kToleranceRPM) && MathUtil.isNear(m_motorRPM, m_leftRPM, kToleranceRPM);
       m_atRequestedRPMPub.set(m_isAtRequestedRPM);
@@ -298,7 +298,7 @@ public class Launcher extends SubsystemBase
     m_armSim.update(0.020);
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_leftMotorLowerSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocityRPM( ) / 60.0);
+    m_leftMotorLowerSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocityRPM( ) / Constants.kSecsPerMin);
 
     m_hoodMotorSim.setRawRotorPosition(Conversions.radiansToInputRotations(m_armSim.getAngleRads( ), kHoodGearRatio));
     m_hoodMotorSim.setRotorVelocity(Conversions.radiansToInputRotations(m_armSim.getVelocityRadPerSec( ), kHoodGearRatio));
@@ -581,7 +581,7 @@ public class Launcher extends SubsystemBase
     m_motorRPM = Conversions.rotationsToInputRotations(m_launcherRPM, kLauncherGearRatio);
     m_motorRPMPub.set(m_motorRPM);
 
-    double rotPerSecond = m_motorRPM / 60.0;
+    double rotPerSecond = m_motorRPM / Constants.kSecsPerMin;
     if (m_launcherLLowerValid)
     {
       if (m_motorRPM > 100.0)            // Only allow positive velocities
