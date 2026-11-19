@@ -269,8 +269,9 @@ public class Intake extends SubsystemBase
     m_CANcoderSim.setVelocity(Units.radiansToRotations(m_armSim.getVelocityRadPerSec( )));
 
     // Roller sim intentionally mirrors commanded output to sensor state.
-    m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
-    m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
+    m_rollerMotorSim
+        .setRawRotorPosition((Constants.kKrakenX60 / Constants.kSecsPerMin / Constants.kSampleFreq) * m_rollerMotor.get( ));
+    m_rollerMotorSim.setRotorVelocity((Constants.kKrakenX60 / Constants.kSecsPerMin) * m_rollerMotor.get( ));
 
     // SimBattery estimates loaded battery voltages
     RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(m_armSim.getCurrentDrawAmps( )));

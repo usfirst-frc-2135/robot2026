@@ -172,8 +172,8 @@ public class Launcher extends SubsystemBase
     {
       // Calculate Motor RPM and update network tables publishers
       BaseStatusSignal.refreshAll(m_leftVelocity, m_rightVelocity);
-      m_leftRPM = m_leftVelocityFilter.calculate((m_leftVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
-      m_rightRPM = m_rightVelocityFilter.calculate((m_rightVelocity.getValue( ).in(RotationsPerSecond) * 60.0));
+      m_leftRPM = m_leftVelocityFilter.calculate((m_leftVelocity.getValue( ).in(RotationsPerSecond) * Constants.kSecsPerMin));
+      m_rightRPM = m_rightVelocityFilter.calculate((m_rightVelocity.getValue( ).in(RotationsPerSecond) * Constants.kSecsPerMin));
 
       m_isAtRequestedRPM = ((m_leftRPM > kToleranceRPM) && MathUtil.isNear(m_motorRPM, m_leftRPM, kToleranceRPM))
           && ((m_rightRPM > kToleranceRPM) && MathUtil.isNear(m_motorRPM, m_rightRPM, kToleranceRPM));
@@ -214,8 +214,8 @@ public class Launcher extends SubsystemBase
     m_rightFlywheelSim.update(0.020);
 
     // Finally, we set our simulated encoder's readings and simulated battery voltage
-    m_leftMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocityRPM( ) / 60.0);
-    m_rightMotorSim.setRotorVelocity(m_rightFlywheelSim.getAngularVelocityRPM( ) / 60.0);
+    m_leftMotorSim.setRotorVelocity(m_leftFlywheelSim.getAngularVelocityRPM( ) / Constants.kSecsPerMin);
+    m_rightMotorSim.setRotorVelocity(m_rightFlywheelSim.getAngularVelocityRPM( ) / Constants.kSecsPerMin);
 
     // SimBattery estimates loaded battery voltage from total launcher current draw
     double totalCurrentDrawAmps = m_leftFlywheelSim.getCurrentDrawAmps( ) + m_rightFlywheelSim.getCurrentDrawAmps( );
@@ -317,7 +317,7 @@ public class Launcher extends SubsystemBase
     m_motorRPM = Conversions.rotationsToInputRotations(m_launcherRPM, kLauncherGearRatio);
     m_motorRPMPub.set(m_motorRPM);
 
-    double rotPerSecond = m_motorRPM / 60.0;
+    double rotPerSecond = m_motorRPM / Constants.kSecsPerMin;
     if (m_launcherValid)
     {
       if (m_motorRPM > 100.0)            // Only allow positive velocities

@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HPConsts.HPRollerMode;
+import frc.robot.Constants;
 import frc.robot.Constants.Ports;
 import frc.robot.lib.phoenix.CTREConfigs6;
 import frc.robot.lib.phoenix.PhoenixUtil6;
@@ -116,8 +117,9 @@ public class Hopper extends SubsystemBase
     // No detailed plant update here by design.
 
     // Finally, set simulated sensor readings for the roller motor
-    m_rollerMotorSim.setRawRotorPosition((5300.0 / 60.0 / 50.0) * m_rollerMotor.get( ));
-    m_rollerMotorSim.setRotorVelocity((5300.0 / 60.0) * m_rollerMotor.get( ));
+    m_rollerMotorSim
+        .setRawRotorPosition((Constants.kKrakenX60 / Constants.kSecsPerMin / Constants.kSampleFreq) * m_rollerMotor.get( ));
+    m_rollerMotorSim.setRotorVelocity((Constants.kKrakenX60 / Constants.kSecsPerMin) * m_rollerMotor.get( ));
 
     // Battery loading from this roller is intentionally omitted in sim.
 
