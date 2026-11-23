@@ -1,7 +1,7 @@
 //
 // Swerve Subystem - command-based swerve subsystem
 //
-package frc.robot.subsystems;
+package frc.robot.generated;
 
 import static edu.wpi.first.units.Units.*;
 
