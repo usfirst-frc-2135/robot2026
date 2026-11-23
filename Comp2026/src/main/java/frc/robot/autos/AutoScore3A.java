@@ -12,7 +12,7 @@ import frc.robot.commands.LogCommand;
 import frc.robot.commands.StopIntaking;
 import frc.robot.commands.StopLaunching;
 import frc.robot.lib.BLine.Path;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kicker;
@@ -32,8 +32,7 @@ public class AutoScore3A extends SequentialCommandGroup
    * @param drivetrain
    *          swerve drivetrain subsystem
    */
-  public AutoScore3A(List<Path> bLineAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper, Kicker kicker,
-      Launcher launcher)
+  public AutoScore3A(List<Path> bLineAuto, Drivetrain drivetrain, Intake intake, Hopper hopper, Kicker kicker, Launcher launcher)
   {
     setName("AutoScore3A");
 

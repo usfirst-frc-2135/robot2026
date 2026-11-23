@@ -13,7 +13,7 @@ import frc.robot.commands.LaunchFuel;
 import frc.robot.commands.LogCommand;
 import frc.robot.commands.StopIntaking;
 import frc.robot.commands.StopLaunching;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kicker;
@@ -33,8 +33,8 @@ public class AutoScore2B extends SequentialCommandGroup
    * @param drivetrain
    *          swerve drivetrain subsystem
    */
-  public AutoScore2B(List<PathPlannerPath> ppAuto, CommandSwerveDrivetrain drivetrain, Intake intake, Hopper hopper,
-      Kicker kicker, Launcher launcher)
+  public AutoScore2B(List<PathPlannerPath> ppAuto, Drivetrain drivetrain, Intake intake, Hopper hopper, Kicker kicker,
+      Launcher launcher)
   {
     setName("AutoScore2B");
 
@@ -48,7 +48,7 @@ public class AutoScore2B extends SequentialCommandGroup
         new ParallelCommandGroup(
             new SequentialCommandGroup(
               new WaitCommand(0.15),
-              drivetrain.getPathCommand(ppAuto.get(0))
+              drivetrain.getPPPathCommand(ppAuto.get(0))
             ),
             new AcquireFuel(intake, hopper)
           ),
@@ -65,7 +65,7 @@ public class AutoScore2B extends SequentialCommandGroup
 
         new LogCommand(getName(),"Drive return path while intaking "),
         new ParallelCommandGroup(
-            drivetrain.getPathCommand(ppAuto.get(1)),
+            drivetrain.getPPPathCommand(ppAuto.get(1)),
             new AcquireFuel(intake,hopper)
           ),
         new ParallelCommandGroup(

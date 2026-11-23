@@ -67,7 +67,7 @@ import frc.robot.lib.Vision;
 import frc.robot.lib.BLine.FlippingUtil;
 import frc.robot.lib.BLine.Path;
 import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Kicker;
@@ -135,7 +135,7 @@ public class RobotContainer
   private final Power                                 m_power           = new Power( );
 
   // These subsystems may use LED or vision and must be created afterward
-  private final CommandSwerveDrivetrain               m_drivetrain      = TunerConstants.createDrivetrain( );
+  private final Drivetrain                            m_drivetrain      = new Drivetrain( );
   private final Intake                                m_intake          = new Intake( );
   private final Hopper                                m_hopper          = new Hopper( );
   private final Kicker                                m_kicker          = new Kicker( );
