@@ -20,7 +20,7 @@ public final class CTREConfigs6
 
   /****************************************************************************
    * 
-   * Intake roller motor - Kraken X44
+   * Intake roller motor - Kraken X60
    * 
    * @return inRollerConfig
    */
@@ -57,73 +57,73 @@ public final class CTREConfigs6
    *          CANcoder port number
    * @param gearRatio
    *          gear box ratio
-   * @return inRotaryConfig
+   * @return inRackConfig
    */
   public static TalonFXConfiguration intakeRackFXConfig(double gearRatio)
   {
-    TalonFXConfiguration inRotaryConfig = new TalonFXConfiguration( );
+    TalonFXConfiguration inRackConfig = new TalonFXConfiguration( );
 
     // Closed Loop settings
-    // inRotaryConfig.ClosedLoopGeneral.*
-    // inRotaryConfig.ClosedLoopRamps.*                           // Seconds to ramp
+    // inRackConfig.ClosedLoopGeneral.*
+    // inRackConfig.ClosedLoopRamps.*                           // Seconds to ramp
 
     // Current limit settings
-    inRotaryConfig.CurrentLimits.SupplyCurrentLimit = 50.0;       // Amps
-    inRotaryConfig.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  // Amps
-    inRotaryConfig.CurrentLimits.SupplyCurrentLowerTime = 0.200;  // Seconds
-    inRotaryConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+    inRackConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
+    inRackConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
+    inRackConfig.CurrentLimits.SupplyCurrentLowerTime = 0.200;  // Seconds
+    inRackConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
-    inRotaryConfig.CurrentLimits.StatorCurrentLimit = 400.0;      // Amps
-    inRotaryConfig.CurrentLimits.StatorCurrentLimitEnable = false;
+    inRackConfig.CurrentLimits.StatorCurrentLimit = 400.0;      // Amps
+    inRackConfig.CurrentLimits.StatorCurrentLimitEnable = false;
 
     // Feedback settings
-    // inRotaryConfig.Feedback.FeedbackRemoteSensorID
-    // inRotaryConfig.Feedback.FeedbackSensorSource
-    inRotaryConfig.Feedback.SensorToMechanismRatio = 1.0;
-    inRotaryConfig.Feedback.RotorToSensorRatio = 1.0;
+    // inRackConfig.Feedback.FeedbackRemoteSensorID
+    // inRackConfig.Feedback.FeedbackSensorSource
+    inRackConfig.Feedback.SensorToMechanismRatio = 1.0;
+    inRackConfig.Feedback.RotorToSensorRatio = 1.0;
 
     // Hardware limit switches - NONE
-    // inRotaryConfig.HardwareLimitSwitch.*
+    // inRackConfig.HardwareLimitSwitch.*
 
     // Motion Magic settings - fused CANcoder affects all feedback constants by the gearRatio
-    inRotaryConfig.MotionMagic.MotionMagicCruiseVelocity = 60.0;      // Rotations / second
-    inRotaryConfig.MotionMagic.MotionMagicAcceleration = 200.0;       // Rotations / second ^ 2
-    inRotaryConfig.MotionMagic.MotionMagicJerk = 2000.0;              // Rotations / second ^ 3
+    inRackConfig.MotionMagic.MotionMagicCruiseVelocity = 60.0;      // Rotations / second
+    inRackConfig.MotionMagic.MotionMagicAcceleration = 200.0;       // Rotations / second ^ 2
+    inRackConfig.MotionMagic.MotionMagicJerk = 2000.0;              // Rotations / second ^ 3
 
     // Motor output settings
-    inRotaryConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
-    inRotaryConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    inRotaryConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    inRackConfig.MotorOutput.DutyCycleNeutralDeadband = 0.001;    // Percentage
+    inRackConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    inRackConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // Open Loop settings
-    // inRotaryConfig.OpenLoopRamps.*                               // Seconds to ramp
+    // inRackConfig.OpenLoopRamps.*                               // Seconds to ramp
 
     // Slot settings - remote/fused CANcoder affects all feedback constants by the gearRatio
     // kG = (0.40 + 0.25) / 2
     // kS = (0.40 - 0.25) / 2
-    inRotaryConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine; // Feedforward: Mechanism is an arm and needs cosine
-    inRotaryConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
-    inRotaryConfig.Slot0.kS = 0.07;                                 // Feedforward: Voltage or duty cycle to overcome static friction
-    inRotaryConfig.Slot0.kG = 0.0;                                  // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
-    inRotaryConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
+    inRackConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine; // Feedforward: Mechanism is an arm and needs cosine
+    inRackConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+    inRackConfig.Slot0.kS = 0.07;                                 // Feedforward: Voltage or duty cycle to overcome static friction
+    inRackConfig.Slot0.kG = 0.0;                                  // Feedforward: Voltage or duty cycle to overcome gravity (arbitrary feedforward)
+    inRackConfig.Slot0.kV = 0.1129;                               // Feedforward: Voltage or duty cycle per requested RPS (velocity modes)
 
     // NOTE: Motion Magic settings are scaled by gear ration when using a FusecCANCoder
-    inRotaryConfig.Slot0.kP = 4.0;                                  // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
-    inRotaryConfig.Slot0.kI = 0.0;                                  // Feedback: Voltage or duty cycle per accumulated unit
-    inRotaryConfig.Slot0.kD = 0.05;                                  // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
+    inRackConfig.Slot0.kP = 4.0;                                  // Feedback: Voltage or duty cycle per velocity unit (velocity modes)
+    inRackConfig.Slot0.kI = 0.0;                                  // Feedback: Voltage or duty cycle per accumulated unit
+    inRackConfig.Slot0.kD = 0.05;                                  // Feedback: Voltage or duty cycle per unit of acceleration unit (velocity modes)
 
     // Software limit switches
-    // inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations
-    // inRotaryConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    // inRotaryConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = max;  // Rotations
-    // inRotaryConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    // inRackConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = min;  // Rotations
+    // inRackConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    // inRackConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = max;  // Rotations
+    // inRackConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
 
-    return inRotaryConfig;
+    return inRackConfig;
   }
 
   /****************************************************************************
    * 
-   * Hopper roller motor - Kraken X44
+   * Hopper roller motor - Kraken X60
    * 
    * @return hpRollerConfig
    */
@@ -132,8 +132,8 @@ public final class CTREConfigs6
     TalonFXConfiguration hpRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // Amps
-    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
+    hpRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
     hpRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     hpRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
@@ -153,7 +153,7 @@ public final class CTREConfigs6
 
   /****************************************************************************
    * 
-   * Kicker roller motor - Kraken X44
+   * Kicker roller motor - Kraken X60
    * 
    * @return kkRollerConfig
    */
@@ -162,8 +162,8 @@ public final class CTREConfigs6
     TalonFXConfiguration kkRollerConfig = new TalonFXConfiguration( );
 
     // Current limit settings
-    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 20.0;       // Amps
-    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
+    kkRollerConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
     kkRollerConfig.CurrentLimits.SupplyCurrentLowerTime = 0.100;  // Seconds
     kkRollerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
@@ -191,8 +191,8 @@ public final class CTREConfigs6
     TalonFXConfiguration launcherConfig = new TalonFXConfiguration( );
 
     // Closed Loop settings
-    // inRotaryConfig.ClosedLoopGeneral.*
-    // inRotaryConfig.ClosedLoopRamps.*                             // Seconds to ramp
+    // inRackConfig.ClosedLoopGeneral.*
+    // inRackConfig.ClosedLoopRamps.*                             // Seconds to ramp
 
     launcherConfig.CurrentLimits.SupplyCurrentLimit = 35.0;          // Amps
     launcherConfig.CurrentLimits.SupplyCurrentLowerLimit = 35.0;     // Amps
@@ -246,8 +246,8 @@ public final class CTREConfigs6
     // launcherHoodConfig.ClosedLoopRamps.*                           // Seconds to ramp
 
     // Current limit settings
-    launcherHoodConfig.CurrentLimits.SupplyCurrentLimit = 50.0;       // Amps
-    launcherHoodConfig.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  // Amps
+    launcherHoodConfig.CurrentLimits.SupplyCurrentLimit = 25.0;       // Amps
+    launcherHoodConfig.CurrentLimits.SupplyCurrentLowerLimit = 25.0;  // Amps
     launcherHoodConfig.CurrentLimits.SupplyCurrentLowerTime = 0.200;  // Seconds
     launcherHoodConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 

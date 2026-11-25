@@ -71,15 +71,15 @@ public class Launcher extends SubsystemBase
   private static final String kSubsystemName     = "Launcher";
 
   private static final double kMOI               = 0.005;     // Simulation - Moment of Inertia
-  private static final double kLauncherAutoRPM   = 3170.0;    // RPM to score for autonomous
-  private static final double kLauncherTeleopRPM = 3150.0;    // RPM to score for autonomous
-  private static final double kLauncherPassRPM   = 3300.0;    // RPM to pass 
-  private static final double kLauncherPrimedRPM = 2400.0;    // RPM to pass 
+  private static final double kLauncherAutoRPM   = 1800.0;    // RPM to score for autonomous
+  private static final double kLauncherTeleopRPM = 1800.0;    // RPM to score for autonomous
+  private static final double kLauncherPassRPM   = 2000.0;    // RPM to pass 
+  private static final double kLauncherPrimedRPM = 1500.0;    // RPM to pass 
   private static final double kRPMStepSize       = 50.0;      // RPM step size for increment/decrement
   private static final double kToleranceRPM      = 50.0;      // Tolerance band around requested RPM
 
   private static final double kLauncherGearRatio = (24.0 / 24.0);
-  private static final double kHoodGearRatio     = (60.0 / 24.0) * (36.0 / 18.);
+  private static final double kHoodGearRatio     = (60.0 / 24.0) * (36.0 / 18.0) * (160.0 / 10.0); // Gears, belts, then rack
 
   /** Launcher (RPM) modes */
   private enum LauncherMode
@@ -375,6 +375,7 @@ public class Launcher extends SubsystemBase
   ////////////////////////////////////////////////////////////////////////////
 
   // private final static Voltage kManualKG = Volts.of(-0.45);
+  private static double nextTimeToLog = 0.0;
 
   /****************************************************************************
    * 
@@ -405,7 +406,11 @@ public class Launcher extends SubsystemBase
       axisValue = 0.0;
     }
 
-    DataLogManager.log(String.format("%s: Manual move %.2f %s", getSubsystem( ), axisValue, kHoodManualVolts.times(axisValue)));
+    if (RobotController.getFPGATime( ) - nextTimeToLog > 1000.0)
+    {
+      nextTimeToLog = RobotController.getFPGATime( ) + 1000.0; // Log every 1 second
+      DataLogManager.log(String.format("%s: Manual move %.2f %s", getSubsystem( ), axisValue, kHoodManualVolts.times(axisValue)));
+    }
 
     if (newMode != m_hoodMode)
     {

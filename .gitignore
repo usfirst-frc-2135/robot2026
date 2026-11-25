@@ -172,6 +172,7 @@ out/
 networktables.json
 simgui.json
 *-window.json
+*/.DS_Store
 
 # Simulation data log directory
 logs/
@@ -185,4 +186,3 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
-*/.DS_Store

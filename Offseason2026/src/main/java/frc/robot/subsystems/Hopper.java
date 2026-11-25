@@ -34,7 +34,7 @@ public class Hopper extends SubsystemBase
   // Constants
   private static final String   kSubsystemName      = "Hopper";
 
-  private static final double   kRollerSpeedAcquire = 0.6;     // Motor direction for positive input
+  private static final double   kRollerSpeedAcquire = 0.5;     // Motor direction for positive input
   private static final double   kRollerSpeedExpel   = -0.4;
   private static final double   kPulseModeDuration  = 0.5;
 

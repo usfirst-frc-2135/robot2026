@@ -73,7 +73,7 @@ public class Intake extends SubsystemBase
   private static final double  kRolloutRatio       = kDrumDiameterInches * Math.PI / kRackGearRatio;  // inches per shaft rotation
 
   // Intake roller constants
-  private static final double  kRollerSpeedAcquire = 0.9;    // Motor direction for positive input
+  private static final double  kRollerSpeedAcquire = 0.5;    // Motor direction for positive input
   private static final double  kRollerSpeedExpel   = -0.4;
 
   // Intake Rack constants
@@ -91,16 +91,16 @@ public class Intake extends SubsystemBase
 
   /** Rack Motion Magic movement parameters */
 
-  private static final double       kToleranceInches    = 0.5;      // PID tolerance in inches
+  private static final double       kToleranceInches    = 0.25;     // PID tolerance in inches
   private static final double       kMMDebounceTime     = 0.060;    // Seconds to debounce a final position check
   private static final double       kMMMoveTimeout      = 1.5;      // Seconds allowed for a Motion Magic movement
 
   // Rack lengths - Motion Magic move parameters    
   private static final double       kRackLengthStowed   = 0.0;      // Min length in inches
-  private static final double       kRackLengthDeployed = 10.0;     // Max length in inches
+  private static final double       kRackLengthDeployed = 10.5;     // Max length in inches
 
-  private static final double       kRackLengthMin      = kRackLengthStowed - 0.5;
-  private static final double       kRackLengthMax      = kRackLengthDeployed + 0.5;
+  private static final double       kRackLengthMin      = kRackLengthStowed - 0.1;
+  private static final double       kRackLengthMax      = kRackLengthDeployed + 0.1;
 
   // Declare device objects
   private final TalonFX             m_rollerMotorL      = new TalonFX(Ports.kCANID_IntakeRollerL);
@@ -331,7 +331,8 @@ public class Intake extends SubsystemBase
   ///////////////////////// MANUAL MOVEMENT //////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  // private final static Voltage kManualKG = Volts.of(-0.45);
+  // private final static Voltage kManualKG     = Volts.of(-0.45);  // No gravity effect on rack
+  private static double nextTimeToLog = 0.0;
 
   /****************************************************************************
    * 
@@ -362,7 +363,11 @@ public class Intake extends SubsystemBase
       axisValue = 0.0;
     }
 
-    DataLogManager.log(String.format("%s: Manual move %.2f %s", getSubsystem( ), axisValue, kRackManualVolts.times(axisValue)));
+    if (RobotController.getFPGATime( ) - nextTimeToLog > 0.0)
+    {
+      nextTimeToLog = RobotController.getFPGATime( ) + 1000.0; // Log every 1 second
+      DataLogManager.log(String.format("%s: Manual move %.2f %s", getSubsystem( ), axisValue, kRackManualVolts.times(axisValue)));
+    }
 
     if (newMode != m_rackMode)
     {

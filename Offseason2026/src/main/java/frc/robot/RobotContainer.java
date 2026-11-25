@@ -574,7 +574,7 @@ public class RobotContainer
 
   /****************************************************************************
    * 
-   * Gamepad joystick axis interfaces
+   * Gamepad joystick axis interfaces (Invert Y axis for operator convenience)
    */
   private double getIntakeRotaryAxis( )
   {
@@ -583,11 +583,11 @@ public class RobotContainer
 
   /****************************************************************************
    * 
-   * Gamepad joystick axis interfaces
+   * Gamepad joystick axis interfaces (Invert Y axis for operator convenience)
    */
   private double getLauncherHoodAxis( )
   {
-    return m_operatorPad.getLeftY( );
+    return -m_operatorPad.getLeftY( );
   }
 
   /****************************************************************************
