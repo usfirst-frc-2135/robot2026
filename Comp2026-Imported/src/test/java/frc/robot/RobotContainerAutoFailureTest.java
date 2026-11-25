@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import first.robot.RobotContainer;
+
 class RobotContainerAutoFailureTest
 {
   @Test
