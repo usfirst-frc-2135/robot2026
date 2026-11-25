@@ -406,9 +406,9 @@ public class Launcher extends SubsystemBase
       axisValue = 0.0;
     }
 
-    if (RobotController.getFPGATime( ) - nextTimeToLog > 1000.0)
+    if (Timer.getTimestamp( ) - nextTimeToLog > 0.0)
     {
-      nextTimeToLog = RobotController.getFPGATime( ) + 1000.0; // Log every 1 second
+      nextTimeToLog = Timer.getTimestamp( ) + 1.0; // Log every 1 second
       DataLogManager.log(String.format("%s: Manual move %.2f %s", getSubsystem( ), axisValue, kHoodManualVolts.times(axisValue)));
     }
 
