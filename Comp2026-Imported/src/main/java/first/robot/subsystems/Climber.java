@@ -307,6 +307,8 @@ public class Climber extends SubsystemBase
   /// MANUAL MOVEMENT //////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
+  private static double nextTimeToLog = 0.0;
+
   /****************************************************************************
    * 
    * Move motors proportional to a joystick axis value
@@ -334,6 +336,12 @@ public class Climber extends SubsystemBase
     {
       rangeLimited = true;
       axisValue = 0.0;
+    }
+
+    if (Timer.getTimestamp( ) - nextTimeToLog > 0.0)
+    {
+      nextTimeToLog = Timer.getTimestamp( ) + 1.0; // Log every 1 second
+      DataLogManager.log(String.format("%s: Manual move %.2f", getName( ), axisValue));
     }
 
     if (newMode != m_mode)

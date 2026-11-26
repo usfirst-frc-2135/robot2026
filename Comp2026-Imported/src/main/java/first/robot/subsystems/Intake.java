@@ -349,11 +349,13 @@ public class Intake extends SubsystemBase
     }
   }
 
-  private final static Voltage kManualKG = Volts.of(-0.45);
+  private final static Voltage kManualKG     = Volts.of(-0.45);
 
   //////////////////////////////////////////////////////////////////////////// //////////////////////
   /// MANUAL MOVEMENT //////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
+
+  private static double        nextTimeToLog = 0.0;
 
   /****************************************************************************
    * 
@@ -384,7 +386,11 @@ public class Intake extends SubsystemBase
       axisValue = 0.0;
     }
 
-    DataLogManager.log(String.format("%s: Manual move %.2f %s", getName( ), axisValue, kRotaryManualVolts.times(axisValue)));
+    if (Timer.getTimestamp( ) - nextTimeToLog > 0.0)
+    {
+      nextTimeToLog = Timer.getTimestamp( ) + 1.0; // Log every 1 second
+      DataLogManager.log(String.format("%s: Manual move %.2f", getName( ), axisValue));
+    }
 
     if (newMode != m_rotaryMode)
     {
