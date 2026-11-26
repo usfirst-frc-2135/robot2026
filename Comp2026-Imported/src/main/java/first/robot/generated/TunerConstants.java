@@ -1,42 +1,20 @@
 package first.robot.generated;
 
-import static org.wpilib.units.Units.Amps;
-import static org.wpilib.units.Units.Inches;
-import static org.wpilib.units.Units.KilogramSquareMeters;
-import static org.wpilib.units.Units.MetersPerSecond;
-import static org.wpilib.units.Units.Rotations;
-import static org.wpilib.units.Units.Volts;
+import static org.wpilib.units.Units.*;
 
 import org.wpilib.math.linalg.Matrix;
 import org.wpilib.math.numbers.N1;
 import org.wpilib.math.numbers.N3;
-import org.wpilib.units.measure.Angle;
-import org.wpilib.units.measure.Current;
-import org.wpilib.units.measure.Distance;
-import org.wpilib.units.measure.LinearVelocity;
-import org.wpilib.units.measure.MomentOfInertia;
-import org.wpilib.units.measure.Voltage;
+import org.wpilib.units.measure.*;
 
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
-import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.hardware.*;
+import com.ctre.phoenix6.signals.*;
+import com.ctre.phoenix6.swerve.*;
+import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
 import first.robot.Robot;
-
-import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 
 // @formatter:off
 
