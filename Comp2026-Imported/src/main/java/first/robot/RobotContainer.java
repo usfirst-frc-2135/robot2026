@@ -66,7 +66,7 @@ import first.robot.commands.StopLaunching;
 import first.robot.generated.TunerConstants;
 import first.robot.lib.HID;
 import first.robot.lib.LED;
-import first.robot.lib.MatchPhase;
+import first.robot.lib.MatchShift;
 import first.robot.lib.Vision;
 import first.robot.subsystems.Climber;
 import first.robot.subsystems.Drivetrain;
@@ -86,8 +86,6 @@ import first.robot.subsystems.SwerveTelemetry;
  */
 public class RobotContainer
 {
-  private final boolean                               m_macOSXSim       = false;  // Enables Mac OS X controller compatibility in simulation
-
   // Autonomous health/status observability for pit and development debugging
   private static final String                         kAutoHealthState  = "AutoHealthState";
   private static final String                         kAutoHealthReason = "AutoHealthReason";
@@ -131,7 +129,7 @@ public class RobotContainer
   private final LED                                   m_led             = new LED( );
   private final HID                                   m_hid             = new HID(m_driverPad.getHID( ), m_operatorPad.getHID( ));
   private final Vision                                m_vision          = new Vision( );
-  private MatchPhase                                  m_matchPhase;
+  private MatchShift                                  m_matchShift;
 
   // The robot's shared subsystems
   private final Power                                 m_power           = new Power( );
@@ -233,17 +231,15 @@ public class RobotContainer
    */
   public RobotContainer(Robot robot)
   {
-    Robot.timeMarker("robotContainer: before heading controller and field layout");
-
+    // Configure the swerve facing PID controller for field-centric facing requests
     facing.HeadingController = new PhoenixPIDController(kHeadingKp, kHeadingKi, kHeadingKd);    // Swerve steer PID for facing swerve request
     facing.HeadingController.enableContinuousInput(-180.0, 180.0);
 
-    m_matchPhase = new MatchPhase(m_hid, m_led);
-    addDashboardWidgets( );     // Add some dashboard widgets for commands
-    configureBindings( );       // Configure game controller buttons and triggers
-    initDefaultCommands( );     // Initialize subsystem default commands
-
-    Robot.timeMarker("robotContainer: after default commands");
+    m_matchShift = new MatchShift(m_hid, m_led);  // Create a match phase object to track the current match phase
+    addDashboardWidgets( );                       // Add some dashboard widgets for commands
+    configureDriverTriggers(m_driverPad);         // Configure driver controller buttons and triggers
+    configureOperatorTriggers(m_operatorPad);     // Configure operator controller buttons and triggers
+    initDefaultCommands( );                       // Initialize subsystem default commands
   }
 
   /****************************************************************************
@@ -333,121 +329,119 @@ public class RobotContainer
   }
 
   /****************************************************************************
-   * 
-   * Define button-command mappings. Triggers are created and bound to the desired commands.
+   *
+   * Driver XBOX Controller Assignments
    */
-  private void configureBindings( )
+  private void configureDriverTriggers(CommandXboxController driverPad)
   {
-    ////////////////////
-    //
-    // Driver Controller Assignments
     //
     // Driver - A, B, X, Y
     // 
-    m_driverPad.a( ).whileTrue(m_drivetrain.getAutoAlignToHubCommand( ));
-    m_driverPad.b( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim       //
+    driverPad.a( ).whileTrue(m_drivetrain.getAutoAlignToHubCommand( ));
+    driverPad.b( ).whileTrue(m_drivetrain.applyRequest(( ) -> aim         //
         .withVelocityX(m_vision.rangeProportional(kMaxSpeed))             //
         .withVelocityY(0)                                    //
-        .withRotationalRate(m_vision.aimProportional(kMaxAngularRate))));
+        .withRotationalRate(m_vision.aimProportional(kMaxAngularRate)))); //
 
-    m_driverPad.x( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));
-    m_driverPad.y( ).whileTrue(getSlowSwerveCommand( )); // Note: left lower paddle!
+    driverPad.x( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));
+    driverPad.y( ).whileTrue(m_drivetrain.applyRequest(( ) -> drive                               // Drive slow mode - Note: left lower paddle!
+        .withVelocityX(kMaxSpeed.times(kSlowSwerve).times(-m_driverPad.getLeftY( )))              // Drive forward with negative Y (forward)
+        .withVelocityY(kMaxSpeed.times(kSlowSwerve).times(-m_driverPad.getLeftX( )))              // Drive left with negative X (left)
+        .withRotationalRate(kMaxAngularRate.times(kSlowSwerve).times(-m_driverPad.getRightX( )))  // Drive counterclockwise with negative X (left)
+    )                                                                                             //
+        .withName("CommandSlowSwerveDrivetrain"));
 
     //
-    // Driver - Bumpers, start, back
+    // Driver - Bumpers, start, back, view, menu
     //
-    m_driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
-    m_driverPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
-        new StopIntaking(m_intake, m_hopper),                 //
-        m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
+    driverPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
+    driverPad.leftBumper( ).onFalse(new ParallelCommandGroup(       //
+        new StopIntaking(m_intake, m_hopper),                       //
+        m_kicker.getRollerModeCommand(KKRollerMode.STOP)            //
     ));
-    m_driverPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
-        m_launcher.getLauncherPrimedCommand( ), //
-        new AcquireFuel(m_intake, m_hopper)));//
-    m_driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    driverPad.rightBumper( ).onTrue(new SequentialCommandGroup(     //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),  //
+        m_launcher.getLauncherPrimedCommand( ),                     //
+        new AcquireFuel(m_intake, m_hopper)));                      //
+    driverPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
-    m_driverPad.view( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));                     // aka View button
-    m_driverPad.menu( ).onTrue(m_drivetrain.runOnce(( ) -> m_drivetrain.seedFieldCentric( )));  // aka Menu button
+    driverPad.view( ).whileTrue(m_drivetrain.applyRequest(( ) -> brake));
+    driverPad.menu( ).onTrue(m_drivetrain.runOnce(( ) -> m_drivetrain.seedFieldCentric( )));
 
     //
     // Driver - POV buttons
     //
-    m_driverPad.dpadUp( ).onTrue(new PrepareToClimb(m_intake, m_climber));
-    m_driverPad.dpadRight( ).onTrue(new ClimbTower(m_climber));
-    m_driverPad.dpadDown( ).whileTrue(m_drivetrain.applyRequest(( ) -> facing  //
-        .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                 //
-        .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                 //
-        .withTargetDirection(Rotation2d.fromDegrees(-180.0))));
-    m_driverPad.dpadLeft( ).onTrue(new LogCommand("driverPad", "POV 270"));
+    driverPad.dpadUp( ).onTrue(new PrepareToClimb(m_intake, m_climber));
+    driverPad.dpadRight( ).onTrue(new ClimbTower(m_climber));
+    driverPad.dpadDown( ).whileTrue(m_drivetrain.applyRequest(( ) -> facing   //
+        .withVelocityX(kMaxSpeed.times(-driverPad.getLeftY( )))               //
+        .withVelocityY(kMaxSpeed.times(-driverPad.getLeftX( )))               //
+        .withTargetDirection(Rotation2d.fromDegrees(-180.0))));               //
+    driverPad.dpadLeft( ).onTrue(new LogCommand("driverPad", "DPAD:left"));
 
     //
-    // Driver Left/Right Trigger
+    // Driver Left/Right Trigger, Left/Right Stick
     //
-    // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
-    // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
-    //
-    m_driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    // m_driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
-    m_driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
+    driverPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
+    // driverPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
+    driverPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
+    driverPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
 
-    m_driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
-    m_driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
+    driverPad.leftStick( ).onTrue(new LogCommand("driverPad", "left stick"));
+    driverPad.rightStick( ).onTrue(new LogCommand("driverPad", "right stick"));
+  }
 
-    ////////////////////
-    //
-    // Operator Controller Assignments
+  /****************************************************************************
+   *
+   * Operator XBOX Controller Assignments
+   */
+  private void configureOperatorTriggers(CommandXboxController operPad)
+  {
     //
     // Operator - A, B, X, Y
     //
-    m_operatorPad.a( ).onTrue(Commands.runOnce(( ) -> m_launcher.decrementTeleopRPM( )));
-    m_operatorPad.b( ).onTrue(Commands.runOnce(( ) -> m_launcher.incrementTeleopRPM( )));
+    operPad.a( ).onTrue(Commands.runOnce(( ) -> m_launcher.decrementTeleopRPM( )));
+    operPad.b( ).onTrue(Commands.runOnce(( ) -> m_launcher.incrementTeleopRPM( )));
 
-    m_operatorPad.x( )
-        .onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getController( ).getXButtonPressed( ))));
-    m_operatorPad.x( )
-        .onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(m_operatorPad.getController( ).getXButtonPressed( ))));
-    m_operatorPad.y( ).onTrue(m_launcher.getLauncherStopCommand( ));
+    operPad.x( ).onTrue(Commands.runOnce(( ) -> m_hopper.setPulseMode(operPad.getController( ).getXButtonPressed( ))));
+    operPad.x( ).onFalse(Commands.runOnce(( ) -> m_hopper.setPulseMode(operPad.getController( ).getXButtonPressed( ))));
+    operPad.y( ).onTrue(m_launcher.getLauncherStopCommand( ));
 
     //
-    // Operator - Bumpers, start, back
+    // Operator - Bumpers, start, back, view menu
     //
-    m_operatorPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
-    m_operatorPad.leftBumper( ).onFalse(new ParallelCommandGroup(  //
-        new StopIntaking(m_intake, m_hopper),                 //
-        m_kicker.getRollerModeCommand(KKRollerMode.STOP)      //
+    operPad.leftBumper( ).onTrue(new ExpelFuel(m_intake, m_hopper, m_kicker));
+    operPad.leftBumper( ).onFalse(new ParallelCommandGroup(         //
+        new StopIntaking(m_intake, m_hopper),                       //
+        m_kicker.getRollerModeCommand(KKRollerMode.STOP)            //
     ));
-    m_operatorPad.rightBumper( ).onTrue(new SequentialCommandGroup( //
-        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),//
-        m_launcher.getLauncherPrimedCommand( ), //
-        new AcquireFuel(m_intake, m_hopper)));//
-    m_operatorPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
+    operPad.rightBumper( ).onTrue(new SequentialCommandGroup(       //
+        m_kicker.getRollerModeCommand(KKConsts.KKRollerMode.STOP),  //
+        m_launcher.getLauncherPrimedCommand( ),                     //
+        new AcquireFuel(m_intake, m_hopper)));                      //
+    operPad.rightBumper( ).onFalse(new StopIntaking(m_intake, m_hopper));
 
-    m_operatorPad.view( ).toggleOnTrue(m_climber.getJoystickCommand(( ) -> getClimberAxis( )));   // aka View button
-    m_operatorPad.menu( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));  // aka Menu button
+    operPad.view( ).toggleOnTrue(m_climber.getJoystickCommand(( ) -> getClimberAxis( )));
+    operPad.menu( ).toggleOnTrue(m_intake.getJoystickCommand(( ) -> getIntakeRotaryAxis( )));
 
     //
     // Operator - POV buttons
     //
-    m_operatorPad.dpadUp( ).onTrue(new PrepareToClimb(m_intake, m_climber));
-    m_operatorPad.dpadRight( ).onTrue(new ClimbTower(m_climber));
-    m_operatorPad.dpadDown( ).onTrue(new LogCommand("operatorPad", "POV:180"));
-    m_operatorPad.dpadLeft( ).onTrue(new LogCommand("operatorPad", "POV:270"));
+    operPad.dpadUp( ).onTrue(new PrepareToClimb(m_intake, m_climber));
+    operPad.dpadRight( ).onTrue(new ClimbTower(m_climber));
+    operPad.dpadDown( ).onTrue(new LogCommand("operatorPad", "DPAD:down"));
+    operPad.dpadLeft( ).onTrue(new LogCommand("operatorPad", "DPAD:left"));
 
     //
-    // Operator Left/Right Trigger
+    // Operator Left/Right Trigger, Left/Right Stick
     //
-    // Xbox enums { leftX = 0, leftY = 1, leftTrigger = 2, rightTrigger = 3, rightX = 4, rightY = 5}
-    // Xbox on MacOS { leftX = 0, leftY = 1, rightX = 2, rightY = 3, leftTrigger = 5, rightTrigger = 4}
-    //
-    m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
-    // m_operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
-    m_operatorPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
+    operPad.leftTrigger(Constants.kTriggerThreshold).onTrue(new RetractIntake(m_intake, m_hopper));
+    // operatorPad.leftTrigger(Constants.kTriggerThreshold).onFalse(new StopIntaking(m_intake, m_hopper));
+    operPad.rightTrigger(Constants.kTriggerThreshold).onTrue(new LaunchFuel(m_intake, m_hopper, m_kicker, m_launcher));
+    operPad.rightTrigger(Constants.kTriggerThreshold).onFalse(new StopLaunching(m_intake, m_hopper, m_kicker, m_launcher));
 
-    m_operatorPad.leftStick( ).toggleOnTrue(new LogCommand("operPad", "left stick"));
-    m_operatorPad.rightStick( ).toggleOnTrue(new LogCommand("operPad", "right stick"));
+    operPad.leftStick( ).toggleOnTrue(new LogCommand("operPad", "left stick"));
+    operPad.rightStick( ).toggleOnTrue(new LogCommand("operPad", "right stick"));
   }
 
   /****************************************************************************
@@ -456,34 +450,23 @@ public class RobotContainer
    */
   private void initDefaultCommands( )
   {
-    if (!m_macOSXSim)
-    {
-      m_drivetrain.setDefaultCommand(                                                                 // Drivetrain will execute this command periodically
-          m_drivetrain.applyRequest(( ) -> drive                                                      //
-              .withVelocityX(kMaxSpeed.times(                                                         // Apply deadband to joystick value
-                  MathUtil.applyDeadband(-m_driverPad.getLeftY( ), 0.15, 1.0))) // Drive forward with negative Y (forward)
-              .withVelocityY(kMaxSpeed.times(                                                         // Apply deadband to joystick value
-                  MathUtil.applyDeadband(-m_driverPad.getLeftX( ), 0.15, 1.0))) // Drive left with negative X (left)
-              .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getRightX( )))                   // Drive counterclockwise with negative X (left)
-          )                                                                                           //
-              .withName("CommandSwerveDrivetrain"));
-    }
-    else // When using simulation on MacOS X, XBox controllers need to be re-mapped due to an Apple bug
-    {
-      m_drivetrain.setDefaultCommand(                                                                 // Drivetrain will execute this command periodically
-          m_drivetrain.applyRequest(( ) -> drive                                                      //
-              .withVelocityX(kMaxSpeed.times(-m_driverPad.getLeftY( )))                               // Drive forward with negative Y (forward)
-              .withVelocityY(kMaxSpeed.times(-m_driverPad.getLeftX( )))                               // Drive left with negative X (left)
-              .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getLeftTrigger( )))          // Drive counterclockwise with negative X (left)
-          )                                                                                           //
-              .withName("CommandSwerveDrivetrain"));
-    }
+    // Note: Only one default command can be active per subsystem
+
+    // Set the default command for the drivetrain to be field-centric driving with joystick input
+    m_drivetrain.setDefaultCommand(                                                                   // Drivetrain will execute this command periodically
+        m_drivetrain.applyRequest(( ) -> drive                                                        //
+            .withVelocityX(kMaxSpeed.times(                                                           // Apply deadband to joystick value
+                MathUtil.applyDeadband(-m_driverPad.getLeftY( ), 0.15, 1.0)))  // Drive forward with negative Y (forward)
+            .withVelocityY(kMaxSpeed.times(                                                           // Apply deadband to joystick value
+                MathUtil.applyDeadband(-m_driverPad.getLeftX( ), 0.15, 1.0)))  // Drive left with negative X (left)
+            .withRotationalRate(kMaxAngularRate.times(-m_driverPad.getRightX( )))                     // Drive counterclockwise with negative X (left)
+        )                                                                                             //
+            .withName("CommandSwerveDrivetrain"));
 
     // Idle while the robot is disabled. This ensures the configured neutral mode is applied to the drive motors while disabled.
     RobotModeTriggers.disabled( ).whileTrue(m_drivetrain.applyRequest(( ) -> idle).ignoringDisable(true));
 
-    // Note: Only one default command can be active per subsystem--use the manual modes during bring-up
-
+    // Register telemetry logging for the drivetrain
     m_drivetrain.registerTelemetry(logger::telemeterize);
   }
 
@@ -516,7 +499,6 @@ public class RobotContainer
     {
       DataLogManager.log(String.format("getAuto: ERROR! - failed to read/reset starting pose (%s)", e.toString( )));
     }
-
   }
 
   /****************************************************************************
@@ -533,7 +515,7 @@ public class RobotContainer
     //
     // IMPORTANT POLICY: Never return null from this method. Always return a valid command,
     // falling back to AutoStop/idle on any error.
-    AutoSelectionContext selection = resolveAutoSelectionContext( );  // Get auto name using created key
+    AutoSelectionContext selection = resolveAutoSelectionContext(m_autoChooser, m_startChooser, m_autoDelay.get( ));  // Get auto name using created key
 
     DataLogManager.log(String.format("========================================================================"));
     DataLogManager.log(String.format("getAuto: autoKey: %s  autoName: %s", selection.autoKey, selection.autoName));
@@ -605,7 +587,7 @@ public class RobotContainer
    * Wrap a base autonomous command with common start/end markers and delay behavior.
    * Optionally run a pre-run hook immediately before the delay and base command.
    */
-  private Command buildFullAutoCommand(Command baseAutoCommand, double delay, Runnable preRunHook)
+  private Command buildFullAutoCommand(Runnable preRunHook, double delay, Command baseAutoCommand)
   {
     if (baseAutoCommand == null)
     {
@@ -616,12 +598,10 @@ public class RobotContainer
     Command preRunCommand = buildPreRunCommand(preRunHook);
 
     return new SequentialCommandGroup(                                                                //
-        new InstantCommand(( ) -> Robot.timeMarker("AutoStart")),                                  //
         preRunCommand,                                                                                //
         new LogCommand("Autodelay", String.format("Delaying %.1f seconds ...", delay)), //
         new WaitCommand(delay),                                                                       //
-        baseAutoCommand,                                                                              //
-        new InstantCommand(( ) -> Robot.timeMarker("AutoEnd"))                                     //
+        baseAutoCommand                                                                               //
     );
   }
 
@@ -643,7 +623,7 @@ public class RobotContainer
     // Build the autonomous command to run
     if (selection.autoOption != AutoChooser.AUTOSTOP)
     {
-      m_autoCommand = buildFullAutoCommand(m_autoCommand, selection.delay, ( ) -> resetOdometryToInitialPose(initialPose));
+      m_autoCommand = buildFullAutoCommand(( ) -> resetOdometryToInitialPose(initialPose), selection.delay, m_autoCommand);
     }
 
     return m_autoCommand;
@@ -673,10 +653,11 @@ public class RobotContainer
    *
    * Resolve chooser selections into a shared autonomous selection context.
    */
-  private AutoSelectionContext resolveAutoSelectionContext( )
+  private AutoSelectionContext resolveAutoSelectionContext(Selectable<AutoChooser> autoChooser,
+      Selectable<StartPose> startChooser, double delay)
   {
-    AutoChooser autoOption = m_autoChooser.getSelected( );
-    StartPose startOption = m_startChooser.getSelected( );
+    AutoChooser autoOption = autoChooser.getSelected( );
+    StartPose startOption = startChooser.getSelected( );
 
     if (autoOption == null)
     {
@@ -692,7 +673,6 @@ public class RobotContainer
 
     String autoKey = autoOption.toString( ) + startOption.toString( );
     String autoName = ppAutoMap.get(autoKey);
-    double delay = m_autoDelay.get( );
 
     return new AutoSelectionContext(autoOption, delay, autoKey, autoName);
   }
@@ -819,21 +799,6 @@ public class RobotContainer
 
   /****************************************************************************
    * 
-   * Use to slow down swerve drivetrain to 30 percent max speed. Drivetrain will execute this command
-   * when invoked
-   */
-  private Command getSlowSwerveCommand( )
-  {
-    return m_drivetrain.applyRequest(( ) -> drive                                                 // 
-        .withVelocityX(kMaxSpeed.times(kSlowSwerve).times(-m_driverPad.getLeftY( )))              // Drive forward with negative Y (forward)
-        .withVelocityY(kMaxSpeed.times(kSlowSwerve).times(-m_driverPad.getLeftX( )))              // Drive left with negative X (left)
-        .withRotationalRate(kMaxAngularRate.times(kSlowSwerve).times(-m_driverPad.getRightX( )))  // Drive counterclockwise with negative X (left)
-    )                                                                                             //
-        .withName("CommandSlowSwerveDrivetrain");
-  }
-
-  /****************************************************************************
-   * 
    * Gamepad joystick axis interfaces
    */
   private double getIntakeRotaryAxis( )
@@ -893,7 +858,7 @@ public class RobotContainer
     m_vision.run( );
 
     m_launcher.initTeleopRPM( );
-    m_matchPhase.teleopInit( );
+    m_matchShift.teleopInit( );
 
     CommandScheduler.getInstance( ).schedule(m_launcher.getLauncherPrimedCommand( ));
     CommandScheduler.getInstance( ).schedule(m_climber.getCalibrateCommand( ));
@@ -908,7 +873,7 @@ public class RobotContainer
     // Add periodic calls for non-subsystem classes
     m_hid.periodic( );
     m_led.periodic( );
-    m_matchPhase.periodic( );
+    m_matchShift.periodic( );
   }
 
   /****************************************************************************

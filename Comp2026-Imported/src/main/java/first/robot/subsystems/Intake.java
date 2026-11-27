@@ -60,8 +60,8 @@ import first.robot.Robot;
 import first.robot.Constants.Ports;
 import first.robot.Constants.INConsts.INRollerMode;
 import first.robot.lib.math.Conversions;
-import first.robot.lib.phoenix.CTREConfigs6;
-import first.robot.lib.phoenix.PhoenixUtil6;
+import first.robot.lib.phoenix.CTREConfigs;
+import first.robot.lib.phoenix.PhoenixUtil;
 
 /****************************************************************************
  * 
@@ -178,15 +178,15 @@ public class Intake extends SubsystemBase
     setName(kSubsystemName);
 
     // Roller motor init
-    m_rollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotor, kSubsystemName + "Roller",
-        CTREConfigs6.intakeRollerFXConfig( ));
+    m_rollerValid = PhoenixUtil.getInstance( ).talonFXInitialize(m_rollerMotor, kSubsystemName + "Roller",
+        CTREConfigs.intakeRollerFXConfig( ));
 
     // Initialize rotary motor and CANcoder objects
-    m_rotaryValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rotaryMotor, kSubsystemName + "Rotary",
-        CTREConfigs6.intakeRotaryFXConfig(Units.degreesToRotations(kRotaryAngleMin), Units.degreesToRotations(kRotaryAngleMax),
+    m_rotaryValid = PhoenixUtil.getInstance( ).talonFXInitialize(m_rotaryMotor, kSubsystemName + "Rotary",
+        CTREConfigs.intakeRotaryFXConfig(Units.degreesToRotations(kRotaryAngleMin), Units.degreesToRotations(kRotaryAngleMax),
             Ports.kCANID_IntakeCANcoder, kRotaryGearRatio));
-    m_canCoderValid = PhoenixUtil6.getInstance( ).canCoderInitialize6(m_CANcoder, kSubsystemName + "Rotary",
-        CTREConfigs6.intakeRotaryCCConfig( ));
+    m_canCoderValid =
+        PhoenixUtil.getInstance( ).canCoderInitialize(m_CANcoder, kSubsystemName + "Rotary", CTREConfigs.intakeRotaryCCConfig( ));
 
     m_rollerAlert.set(!m_rollerValid);
     m_rotaryAlert.set(!m_rotaryValid);
@@ -332,28 +332,28 @@ public class Intake extends SubsystemBase
   {
     if (m_rollerValid)
     {
-      PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
+      PhoenixUtil.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
       m_rollerMotor.clearStickyFaults( );
     }
 
     if (m_rotaryValid)
     {
-      PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rotaryMotor, kSubsystemName + "Rotary");
+      PhoenixUtil.getInstance( ).talonFXPrintFaults(m_rotaryMotor, kSubsystemName + "Rotary");
       m_rotaryMotor.clearStickyFaults( );
     }
 
     if (m_canCoderValid)
     {
-      PhoenixUtil6.getInstance( ).canCoderPrintFaults(m_CANcoder, kSubsystemName + "CANcoder");
+      PhoenixUtil.getInstance( ).canCoderPrintFaults(m_CANcoder, kSubsystemName + "CANcoder");
       m_CANcoder.clearStickyFaults( );
     }
   }
 
   private final static Voltage kManualKG     = Volts.of(-0.45);
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// MANUAL MOVEMENT //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * MANUAL MOVEMENT
+   ***************************************************************************/
 
   private static double        nextTimeToLog = 0.0;
 
@@ -408,9 +408,9 @@ public class Intake extends SubsystemBase
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// MOTION MAGIC /////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * MOTION MAGIC MOVEMENT
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -514,9 +514,9 @@ public class Intake extends SubsystemBase
     m_mmMoveTimer.stop( );
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PRIVATE HELPERS //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PRIVATE HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -587,9 +587,9 @@ public class Intake extends SubsystemBase
     return (degrees >= kRotaryAngleMin) && (degrees <= kRotaryAngleMax);
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PUBLIC HELPERS ///////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PUBLIC HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -656,9 +656,9 @@ public class Intake extends SubsystemBase
     return kRotaryAngleDeployed;
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// COMMAND FACTORIES ////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * COMMAND FACTORIES
+   ***************************************************************************/
 
   /****************************************************************************
    * 

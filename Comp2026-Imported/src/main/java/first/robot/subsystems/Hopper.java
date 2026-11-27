@@ -12,8 +12,8 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import first.robot.Constants;
 import first.robot.Constants.Ports;
 import first.robot.Constants.HPConsts.HPRollerMode;
-import first.robot.lib.phoenix.CTREConfigs6;
-import first.robot.lib.phoenix.PhoenixUtil6;
+import first.robot.lib.phoenix.CTREConfigs;
+import first.robot.lib.phoenix.PhoenixUtil;
 
 import org.wpilib.util.Alert;
 import org.wpilib.util.Alert.Level;
@@ -66,8 +66,8 @@ public class Hopper extends SubsystemBase
     setName(kSubsystemName);
 
     // Roller motor init
-    m_rollerValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rollerMotor, kSubsystemName + "Roller",
-        CTREConfigs6.hopperRollerFXConfig( ));
+    m_rollerValid = PhoenixUtil.getInstance( ).talonFXInitialize(m_rollerMotor, kSubsystemName + "Roller",
+        CTREConfigs.hopperRollerFXConfig( ));
 
     m_rollerAlert.set(!m_rollerValid);
 
@@ -160,14 +160,14 @@ public class Hopper extends SubsystemBase
       return;
     }
 
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
+    PhoenixUtil.getInstance( ).talonFXPrintFaults(m_rollerMotor, kSubsystemName + "Roller");
 
     m_rollerMotor.clearStickyFaults( );
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PRIVATE HELPERS //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PRIVATE HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -231,9 +231,9 @@ public class Hopper extends SubsystemBase
     return num - numInt;
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PUBLIC HELPERS ///////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PUBLIC HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -248,9 +248,9 @@ public class Hopper extends SubsystemBase
     DataLogManager.log(String.format("%s: Set PULSE MODE: %s", getName( ), mode));
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// COMMAND FACTORIES ////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * COMMAND FACTORIES
+   ***************************************************************************/
 
   /****************************************************************************
    * 

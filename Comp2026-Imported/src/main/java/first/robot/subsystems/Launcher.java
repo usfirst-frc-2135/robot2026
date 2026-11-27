@@ -40,8 +40,8 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import first.robot.Constants;
 import first.robot.Constants.Ports;
 import first.robot.lib.math.Conversions;
-import first.robot.lib.phoenix.CTREConfigs6;
-import first.robot.lib.phoenix.PhoenixUtil6;
+import first.robot.lib.phoenix.CTREConfigs;
+import first.robot.lib.phoenix.PhoenixUtil;
 
 /****************************************************************************
  * 
@@ -128,10 +128,10 @@ public class Launcher extends SubsystemBase
   {
     setName("Launcher");
 
-    boolean leftValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_leftMotor, kSubsystemName + "Left",
-        CTREConfigs6.launcherFXConfig(false));
-    boolean rightValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_rightMotor, kSubsystemName + "Right",
-        CTREConfigs6.launcherFXConfig(true));
+    boolean leftValid =
+        PhoenixUtil.getInstance( ).talonFXInitialize(m_leftMotor, kSubsystemName + "Left", CTREConfigs.launcherFXConfig(false));
+    boolean rightValid =
+        PhoenixUtil.getInstance( ).talonFXInitialize(m_rightMotor, kSubsystemName + "Right", CTREConfigs.launcherFXConfig(true));
     //m_rightMotor.setControl(new Follower(Ports.kCANID_LauncherLeft, MotorAlignmentValue.Opposed));
     m_launcherValid = leftValid && rightValid;
 
@@ -266,15 +266,15 @@ public class Launcher extends SubsystemBase
       return;
     }
 
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_leftMotor, "LauncherLeft");
-    PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_rightMotor, "LauncherRight");
+    PhoenixUtil.getInstance( ).talonFXPrintFaults(m_leftMotor, "LauncherLeft");
+    PhoenixUtil.getInstance( ).talonFXPrintFaults(m_rightMotor, "LauncherRight");
     m_leftMotor.clearStickyFaults( );
     m_rightMotor.clearStickyFaults( );
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PRIVATE HELPERS //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PRIVATE HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -352,9 +352,9 @@ public class Launcher extends SubsystemBase
     m_rightMotor.setControl(m_requestVolts.withOutput(0.0));
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PUBLIC HELPERS ///////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PUBLIC HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    *
@@ -405,9 +405,9 @@ public class Launcher extends SubsystemBase
     m_ScoreRPMEntry.set(Math.clamp(requestedRPM, kScoreRPMMin, kScoreRPMMax));
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// COMMAND FACTORIES ////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * COMMAND FACTORIES
+   ***************************************************************************/
 
   /****************************************************************************
    * 

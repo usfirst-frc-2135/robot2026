@@ -20,7 +20,7 @@ import first.robot.Robot;
  * 
  * CTRE configuration structure for v6 devices
  */
-public final class CTREConfigs6
+public final class CTREConfigs
 {
 
   /****************************************************************************

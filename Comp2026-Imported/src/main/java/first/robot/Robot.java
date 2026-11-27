@@ -14,7 +14,6 @@ import org.wpilib.net.WebServer;
 import org.wpilib.system.DataLogManager;
 import org.wpilib.system.Filesystem;
 import org.wpilib.system.RobotController;
-import org.wpilib.system.Timer;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
@@ -24,13 +23,11 @@ import com.pathplanner.lib.commands.FollowPathCommand;
  */
 public class Robot extends TimedRobot
 {
-  private static final boolean m_isComp          = detectRobot( ); // Detect whether this is the competition robot
-  private static final String  printBarrier      = "========================================================================\n";
-  private final RobotContainer m_robotContainer  = new RobotContainer(this); // Main robot container
-  private Command              m_autonomousCommand;
-  private static double        m_timeMark        = Timer.getTimestamp( );
-  private static boolean       m_loadAutoCommand = true;
-  private Optional<Alliance>   m_alliance        = Optional.empty( );
+  private static final boolean m_isComp            = detectRobot( );        // Detect whether this is the competition/practice robot
+  private final RobotContainer m_robotContainer    = new RobotContainer(this); // Main robot container
+  private Command              m_autonomousCommand = null;                  // The autonomous command selected by RobotContainer
+  private static boolean       m_loadAutoCommand   = true;                  // Flag to indicate that the autonomous command needs to be reloaded
+  private Optional<Alliance>   m_alliance          = Optional.empty( );     // Current alliance color, used to detect changes in alliance color
 
   /****************************************************************************
    * 
@@ -40,17 +37,16 @@ public class Robot extends TimedRobot
   {
     // Starts recording to data log
     DataLogManager.start( );
-    DriverStation.startDataLog(DataLogManager.getLog( )); // Logs joystick data
-    Robot.timeMarker("Robot: start");
+    DriverStation.startDataLog(DataLogManager.getLog( )); // Enables logging of joystick data
 
     // Log when commands initialize, interrupt, and end states
     CommandScheduler.getInstance( ).onCommandInitialize(cmd -> DataLogManager.log(String.format("%s: Init", cmd.getName( ))));
     CommandScheduler.getInstance( ).onCommandInterrupt(cmd -> DataLogManager.log(String.format("%s: Interrupt", cmd.getName( ))));
     CommandScheduler.getInstance( ).onCommandFinish(cmd -> DataLogManager.log(String.format("%s: End", cmd.getName( ))));
 
+    // Start the web server for remote dashboard layout (only on a real Systemcore)
     if (RobotBase.isReal( ))
     {
-      // Start the web server for remote dashboard layout (only on a real RoboRIO)
       try
       {
         WebServer.start(5800, Filesystem.getDeployDirectory( ).getPath( ));
@@ -61,16 +57,14 @@ public class Robot extends TimedRobot
       }
     }
 
-    // Recommended by PathPlanner docs
+    // PathPlanner warmup command - recommended by PathPlanner docs
     CommandScheduler.getInstance( ).schedule(FollowPathCommand.warmupCommand( ).withName("PathPlanner - warmupCommand"));
-
-    Robot.timeMarker("Robot: after warmup");
   }
 
   /****************************************************************************
    * 
    * This function is called every 20 msec robot loop, no matter the mode. Use this for items like
-   * diagnostics that you want to run during Disabled, Autonomous, Teleoperated and Test.
+   * diagnostics that you want to run during Disabled, Autonomous, Teleoperated and Utility.
    *
    * This runs after the mode specific periodic functions, but before LiveWindow and SmartDashboard
    * integrated updating.
@@ -85,6 +79,7 @@ public class Robot extends TimedRobot
     //
     CommandScheduler.getInstance( ).run( );
 
+    // Call the robotPeriodic() method in RobotContainer to handle any periodic tasks for subsystems
     m_robotContainer.robotPeriodic( );
   }
 
@@ -97,11 +92,7 @@ public class Robot extends TimedRobot
   {
     datalogMatchBanner("disabledInit");
 
-    Robot.timeMarker("disabledInit: before init");
-
     m_robotContainer.disabledInit( );
-
-    Robot.timeMarker("disabledInit: after init");
   }
 
   /**
@@ -120,7 +111,7 @@ public class Robot extends TimedRobot
   @Override
   public void autonomousInit( )
   {
-    datalogMatchBanner("autonomousInit");
+    datalogMatchBanner("autonInit");
 
     cancelAnyRunningAutonomousCommand( );
 
@@ -135,12 +126,12 @@ public class Robot extends TimedRobot
     // Schedule the preloaded autonomous command selected by RobotContainer.
     if (m_autonomousCommand != null)
     {
-      DataLogManager.log(String.format("autonomousInit: scheduling preloaded auto command: %s", m_autonomousCommand.getName( )));
+      DataLogManager.log(String.format("autonInit: scheduling preloaded auto command: %s", m_autonomousCommand.getName( )));
       CommandScheduler.getInstance( ).schedule(m_autonomousCommand);
     }
     else
     {
-      DataLogManager.log("autonomousInit: WARNING - m_autonomousCommand is null; no autonomous command scheduled");
+      DataLogManager.log("autonInit: WARNING - m_autonomousCommand is null; no autonomous command scheduled");
     }
   }
 
@@ -191,7 +182,7 @@ public class Robot extends TimedRobot
 
   /****************************************************************************
    * 
-   * This function is called once each time the robot enters Test mode.
+   * This function is called once each time the robot enters Utility mode.
    */
   @Override
   public void utilityInit( )
@@ -201,11 +192,13 @@ public class Robot extends TimedRobot
   }
 
   /**
-   * This function is called periodically during Test mode.
+   * This function is called periodically during Utility mode.
    */
   @Override
   public void utilityPeriodic( )
   {}
+
+  /****************************************************************************/
 
   /****************************************************************************
    * 
@@ -218,7 +211,8 @@ public class Robot extends TimedRobot
 
   private static boolean detectRobot( )
   {
-    // Detect which robot/RoboRIO
+    // Detect which robot/Systemcore is being used by reading the serial number. 
+    // Used to differentiate between the competition and practice robots.
     String serialNum = null;
     if (RobotBase.isSimulation( ))
     {
@@ -234,14 +228,15 @@ public class Robot extends TimedRobot
       catch (Throwable t)
       {
         serialNum = null;
-        DataLogManager.log(String.format("robotContainer: WARNING - failed to read RoboRIO serial number (%s)", t.toString( )));
+        DataLogManager
+            .log(String.format("robotContainer: WARNING - failed to read Systemcore serial number (%s)", t.toString( )));
       }
     }
 
     String robotName = "UNKNOWN";
     boolean isComp = false;
 
-    DataLogManager.log(String.format("robotContainer: RoboRIO SN: %s", serialNum));
+    DataLogManager.log(String.format("robotContainer: Systemcore SN: %s", serialNum));
     if (serialNum == null)
     {
       robotName = "SIMULATION";
@@ -256,22 +251,9 @@ public class Robot extends TimedRobot
       isComp = false;
       robotName = "PRACTICE (B)";
     }
-    DataLogManager.log(String.format("robotContainer: Detected the %s robot (RoboRIO)!", robotName));
+    DataLogManager.log(String.format("robotContainer: Detected the %s robot (Systemcore)!", robotName));
 
     return isComp;
-  }
-
-  /****************************************************************************
-   * 
-   * Print absolute and relative time from the previous marker.
-   */
-  public static void timeMarker(String msg)
-  {
-    double now = Timer.getTimestamp( );
-
-    DataLogManager.log(String.format("***** TimeMarker ***** absolute: %.3f relative: %.3f - %s", now, now - m_timeMark, msg));
-
-    m_timeMark = now;
   }
 
   /****************************************************************************
@@ -280,6 +262,8 @@ public class Robot extends TimedRobot
    */
   private static void datalogMatchBanner(String msg)
   {
+    final String printBarrier = "========================================================================";
+
     DataLogManager.log(String.format(printBarrier));
     DataLogManager.log(String.format("%s: Match %s %s, %s Alliance", msg, MatchState.getMatchType( ).toString( ),
         MatchState.getMatchNumber( ), MatchState.getAlliance( ).toString( )));

@@ -3,7 +3,6 @@
 //
 package first.robot.subsystems;
 
-import static org.wpilib.units.Units.DegreesPerSecond;
 import static org.wpilib.units.Units.RotationsPerSecond;
 
 import java.util.List;
@@ -11,17 +10,14 @@ import java.util.Optional;
 
 import org.wpilib.command2.Command;
 import org.wpilib.command2.SequentialCommandGroup;
-import org.wpilib.command2.sysid.SysIdRoutine;
 import org.wpilib.driverstation.Alliance;
 import org.wpilib.driverstation.DriverStationErrors;
 import org.wpilib.driverstation.MatchState;
-import org.wpilib.math.controller.PIDController;
 import org.wpilib.math.filter.MedianFilter;
 import org.wpilib.math.geometry.Pose2d;
 import org.wpilib.math.geometry.Rotation2d;
 import org.wpilib.math.geometry.Translation2d;
 import org.wpilib.math.kinematics.ChassisVelocities;
-import org.wpilib.math.linalg.VecBuilder;
 import org.wpilib.math.util.Units;
 import org.wpilib.networktables.BooleanEntry;
 import org.wpilib.networktables.BooleanPublisher;
@@ -36,9 +32,11 @@ import org.wpilib.tunable.Tunables;
 import org.wpilib.units.measure.AngularVelocity;
 import org.wpilib.units.measure.LinearVelocity;
 
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.limelightvision.Limelight;
-import com.limelightvision.PoseEstimate;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -51,12 +49,12 @@ import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
 import bline.commands.FollowPath;
-import bline.following.DriveType;
 import first.robot.Constants;
 import first.robot.commands.LogCommand;
 import first.robot.generated.CommandSwerveDrivetrain;
 import first.robot.generated.TunerConstants;
 import first.robot.lib.Vision;
+import first.robot.lib.phoenix.PhoenixUtil;
 
 /**
  * Class that extends the TunerX generated CommandSwerveDrivetrain class and extends it with
@@ -140,34 +138,10 @@ public class Drivetrain extends CommandSwerveDrivetrain
     super(TunerConstants.DrivetrainConstants, TunerConstants.FrontLeft, TunerConstants.FrontRight, TunerConstants.BackLeft,
         TunerConstants.BackRight);
 
+    checkSwerveDevices( );
+
     configureAutoBuilder( );
     initDashboard( );
-  }
-
-  /**
-   * Runs the SysId Quasistatic test in the given direction for the routine specified by
-   * {@link #m_sysIdRoutineToApply}.
-   *
-   * @param direction
-   *          Direction of the SysId Quasistatic test
-   * @return Command to run
-   */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction)
-  {
-    return super.sysIdQuasistatic(direction);
-  }
-
-  /**
-   * Runs the SysId Dynamic test in the given direction for the routine specified by
-   * {@link #m_sysIdRoutineToApply}.
-   *
-   * @param direction
-   *          Direction of the SysId Dynamic test
-   * @return Command to run
-   */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction)
-  {
-    return super.sysIdDynamic(direction);
   }
 
   /**
@@ -183,6 +157,21 @@ public class Drivetrain extends CommandSwerveDrivetrain
 
     double back = (visionUpdate(m_llBack, kLLPoseBack)) ? 1.0 : 0.0;
     m_backUpdate.set(m_backFilter.calculate(back) > 0.5);
+  }
+
+  /**
+   * Check all swerve devices for proper connectivity and report any errors to the driver station.
+   */
+  private void checkSwerveDevices( )
+  {
+    SwerveModule[ ] modules = this.getModules( );
+    for (SwerveModule module : modules)
+    {
+      PhoenixUtil.getInstance( ).talonFXInitialize((TalonFX) module.getDriveMotor( ), "Drive Motor", null);
+      PhoenixUtil.getInstance( ).talonFXInitialize((TalonFX) module.getSteerMotor( ), "Steer Motor", null);
+      PhoenixUtil.getInstance( ).canCoderInitialize((CANcoder) module.getEncoder( ), "Encoder", null);
+    }
+    PhoenixUtil.getInstance( ).pigeon2Initialize(this.getPigeon2( ), null);
   }
 
   /**
@@ -393,10 +382,10 @@ public class Drivetrain extends CommandSwerveDrivetrain
     //     }
     //   }
 
-    //   // PoseEstimateType type = PoseEstimateType.MT2_WPIBLUE;
-    //   // for (var estimate : limelight.readAcceptedPoseEstimates(type)) {
-    //   //   addVisionMeasurement(estimate.pose, estimate.timestampSeconds, estimate.stdDevs);
-    //   // }
+    // PoseEstimateType type = PoseEstimateType.MT2_WPIBLUE;
+    // for (var estimate : limelight.readAcceptedPoseEstimates(type)) {
+    //   addVisionMeasurement(estimate.pose, estimate.timestampSeconds, estimate.stdDevs);
+    // }
     // }
 
     return !doRejectUpdate;
@@ -438,9 +427,9 @@ public class Drivetrain extends CommandSwerveDrivetrain
     // setModuleStates(m_previousSetpoint.moduleStates( )); // FUTURE: swerve setpoint generator sample code
   }
 
-  //////////////////////////////////////////////////////////////////////////// ////////////////////
-  /// COMMAND FACTORIES //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * COMMAND FACTORIES
+   ***************************************************************************/
 
   /****************************************************************************
    *

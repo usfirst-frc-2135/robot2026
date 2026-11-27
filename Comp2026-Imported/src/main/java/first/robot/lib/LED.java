@@ -1,5 +1,5 @@
 //
-// LED class - LED feedback on robot
+// LED library class - provide LED feedback (CANdle) on robot
 //
 package first.robot.lib;
 
@@ -36,11 +36,11 @@ import com.ctre.phoenix6.sim.CANdleSimState;
 import first.robot.Constants.Ports;
 import first.robot.Constants.LEDConsts.ANIMATION;
 import first.robot.Constants.LEDConsts.COLOR;
-import first.robot.lib.phoenix.PhoenixUtil6;
+import first.robot.lib.phoenix.PhoenixUtil;
 
 /****************************************************************************
  * 
- * LED class to control LED changes and provide command factory
+ * LED library class to control LED strip animations
  */
 public class LED
 {
@@ -120,7 +120,7 @@ public class LED
     cfg.CANdleFeatures.VBatOutputMode = VBatOutputModeValue.Off;
     cfg.CANdleFeatures.Enable5VRail = Enable5VRailValue.Enabled;
 
-    m_candleValid = PhoenixUtil6.getInstance( ).candleInitialize6(m_candle, cfg);
+    m_candleValid = PhoenixUtil.getInstance( ).candleInitialize(m_candle, "LEDcontrol", cfg);
 
     /* clear all previous animations */
     if (m_candleValid)
@@ -256,7 +256,7 @@ public class LED
   {
     if (m_candleValid)
     {
-      PhoenixUtil6.getInstance( ).candlePrintFaults(m_candle, "CANdle");
+      PhoenixUtil.getInstance( ).candlePrintFaults(m_candle, "CANdle");
       m_candle.clearStickyFaults( );
     }
     else
@@ -265,9 +265,9 @@ public class LED
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PRIVATE HELPERS //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PRIVATE HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -380,29 +380,5 @@ public class LED
     m_request.rate = rate;
     DataLogManager.log(String.format("%s: CANdle request is %s, %s, %.3f", getName( ), color, animation, rate));
   }
-
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// COMMAND FACTORIES ////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
-
-  /****************************************************************************
-   * 
-   * Create LED set command
-   * 
-   * @param color
-   *          LED color to display
-   * @param animation
-   *          LED animation pattern to use
-   * @return instant command that changes LEDs
-   */
-
-  // public Command getLEDCommand(COLOR color, ANIMATION animation, double rate)
-  // {
-  //   return new InstantCommand(            // Command that runs exactly once
-  //       ( ) -> setLEDs(color, animation, rate) // Method to call
-  //   )                                     //
-  //       .withName("LEDSet")          //
-  //       .ignoringDisable(true);
-  // }
 
 }

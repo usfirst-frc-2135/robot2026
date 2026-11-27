@@ -41,19 +41,13 @@ public class Vision
 
   // Objects
 
-  Limelight                   m_llFront            = new Limelight(Constants.kLLFrontName);
-  Limelight                   m_llBack             = new Limelight(Constants.kLLBackName);
-
   /* What to publish over networktables for telemetry */
   private String              m_name               = "";
-
-  // Declare module variables
-  private MedianFilter        m_filteredTX         = new MedianFilter(5); // Filter to smooth out the TX value
-  private MedianFilter        m_filteredTY         = new MedianFilter(5); // Filter to smooth out the TY value
 
   double                      untrusted            = PoseEstimateConfig.UNTRUSTED;
 
   // Start from the default so you do not have to set every value.
+
   PoseEstimateConfig          mt1Config            = PoseEstimateConfig.defaultMT1( )  //
       .withMinTagCount(1)                                       // At least one tag is required
       .withMaxSingleTagAmbiguity(0.7)                 // MT1 needs low-ambiguity perspectives
@@ -80,12 +74,28 @@ public class Vision
       .withStdDevDistanceScaling(0.5, 0.0, 8.0) // Square root of distance for MT2
       .withStdDevTagCountDivision(0.5);                               // Divide by tag count
 
-  Pose3d                      cameraPoseRobotSpace = new Pose3d(0.30, 0.0, 0.20, new Rotation3d( ));
-  Limelight                   camera               = new Limelight("limelight", cameraPoseRobotSpace)  //
+  // Limelight objects for front and back cameras
+
+  Pose3d                      kLLFrontInRobotSpace = new Pose3d(-0.024, -0.058, 0.529, new Rotation3d( ));
+  @SuppressWarnings("resource")
+  Limelight                   m_llFront            = new Limelight(Constants.kLLFrontName, kLLFrontInRobotSpace)  //
       .withPoseEstimateConfig_MT1(mt1Config)    //
       .withPoseEstimateConfig_MT2(mt2Config)    //
       .withTelemetry(true);           // Keep accepted and rejected poses visible on dashboards
+
+  Pose3d                      kLLBackInRobotSpace  = new Pose3d(-0.298, 0.072, 0.217, new Rotation3d( ));
+  @SuppressWarnings("resource")
+  Limelight                   m_llBack             = new Limelight(Constants.kLLBackName, kLLBackInRobotSpace)  //
+      .withPoseEstimateConfig_MT1(mt1Config)    //
+      .withPoseEstimateConfig_MT2(mt2Config)    //
+      .withTelemetry(true);           // Keep accepted and rejected poses visible on dashboards   
+
   boolean                     useMegaTag2          = true;
+
+  // Declare module variables
+
+  private MedianFilter        m_filteredTX         = new MedianFilter(5); // Filter to smooth out the TX value
+  private MedianFilter        m_filteredTY         = new MedianFilter(5); // Filter to smooth out the TY value
 
   // Each robot loop
   // PoseEstimateType type = PoseEstimateType.MT1_WPIBLUE;
@@ -142,29 +152,14 @@ public class Vision
     setCPUThrottleLevel(true);
     // setIMUModeExternalSeed( );
 
-    if (MatchState.getAlliance( ).equals(Optional.of(Alliance.RED)))
-    {
-      setPriorityId(10, "RED");
-    }
-    else if (MatchState.getAlliance( ).equals(Optional.of(Alliance.BLUE)))
-    {
-      setPriorityId(26, "BLUE");
-    }
-    else
-    {
-      DataLogManager.log(String.format("%s: Driver station alliance color NOT SET!", getName( )));
-    }
+    setPriorityId( );
 
-    // TODO: uncomment and test in cameras
-    // LimelightHelpers.setCameraPose_RobotSpace(Constants.kLLFrontName, Constants.kLLFront_Forward, Constants.kLLFront_Side,
-    //     Constants.kLLFront_Up, Constants.kLLFront_Pitch, Constants.kLLFront_Roll, Constants.kLLFront_Yaw);
-    // LimelightHelpers.setCameraPose_RobotSpace(Constants.kLLBackName, Constants.kLLBack_Forward, Constants.kLLBack_Side,
-    //     Constants.kLLBack_Up, Constants.kLLBack_Pitch, Constants.kLLBack_Roll, Constants.kLLBack_Yaw);
-    // LimelightHelpers.setCropWindow(Constants.kLLFrontName, -1.0, 1.0, -1.0, 1.0);  // (left, right, top, bottom) crop window limits for target detection (range 0 to 1, where 0 is left or top of image, and 1 is right or bottom of image)
-    // LimelightHelpers.setCropWindow(Constants.kLLBackName, -1.0, 1.0, -0.35, 1.0);  // (left, right, top, bottom) crop window limits for target detection (range 0 to 1, where 0 is left or top of image, and 1 is right or bottom of image)
-    // LimelightHelpers.setFiducial3DOffset(Constants.kLLFrontName, 0.0, 0.0, 0.0);   // 3D point of interest offset from fiducial center (positive forward, right, up)
-    // LimelightHelpers.setFiducial3DOffset(Constants.kLLBackName, 0.0, 0.0, 0.0);    // 3D point of interest offset from fiducial center (positive forward, right, up)
+    // (left, right, top, bottom) crop window limits for target detection (range 0 to 1, where 0 is left or top of image, and 1 is right or bottom of image)
+    m_llFront.setCropWindowOverride(-1.0, 1.0, -0.35, 1.0);
+    m_llBack.setCropWindowOverride(-1.0, 1.0, -1.0, 1.0);
 
+    m_llFront.setFiducial3DOffsetOverride(null);
+    m_llBack.setFiducial3DOffsetOverride(null);
   }
 
   /****************************************************************************
@@ -177,42 +172,6 @@ public class Vision
 
     setCPUThrottleLevel(false);
     // setIMUModeAssistExternal( );
-  }
-
-  /****************************************************************************
-   * 
-   * Limelight auto-aiming control for rotational velocity. Only aligns the front Limelight.
-   * 
-   * @param maxAngularRate
-   *          max angular rate to scale against
-   * @return desired proportional angular velocity to rotate the chassis
-   */
-  public AngularVelocity aimProportional(AngularVelocity maxAngularRate)
-  {
-    double sampledTX = m_llFront.hasTarget( ) ? (m_llFront.getTXDegrees( ) + kTXOffset) : 0.0;
-
-    double appliedTX = m_filteredTX.calculate(sampledTX);
-    double proportionalFactor = -appliedTX * kAimingKp;
-
-    return maxAngularRate.times(proportionalFactor);
-  }
-
-  /****************************************************************************
-   * 
-   * Limelight auto-ranging control for distance velocity. Only aligns the front Limelight.
-   * 
-   * @param maxSpeed
-   *          max speed to scale against
-   * @return desired proportional linear velocity in chassis forward direction
-   */
-  public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
-  {
-    double sampledTY = m_llFront.hasTarget( ) ? (m_llFront.getTYDegrees( ) + kTYOffset) : 0.0;
-
-    double appliedTY = m_filteredTY.calculate(sampledTY);
-    double proportionalFactor = -appliedTY * kDrivingKp;
-
-    return maxSpeed.times(proportionalFactor);
   }
 
   /****************************************************************************
@@ -285,21 +244,35 @@ public class Vision
   /****************************************************************************
    * 
    * Set priorityid and display alliance color
-   * 
-   * @param id
-   *          aprilTag ID to set as priority
-   * @param alliance
-   *          alliance color string selected
    */
-  private void setPriorityId(int id, String alliance)
+  private void setPriorityId( )
   {
+    int id = 0;
+    String alliance = "Unknown";
+
+    if (MatchState.getAlliance( ).isPresent( ))
+    {
+      if (MatchState.getAlliance( ).equals(Optional.of(Alliance.RED)))
+      {
+        alliance = "RED";
+        id = 10;
+      }
+      else if (MatchState.getAlliance( ).equals(Optional.of(Alliance.BLUE)))
+      {
+        alliance = "BLUE";
+        id = 26;
+      }
+
+      // Priority ID only used on front camera for auto-aligning to the goal
+      m_llFront.setPriorityTagIDOverride(id);
+    }
+
     DataLogManager.log(String.format("%s: Set AprilTag priority id %d (%s)", getName( ), id, alliance));
-    m_llFront.setPriorityTagIDOverride(id);
   }
 
-  // ////////////////////////////////////////////////////////////////////////// 
-  // ///////////////////// AUTO-ALIGN HELPERS /////////////////////////////////
-  // //////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * AUTO-ALIGN HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -347,4 +320,39 @@ public class Vision
     return goalPose;
   }
 
+  /****************************************************************************
+   * 
+   * Limelight auto-aiming control for rotational velocity. Only aligns the front Limelight.
+   * 
+   * @param maxAngularRate
+   *          max angular rate to scale against
+   * @return desired proportional angular velocity to rotate the chassis
+   */
+  public AngularVelocity aimProportional(AngularVelocity maxAngularRate)
+  {
+    double sampledTX = m_llFront.hasTarget( ) ? (m_llFront.getTXDegrees( ) + kTXOffset) : 0.0;
+
+    double appliedTX = m_filteredTX.calculate(sampledTX);
+    double proportionalFactor = -appliedTX * kAimingKp;
+
+    return maxAngularRate.times(proportionalFactor);
+  }
+
+  /****************************************************************************
+   * 
+   * Limelight auto-ranging control for distance velocity. Only aligns the front Limelight.
+   * 
+   * @param maxSpeed
+   *          max speed to scale against
+   * @return desired proportional linear velocity in chassis forward direction
+   */
+  public LinearVelocity rangeProportional(LinearVelocity maxSpeed)
+  {
+    double sampledTY = m_llFront.hasTarget( ) ? (m_llFront.getTYDegrees( ) + kTYOffset) : 0.0;
+
+    double appliedTY = m_filteredTY.calculate(sampledTY);
+    double proportionalFactor = -appliedTY * kDrivingKp;
+
+    return maxSpeed.times(proportionalFactor);
+  }
 }

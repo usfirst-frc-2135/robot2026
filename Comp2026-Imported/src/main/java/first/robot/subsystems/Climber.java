@@ -52,8 +52,8 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import first.robot.Constants;
 import first.robot.Constants.Ports;
 import first.robot.lib.math.Conversions;
-import first.robot.lib.phoenix.CTREConfigs6;
-import first.robot.lib.phoenix.PhoenixUtil6;
+import first.robot.lib.phoenix.CTREConfigs;
+import first.robot.lib.phoenix.PhoenixUtil;
 
 /****************************************************************************
  * 
@@ -158,8 +158,8 @@ public class Climber extends SubsystemBase
     kNTTableName = "climber";
 
     // Initialize climber motor objects
-    m_climberValid = PhoenixUtil6.getInstance( ).talonFXInitialize6(m_climbMotor, kSubsystemFullName,
-        CTREConfigs6.climberFXConfig(true, Units.degreesToRotations(kLengthMin), Units.degreesToRotations(kLengthMax)));
+    m_climberValid = PhoenixUtil.getInstance( ).talonFXInitialize(m_climbMotor, kSubsystemFullName,
+        CTREConfigs.climberFXConfig(true, Units.degreesToRotations(kLengthMin), Units.degreesToRotations(kLengthMax)));
 
     m_alert.set(!m_climberValid);
 
@@ -294,7 +294,7 @@ public class Climber extends SubsystemBase
   {
     if (m_climberValid)
     {
-      PhoenixUtil6.getInstance( ).talonFXPrintFaults(m_climbMotor, getName( ));
+      PhoenixUtil.getInstance( ).talonFXPrintFaults(m_climbMotor, getName( ));
       m_climbMotor.clearStickyFaults( );
     }
     else
@@ -303,9 +303,9 @@ public class Climber extends SubsystemBase
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// MANUAL MOVEMENT //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * MANUAL MOVEMENT
+   ***************************************************************************/
 
   private static double nextTimeToLog = 0.0;
 
@@ -356,9 +356,9 @@ public class Climber extends SubsystemBase
     setVoltage(kManualSpeedVolts.times(axisValue));
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// MOTION MAGIC /////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * MOTION MAGIC MOVEMENT
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -464,9 +464,9 @@ public class Climber extends SubsystemBase
     m_mmMoveTimer.stop( );
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// CALIBRATION //////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * CALIBRATION MOVEMENT
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -532,9 +532,9 @@ public class Climber extends SubsystemBase
     m_calibrated = true;
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PRIVATE HELPERS ///////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PRIVATE HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -598,9 +598,9 @@ public class Climber extends SubsystemBase
     return (inches >= kLengthMin) && (inches <= kLengthMax);
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PUBLIC HELPERS ///////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PUBLIC HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -646,9 +646,9 @@ public class Climber extends SubsystemBase
     return kLengthStowed;
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// COMMAND FACTORIES ////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * COMMAND FACTORIES
+   ***************************************************************************/
 
   /****************************************************************************
    * 

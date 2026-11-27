@@ -1,6 +1,6 @@
 
 //
-// Match State class - Manage match timing and state
+// Match Shift class - Manage match shift timing during a match and provide LED and rumble feedback
 //
 package first.robot.lib;
 
@@ -22,9 +22,9 @@ import first.robot.Constants.LEDConsts.COLOR;
 
 /****************************************************************************
  * 
- * MatchPhase class to manage the match phase and timing
+ * MatchShift class library to manage the shift timing and provide LED and rumble feedback
  */
-public class MatchPhase
+public class MatchShift
 {
   // Constants
   enum ShiftState
@@ -46,14 +46,14 @@ public class MatchPhase
    * 
    * Constructor
    * 
-   * @param driver
-   *          driver gamepad to initialize
-   * @param operator
-   *          operator gamepad to initialize
+   * @param hid
+   *          HID object to initialize
+   * @param led
+   *          LED object to initialize
    */
-  public MatchPhase(HID hid, LED led)
+  public MatchShift(HID hid, LED led)
   {
-    setName("MatchState");
+    setName("MatchShift");
     m_hid = hid;
     m_led = led;
 
@@ -208,13 +208,13 @@ public class MatchPhase
     m_shiftState = ShiftState.NORMAL;
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PRIVATE HELPERS //////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PRIVATE HELPERS
+   ***************************************************************************/
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// PUBLIC HELPERS ///////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * PUBLIC HELPERS
+   ***************************************************************************/
 
   /****************************************************************************
    * 
@@ -338,8 +338,8 @@ public class MatchPhase
     return matchTime <= 30;
   }
 
-  //////////////////////////////////////////////////////////////////////////// //////////////////////
-  /// COMMAND FACTORIES ////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
+  /***************************************************************************
+   * COMMAND FACTORIES
+   ***************************************************************************/
 
 }
